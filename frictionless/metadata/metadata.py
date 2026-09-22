@@ -576,11 +576,15 @@ class Metadata:
 
         # Remote "$ref"s are retrieved by frictionless instead of jsonschema,
         # whose automatic retrieval is deprecated
+        cache = context.json_schema_cache
+
         def retrieve(uri: str) -> Resource:
-            return Resource.from_contents(
-                cls.metadata_retrieve(uri),
-                default_specification=DRAFT202012,
-            )
+            if uri not in cache:
+                cache[uri] = Resource.from_contents(
+                    cls.metadata_retrieve(uri),
+                    default_specification=DRAFT202012,
+                )
+            return cache[uri]
 
         registry = Registry(retrieve=retrieve)
         validator_class = platform.jsonschema.validators.validator_for(profile)  # type: ignore
