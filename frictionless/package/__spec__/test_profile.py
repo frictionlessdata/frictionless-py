@@ -1,7 +1,8 @@
+import json
 import sys
-import urllib.error
 
 import pytest
+import requests
 import yaml
 
 from frictionless import FrictionlessException, Package, Resource, system
@@ -69,12 +70,12 @@ def test_package_external_profile_invalid_remote_from_descriptor():
         assert "required" in error.message
 
 
-def test_package_profile_unresolvable_ref_issue_1812(mocker):
+def test_package_profile_unresolvable_ref_issue_1812(requests_mock):
     # A profile whose "$ref" cannot be fetched must not crash validation with a
     # jsonschema-internal exception: validate() has to return a report instead
-    mocker.patch(
-        "urllib.request.urlopen",
-        side_effect=urllib.error.URLError("[SSL: CERTIFICATE_VERIFY_FAILED]"),
+    requests_mock.get(
+        "https://example.org/schemas/missing.json",
+        exc=requests.exceptions.SSLError("[SSL: CERTIFICATE_VERIFY_FAILED]"),
     )
     resource = Resource(name="table", path="data/table.csv")
     package = Package(resources=[resource], profile="data/profiles/unresolvable-ref.json")
@@ -83,11 +84,11 @@ def test_package_profile_unresolvable_ref_issue_1812(mocker):
     assert "failed to resolve json-schema profile" in report.errors[0].note
 
 
-def test_package_profile_unresolvable_ref_keeps_cause_issue_1812(mocker):
+def test_package_profile_unresolvable_ref_keeps_cause_issue_1812(requests_mock):
     # cause information should be preserved
-    mocker.patch(
-        "urllib.request.urlopen",
-        side_effect=urllib.error.URLError("[SSL: CERTIFICATE_VERIFY_FAILED]"),
+    requests_mock.get(
+        "https://example.org/schemas/missing.json",
+        exc=requests.exceptions.SSLError("[SSL: CERTIFICATE_VERIFY_FAILED]"),
     )
     resource = Resource(name="table", path="data/table.csv")
     package = Package(resources=[resource], profile="data/profiles/unresolvable-ref.json")
@@ -98,7 +99,33 @@ def test_package_profile_unresolvable_ref_keeps_cause_issue_1812(mocker):
     while cause is not None:
         causes.append(cause)
         cause = cause.__cause__
-    assert any(isinstance(cause, urllib.error.URLError) for cause in causes)
+    assert any(isinstance(cause, requests.exceptions.SSLError) for cause in causes)
+
+
+# A remote "$ref" in a profile is resolved by frictionless (http session),
+# not by jsonschema's deprecated automatic retrieval
+@pytest.mark.filterwarnings("error::DeprecationWarning")
+@pytest.mark.parametrize(
+    "descriptor, notes",
+    [
+        ({"name": "package"}, []),
+        ({}, ["'name' is a required property"]),
+    ],
+)
+def test_package_profile_remote_ref_resolved_by_frictionless(
+    descriptor, notes, tmp_path, mocker, requests_mock
+):
+    # jsonschema's own retrieval must not be used (nor hit the network)
+    mocker.patch("urllib.request.urlopen", side_effect=AssertionError)
+    remote = "https://example.com/profiles/remote.json"
+    requests_mock.get(remote, json={"required": ["name"]})
+    profile = tmp_path / "profile.json"
+    profile.write_text(json.dumps({"allOf": [{"$ref": remote}]}))
+    resource = Resource(name="table", path="data/table.csv")
+    descriptor = {**descriptor, "resources": [resource.to_descriptor()]}
+    with system.use_context(trusted=True):
+        report = Package.validate_descriptor({**descriptor, "profile": str(profile)})
+    assert [error.note for error in report.errors] == notes
 
 
 @pytest.mark.skip

@@ -567,8 +567,21 @@ class Metadata:
         if isinstance(profile, str):
             profile = cls.metadata_retrieve(profile)
 
+        # Imported locally, as jsonschema (which imports it anyway) is lazily loaded
+        from referencing import Registry, Resource
+        from referencing.jsonschema import DRAFT202012
+
+        # Remote "$ref"s are retrieved by frictionless instead of jsonschema,
+        # whose automatic retrieval is deprecated
+        def retrieve(uri: str) -> Resource:
+            return Resource.from_contents(
+                cls.metadata_retrieve(uri),
+                default_specification=DRAFT202012,
+            )
+
+        registry = Registry(retrieve=retrieve)
         validator_class = platform.jsonschema.validators.validator_for(profile)  # type: ignore
-        validator = validator_class(profile)  # type: ignore
+        validator = validator_class(profile, registry=registry)  # type: ignore
         try:
             errors = list(validator.iter_errors(descriptor))  # type: ignore
         except Exception as exception:
