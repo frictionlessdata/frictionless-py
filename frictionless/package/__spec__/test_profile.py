@@ -218,6 +218,49 @@ def test_package_profile_relative_ref_resolved_from_profile(
     ]
 
 
+# When untrusted, a remote profile cannot reach a local file, even a safe one
+# with a known location; and only http(s) and local "$ref"s are supported
+@pytest.mark.parametrize(
+    "profile, ref, reason",
+    [
+        (
+            "https://example.com/profiles/profile.json",
+            "{secret_uri}",
+            '"$ref" path is not safe',
+        ),
+        (
+            "profile.json",
+            "ftp://example.com/target.json",
+            '"$ref" scheme is not supported',
+        ),
+        (
+            "profile.json",
+            'data:application/json,{"required":["x"]}',
+            '"$ref" scheme is not supported',
+        ),
+    ],
+)
+def test_package_profile_ref_unsafe_or_unsupported(
+    profile, ref, reason, tmp_path, monkeypatch, requests_mock
+):
+    (tmp_path / "secret.json").write_text('{"required": ["secret"]}')
+    ref = ref.replace("{secret_uri}", (tmp_path / "secret.json").as_uri())
+    profile_descriptor = {"allOf": [{"$ref": ref}]}
+    (tmp_path / "profile.json").write_text(json.dumps(profile_descriptor))
+    requests_mock.get(
+        "https://example.com/profiles/profile.json", json=profile_descriptor
+    )
+    monkeypatch.chdir(tmp_path)
+    descriptor = {
+        "profile": profile,
+        "resources": [{"name": "table", "data": [["id"], [1]]}],
+    }
+    report = Package.validate_descriptor(descriptor)
+    notes = [error.note for error in report.errors]
+    assert len(notes) == 1
+    assert reason in notes[0]
+
+
 @pytest.mark.skip
 @pytest.mark.parametrize("profile", ["data-package", "tabular-data-package"])
 def test_package_profile_type(profile):

@@ -522,9 +522,10 @@ class Metadata:
         """Retrieve the JSON Schema referenced by a profile's "$ref"
 
         A local "$ref" follows the same safety rules as the profile path: when
-        untrusted, it must resolve inside the current working directory. The
-        JSON Schemas are cached in the validation context, so that each one is
-        retrieved only once per validation.
+        untrusted, it must come from a local profile and resolve inside the
+        current working directory. Only http(s) and local "$ref"s are supported.
+        The JSON Schemas are cached in the validation context, so that each one
+        is retrieved only once per validation.
         """
         # Imported locally, as jsonschema (which imports it anyway) is lazily loaded
         from urllib.request import url2pathname
@@ -532,22 +533,34 @@ class Metadata:
         from referencing import Resource
         from referencing.jsonschema import DRAFT202012
 
+        Error = cls.metadata_Error or platform.frictionless_errors.MetadataError
+        trusted = platform.frictionless.system.trusted
+
         def unsafe() -> FrictionlessException:
             # The error does not mention the path: made relative to the current
             # working directory, it would disclose where this directory is
-            Error = cls.metadata_Error or platform.frictionless_errors.MetadataError
             return FrictionlessException(Error(note='"$ref" path is not safe'))
 
-        # Local "$ref"s are resolved as "file:" URIs (see `metadata_validate`)
         path = uri
         url = urlparse(uri)
         if url.scheme == "file":
-            # A host would be reached through the network (e.g. SMB on Windows)
-            if url.netloc not in ["", "localhost"]:
+            # Resolved against a local profile (see `metadata_validate`), or
+            # written as is: only accepted when trusted. Any other host would
+            # be reached through the network (e.g. SMB on Windows)
+            hosts = [context.local_token] + (["", "localhost"] if trusted else [])
+            if url.netloc not in hosts:
                 raise unsafe()
             path = url2pathname(url.path)
+        elif url.scheme in ["http", "https"]:
+            pass
+        elif helpers.is_remote_path(uri):
+            note = '"$ref" scheme is not supported'
+            raise FrictionlessException(Error(note=note))
+        elif not trusted:
+            # A plain path is not resolved against a local profile
+            raise unsafe()
 
-        if not platform.frictionless.system.trusted and not helpers.is_remote_path(path):
+        if not trusted and url.scheme == "file":
             try:
                 path = os.path.relpath(path)
             except ValueError:  # on another drive (Windows)
@@ -626,7 +639,12 @@ class Metadata:
             # A base URI has to be absolute to resolve relative "$ref"s correctly
             profile_uri = profile
             if not helpers.is_remote_path(profile):
-                profile_uri = Path(os.path.abspath(profile)).as_uri()
+                # Its host tells "$ref"s resolved against it apart (see
+                # `ValidationContext.local_token`)
+                path_uri = Path(os.path.abspath(profile)).as_uri()
+                profile_uri = path_uri.replace(
+                    "file://", f"file://{context.local_token}", 1
+                )
             profile = cls.metadata_retrieve(profile)
 
         # Imported locally, as jsonschema (which imports it anyway) is lazily loaded
