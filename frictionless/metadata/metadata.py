@@ -32,6 +32,8 @@ from ..vendors import stringcase
 from .context import ValidationContext
 
 if TYPE_CHECKING:
+    from referencing import Resource
+
     from ..error import Error
     from ..report import Report
 
@@ -510,6 +512,38 @@ class Metadata:
             raise FrictionlessException(Error(note=note)) from exception
 
     @classmethod
+    def metadata_retrieve_json_schema(
+        cls,
+        uri: str,
+        *,
+        context: ValidationContext,
+    ) -> Resource:
+        """Retrieve the JSON Schema referenced by a profile's "$ref"
+
+        A local "$ref" follows the same safety rules as the profile path. The
+        JSON Schemas are cached in the validation context, so that each one is
+        retrieved only once per validation.
+        """
+        # Imported locally, as jsonschema (which imports it anyway) is lazily loaded
+        from referencing import Resource
+        from referencing.jsonschema import DRAFT202012
+
+        trusted = platform.frictionless.system.trusted
+        if not trusted and not helpers.is_remote_path(uri):
+            if not helpers.is_safe_path(uri):
+                Error = cls.metadata_Error or platform.frictionless_errors.MetadataError
+                note = f'path "{uri}" is not safe'
+                raise FrictionlessException(Error(note=note))
+
+        cache = context.json_schema_cache
+        if uri not in cache:
+            cache[uri] = Resource.from_contents(
+                cls.metadata_retrieve(uri),
+                default_specification=DRAFT202012,
+            )
+        return cache[uri]
+
+    @classmethod
     def metadata_transform(cls, descriptor: types.IDescriptor):
         """Transform the descriptor inplace before serializing into a python class
         instance.
@@ -571,28 +605,13 @@ class Metadata:
             profile = cls.metadata_retrieve(profile)
 
         # Imported locally, as jsonschema (which imports it anyway) is lazily loaded
-        from referencing import Registry, Resource
-        from referencing.jsonschema import DRAFT202012
+        from referencing import Registry
 
-        # Remote "$ref"s are retrieved by frictionless instead of jsonschema,
+        # "$ref"s are retrieved by frictionless instead of jsonschema,
         # whose automatic retrieval is deprecated
-        cache = context.json_schema_cache
-
-        def retrieve(uri: str) -> Resource:
-            # A local "$ref" follows the same safety rules as the profile path
-            trusted = platform.frictionless.system.trusted
-            if not trusted and not helpers.is_remote_path(uri):
-                if not helpers.is_safe_path(uri):
-                    note = f'path "{uri}" is not safe'
-                    raise FrictionlessException(Error(note=note))
-            if uri not in cache:
-                cache[uri] = Resource.from_contents(
-                    cls.metadata_retrieve(uri),
-                    default_specification=DRAFT202012,
-                )
-            return cache[uri]
-
-        registry = Registry(retrieve=retrieve)
+        registry = Registry(
+            retrieve=lambda uri: cls.metadata_retrieve_json_schema(uri, context=context)
+        )
         validator_class = platform.jsonschema.validators.validator_for(profile)  # type: ignore
         validator = validator_class(profile, registry=registry)  # type: ignore
         try:
