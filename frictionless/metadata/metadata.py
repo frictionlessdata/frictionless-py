@@ -579,6 +579,12 @@ class Metadata:
         cache = context.json_schema_cache
 
         def retrieve(uri: str) -> Resource:
+            # A local "$ref" follows the same safety rules as the profile path
+            trusted = platform.frictionless.system.trusted
+            if not trusted and not helpers.is_remote_path(uri):
+                if not helpers.is_safe_path(uri):
+                    note = f'path "{uri}" is not safe'
+                    raise FrictionlessException(Error(note=note))
             if uri not in cache:
                 cache[uri] = Resource.from_contents(
                     cls.metadata_retrieve(uri),
@@ -592,7 +598,16 @@ class Metadata:
         try:
             errors = list(validator.iter_errors(descriptor))  # type: ignore
         except Exception as exception:
-            note = f'failed to resolve json-schema profile because "{exception}"'
+            # Our own error (raised while retrieving a "$ref") is more explicit
+            # than the referencing wrapper around it
+            reason = str(exception)
+            cause = exception.__cause__
+            while cause is not None:
+                if isinstance(cause, FrictionlessException):
+                    reason = cause.error.note
+                    break
+                cause = cause.__cause__
+            note = f'failed to resolve json-schema profile because "{reason}"'
             raise FrictionlessException(Error(note=note)) from exception
 
         for error in errors:

@@ -145,6 +145,42 @@ def test_package_profile_remote_ref_retrieved_once(tmp_path, requests_mock):
     assert requests_mock.call_count == 1
 
 
+# A local "$ref" is subject to the same safety rules as the profile path:
+# an untrusted profile cannot read an arbitrary file of the server
+@pytest.mark.parametrize(
+    "ref, trusted, read",
+    [
+        ("secret.json", False, True),
+        ("{secret}", False, False),
+        ("../outside/secret.json", False, False),
+        ("{secret}", True, True),
+    ],
+)
+def test_package_profile_local_ref_safety(ref, trusted, read, tmp_path, monkeypatch):
+    workdir = tmp_path / "workdir"
+    outside = tmp_path / "outside"
+    workdir.mkdir()
+    outside.mkdir()
+    secret = {"required": ["secret"]}
+    (workdir / "secret.json").write_text(json.dumps(secret))
+    (outside / "secret.json").write_text(json.dumps(secret))
+    ref = ref.format(secret=outside / "secret.json")
+    (workdir / "profile.json").write_text(json.dumps({"allOf": [{"$ref": ref}]}))
+    monkeypatch.chdir(workdir)
+    descriptor = {
+        "profile": "profile.json",
+        "resources": [{"name": "table", "data": [["id"], [1]]}],
+    }
+    with system.use_context(trusted=trusted):
+        report = Package.validate_descriptor(descriptor)
+    notes = [error.note for error in report.errors]
+    if read:
+        assert notes == ["'secret' is a required property"]
+    else:
+        assert len(notes) == 1
+        assert f'path "{ref}" is not safe' in notes[0]
+
+
 @pytest.mark.skip
 @pytest.mark.parametrize("profile", ["data-package", "tabular-data-package"])
 def test_package_profile_type(profile):
