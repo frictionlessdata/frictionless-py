@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import os
+import subprocess
 from typing import List
 
 import typer
@@ -56,4 +56,10 @@ def console_explore(
         raise typer.Exit(code=1)
 
     # Enter editor
-    os.system(f"vd {' '.join(paths)}")
+    try:
+        completed = subprocess.run(["vd", *paths], check=False)
+    except FileNotFoundError:
+        helpers.print_error(note='VisiData executable "vd" was not found')
+        raise typer.Exit(code=1)
+    if completed.returncode:
+        raise typer.Exit(code=completed.returncode)
