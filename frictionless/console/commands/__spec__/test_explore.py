@@ -2,12 +2,12 @@ from __future__ import annotations
 
 from types import SimpleNamespace
 
+from typer.testing import CliRunner
+
 from frictionless.console import console
 from frictionless.console.commands import explore as explore_module
 
-from .conftest import create_runner
-
-runner = create_runner()
+runner = CliRunner()
 
 
 def test_console_explore_passes_paths_without_shell(monkeypatch, tmp_path):
