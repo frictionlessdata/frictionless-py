@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import tempfile
-from typing import Any, List
+from typing import Any
 
 from ... import helpers, types
 from ...resources import FileResource
@@ -21,12 +21,14 @@ class MultipartLoader(Loader):
     def read_byte_stream_create(self):  # type: ignore
         assert self.resource.normpath
         remote = self.resource.remote
+        tabular = self.resource.format == "csv"
         headless = self.resource.dialect.header is False
-        headless = headless or self.resource.format != "csv"
+        headless = headless or not tabular
         return MultipartByteStream(
             self.resource.normpaths,
             remote=remote,
             headless=headless,
+            tabular=tabular,
         )
 
     # Write
@@ -50,10 +52,11 @@ class MultipartLoader(Loader):
 
 
 class MultipartByteStream:
-    def __init__(self, paths: List[str], *, remote: bool, headless: bool):
+    def __init__(self, paths: list[str], *, remote: bool, headless: bool, tabular: bool):
         self.__paths = paths
         self.__remote = remote
         self.__headless = headless
+        self.__tabular = tabular
         self.__line_stream = self.read_line_stream()
 
     def __enter__(self):
@@ -105,8 +108,22 @@ class MultipartByteStream:
 
     def read_line_stream(self):
         for number, path in enumerate(self.__paths, start=1):
+            last_line = None
             with FileResource(path=path) as resource:
                 for line_number, line in enumerate(resource.byte_stream, start=1):
                     if not self.__headless and number > 1 and line_number == 1:
                         continue
-                    yield line
+                    if last_line is not None:
+                        yield last_line
+                    last_line = line
+            if last_line is not None:
+                # A tabular part that does not end with a newline would glue its
+                # last row onto the first row of the next part. Binary parts are
+                # concatenated verbatim: they are chunks of one file.
+                if (
+                    self.__tabular
+                    and number < len(self.__paths)
+                    and not last_line.endswith(b"\n")
+                ):
+                    last_line += b"\n"
+                yield last_line

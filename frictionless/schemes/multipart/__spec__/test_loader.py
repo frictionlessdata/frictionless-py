@@ -3,8 +3,8 @@ import sys
 
 import pytest
 
-from frictionless import FrictionlessException, platform, schemes
-from frictionless.resources import TableResource
+from frictionless import Dialect, FrictionlessException, platform, schemes
+from frictionless.resources import FileResource, TableResource
 
 BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
 
@@ -175,3 +175,48 @@ def test_multipart_loader_with_compressed_parts_issue_1215():
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
         ]
+
+
+def test_multipart_loader_part_without_trailing_newline_issue_1778(tmpdir):
+    # The last row of a part without a trailing newline was glued onto the
+    # first row of the next part ({"id": 1, "name": "english2"}).
+    path1 = str(tmpdir.join("chunk1.csv"))
+    path2 = str(tmpdir.join("chunk2.csv"))
+    with open(path1, "wb") as file:
+        file.write(b"id,name\n1,english")
+    with open(path2, "wb") as file:
+        file.write(b"id,name\n2,german\n")
+    with TableResource(path=path1, extrapaths=[path2]) as resource:
+        assert resource.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "german"},
+        ]
+
+
+def test_multipart_loader_headless_part_without_trailing_newline_issue_1778(tmpdir):
+    path1 = str(tmpdir.join("chunk1.csv"))
+    path2 = str(tmpdir.join("chunk2.csv"))
+    with open(path1, "wb") as file:
+        file.write(b"1,english")
+    with open(path2, "wb") as file:
+        file.write(b"2,german\n")
+    resource = TableResource(
+        path=path1, extrapaths=[path2], dialect=Dialect(header=False)
+    )
+    with resource:
+        assert resource.read_rows() == [
+            {"field1": 1, "field2": "english"},
+            {"field1": 2, "field2": "german"},
+        ]
+
+
+def test_multipart_loader_binary_parts_stay_verbatim_issue_1778(tmpdir):
+    # Non-tabular parts are chunks of one file: no newline may be inserted.
+    path1 = str(tmpdir.join("part1.bin"))
+    path2 = str(tmpdir.join("part2.bin"))
+    with open(path1, "wb") as file:
+        file.write(b"\x00\x01NOEOL")
+    with open(path2, "wb") as file:
+        file.write(b"\x02\x03\n")
+    with FileResource(path=path1, extrapaths=[path2]) as resource:
+        assert resource.read_file() == b"\x00\x01NOEOL\x02\x03\n"
