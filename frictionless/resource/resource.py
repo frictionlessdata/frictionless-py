@@ -11,6 +11,7 @@ from .. import errors, fields, helpers, settings
 from ..checklist import Checklist
 from ..detector import Detector
 from ..dialect import Control, Dialect
+from ..errors import EncodingError, FormatError
 from ..exception import FrictionlessException
 from ..metadata import Metadata
 from ..platform import platform
@@ -674,7 +675,14 @@ class Resource(Metadata, metaclass=Factory):  # type: ignore
 
             # Validate file
             if not isinstance(self, platform.frictionless_resources.TableResource):
-                if self.hash is not None or self.bytes is not None:
+                if isinstance(self, platform.frictionless_resources.JsonResource):
+                    try:
+                        self.read_json()
+                    except UnicodeDecodeError as exception:
+                        errors.append(EncodingError(note=str(exception)))
+                    except (ValueError, platform.yaml.YAMLError) as exception:
+                        errors.append(FormatError(note=str(exception)))
+                elif self.hash is not None or self.bytes is not None:
                     helpers.pass_through(self.byte_stream)
 
             # Validate table
