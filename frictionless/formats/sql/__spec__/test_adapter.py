@@ -232,6 +232,31 @@ def test_sql_adapter_package_url_argument(sqlite_url):
 # Bugs
 
 
+def test_sql_adapter_namespace_issue_1602(tmpdir):
+    # Writing to a table in a namespace (schema) raised
+    # "KeyError: '<table>'", because MetaData(schema=namespace) keys tables
+    # as "<namespace>.<name>" but the adapter looked them up by the bare name.
+    from frictionless.formats.sql import SqlControl
+    from frictionless.formats.sql.adapter import SqlAdapter
+
+    main_db = str(tmpdir.join("main.db"))
+    ns_db = str(tmpdir.join("ns.db"))
+    engine = sa.create_engine(f"sqlite:///{main_db}")
+
+    @sa.event.listens_for(engine, "connect")
+    def _attach(dbapi_conn, _record):
+        dbapi_conn.execute(f"ATTACH DATABASE '{ns_db}' AS ns")
+
+    package = Package(resources=[TableResource(path="data/table.csv")])
+    package.infer()
+
+    SqlAdapter(engine, control=SqlControl(namespace="ns")).write_package(package)
+
+    reader = SqlAdapter(engine, control=SqlControl(table="table", namespace="ns"))
+    rows = list(reader.read_cell_stream(SqlControl(table="table", namespace="ns")))
+    assert rows == [["id", "name"], [1, "english"], [2, "中国人"]]
+
+
 def test_sql_adapter_integer_enum_issue_776(sqlite_url):
     control = formats.SqlControl(table="table")
     source = TableResource(path="data/table.csv")
