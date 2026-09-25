@@ -104,9 +104,14 @@ class MultipartByteStream:
         return res
 
     def read_line_stream(self):
+        last_line_had_terminator = True
         for number, path in enumerate(self.__paths, start=1):
+            if number > 1 and not last_line_had_terminator:
+                yield b"\n"
+                last_line_had_terminator = True
             with FileResource(path=path) as resource:
                 for line_number, line in enumerate(resource.byte_stream, start=1):
                     if not self.__headless and number > 1 and line_number == 1:
                         continue
+                    last_line_had_terminator = line.endswith((b"\n", b"\r"))
                     yield line
