@@ -4,6 +4,10 @@ Here described only the breaking and most significant changes. The full changelo
 
 ## v5.20.0
 
+- fix(security): fix command injection vulnerability in `frictionless explore` 
+  command 
+  ([#1820](https://github.com/frictionlessdata/frictionless-py/pull/1820))
+
 - feat: Data Package v2, accept `$schema` property
   ([#1784](https://github.com/frictionlessdata/frictionless-py/pull/1784))
 - feat: Data Package v2, support `missingValues` as objects
