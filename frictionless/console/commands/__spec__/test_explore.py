@@ -7,7 +7,6 @@ from frictionless.console.commands import explore as explore_module
 
 from .conftest import create_runner
 
-
 runner = create_runner()
 
 
@@ -26,4 +25,10 @@ def test_console_explore_passes_paths_without_shell(monkeypatch, tmp_path):
     result = runner.invoke(console, ["explore", str(source)])
 
     assert result.exit_code == 0
-    assert calls == [(["vd", str(source)], False)]
+    assert calls == [(["vd", "--", str(source)], False)]
+    # The "--" end-of-options separator prevents a path starting with "-"
+    # from being interpreted by VisiData as an option (e.g. --config, which
+    # execs Python)
+    args = calls[0][0]
+    assert args[:2] == ["vd", "--"]
+    assert all(not arg.startswith("-") for arg in args[2:])

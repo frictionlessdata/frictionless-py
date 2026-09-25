@@ -57,7 +57,7 @@ def console_explore(
 
     # Enter editor
     try:
-        completed = subprocess.run(["vd", *paths], check=False)
+        completed = subprocess.run(["vd", "--", *paths], check=False)
     except FileNotFoundError:
         helpers.print_error(note='VisiData executable "vd" was not found')
         raise typer.Exit(code=1)
