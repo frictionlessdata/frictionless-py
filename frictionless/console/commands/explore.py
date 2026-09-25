@@ -62,7 +62,7 @@ def console_explore(
     try:
         completed = subprocess.run(["vd", "--", *paths], check=False)
     except FileNotFoundError:
-        helpers.print_error(note='VisiData executable "vd" was not found')
+        helpers.print_error(console, note='VisiData executable "vd" was not found')
         raise typer.Exit(code=1)
     if completed.returncode:
         raise typer.Exit(code=completed.returncode)
