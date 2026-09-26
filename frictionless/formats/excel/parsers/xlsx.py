@@ -79,9 +79,12 @@ class XlsxParser(Parser):
         # Get book
         # To fill merged cells we can't use read-only because
         # `sheet.merged_cell_ranges` is not available in this mode
+        # NOTE: resolve the dependency outside the try/except so that a missing
+        # `frictionless[excel]` install is not reported as an invalid excel file
+        openpyxl = platform.openpyxl
         try:
             warnings.filterwarnings("ignore", category=UserWarning, module="openpyxl")
-            book = platform.openpyxl.load_workbook(
+            book = openpyxl.load_workbook(
                 self.loader.byte_stream,
                 read_only=not control.fill_merged_cells,
                 data_only=True,
