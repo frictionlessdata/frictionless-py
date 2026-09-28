@@ -147,6 +147,28 @@ print(pipeline)
 
 So what's the reason to use declarative pipelines if it works the same as the Python code? The main difference is that pipelines can be saved as JSON files which can be shared among different users and used with CLI and API. For example, if you implement your own UI based on Frictionless Framework you can serialize the whole pipeline as a JSON file and send it to the server. This is the same for CLI - if your colleague has  given you a `pipeline.json` file, you can run `frictionless transform pipeline.json` in the CLI to get the same results as they got.
 
+For package transformations, a `resource-transform` step contains its own list of
+resource steps. For example, this descriptor updates the `description` field in a
+resource named `data`:
+
+```json
+{
+  "steps": [
+    {
+      "type": "resource-transform",
+      "name": "data",
+      "steps": [
+        {"type": "cell-set", "fieldName": "description", "value": "Updated"}
+      ]
+    }
+  ]
+}
+```
+
+Load it with `Pipeline.from_descriptor(...)` and pass the pipeline to
+`package.transform(...)`. Nested steps are validated and can be saved with
+`pipeline.to_json()` just like top-level steps.
+
 ## Available Steps
 
 Frictionless includes more than 40+ built-in transform steps. They are grouped by the object so you can find them easily using code auto completion in a code editor. For example, start typing `steps.table...` and you will see all the available steps for that group. The available groups are:
