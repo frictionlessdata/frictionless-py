@@ -288,7 +288,7 @@ class Field(Metadata):
 
         # Examples
         example = descriptor.get("example")
-        if example:
+        if example is not None:
             type = descriptor.get("type")
             Class = system.select_field_class(type)
 
