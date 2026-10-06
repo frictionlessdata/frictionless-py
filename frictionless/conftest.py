@@ -119,7 +119,7 @@ def pytest_addoption(parser):
 def pytest_configure(config):
     if not config.option.ci:
         expr = getattr(config.option, "markexpr")
-        setattr(config.option, "markexpr", "{expr} and not ci" if expr else "not ci")
+        setattr(config.option, "markexpr", f"({expr}) and not ci" if expr else "not ci")
 
 
 @pytest.fixture(scope="module")
