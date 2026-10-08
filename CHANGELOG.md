@@ -9,6 +9,7 @@ Here described only the breaking and most significant changes. The full changelo
   10 seconds timeout), non-`http(s)` schemes are refused, relative references 
   resolve from the profile location, and error messages no longer disclose the 
   content of referenced documents
+  ([#1832](https://github.com/frictionlessdata/frictionless-py/pull/1832))
 - fix(security): fix command injection vulnerability in `frictionless explore` 
   command 
   ([#1820](https://github.com/frictionlessdata/frictionless-py/pull/1820))
