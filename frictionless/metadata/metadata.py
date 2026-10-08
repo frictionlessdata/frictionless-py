@@ -900,8 +900,10 @@ def _profile_error_note(exception: Exception) -> str:
 
 # urllib3 prefixes network error messages with the representation of the
 # connection or pool, e.g. "HTTPSConnection(host='example.com', port=443): "
+# (before 2.0, it is the default object repr,
+# e.g. "<urllib3.connection.HTTPSConnection object at 0x...>: ")
 _HTTP_CONNECTION_PREFIX = re.compile(
-    r"^\w*HTTPS?Connection(Pool)?\(host='[^']*', port=\d+\):\s*"
+    r"^(<[^>]*>|\w*HTTPS?Connection(Pool)?\(host='[^']*', port=\d+\)):\s*"
 )
 
 
