@@ -39,69 +39,6 @@ if TYPE_CHECKING:
     from ..report import Report
 
 
-# urllib3 prefixes network error messages with the representation of the
-# connection or pool, e.g. "HTTPSConnection(host='example.com', port=443): "
-_HTTP_CONNECTION_PREFIX = re.compile(
-    r"^\w*HTTPS?Connection(Pool)?\(host='[^']*', port=\d+\):\s*"
-)
-
-
-def _profile_error_note(exception: Exception) -> str:
-    """Return the note of a jsonschema profile validation failure
-
-    The "$ref" retrieval errors raised by frictionless (in the "__cause__"
-    chain) are more explicit than the jsonschema wrapper around them. The
-    exceptions of the referencing library are reworded when they embed the
-    referenced document in their message: a "$ref" can target any file of
-    the working directory, whose content must not be disclosed.
-    """
-    from referencing import exceptions as referencing_exceptions
-
-    cause = exception
-    while cause is not None:
-        if isinstance(cause, FrictionlessException):
-            return cause.error.note
-        if isinstance(cause, referencing_exceptions.PointerToNowhere):
-            note = (
-                f"JSON pointer '{cause.ref}' does not exist "
-                "within the referenced document"
-            )
-            if cause.ref == "/":
-                note += " (to point to the whole document, use '#')"
-            return note
-        if isinstance(cause, referencing_exceptions.NoSuchAnchor):
-            return (
-                f"anchor '{cause.anchor}' does not exist within the referenced document"
-            )
-        if isinstance(cause, referencing_exceptions.CannotDetermineSpecification):
-            return "cannot determine the specification of the referenced document"
-        cause = cause.__cause__
-    return str(exception)
-
-
-def _network_error_note(exception: Exception) -> str:
-    """Return a concise message for a network error
-
-    A requests exception is verbose: it embeds the urllib3 representation of
-    the pool and of the connection, repeating the URL and hiding the
-    low-level cause behind nested parentheses and quotes. Only the
-    informative tail is kept, e.g. "Failed to resolve 'example.com' ([Errno
-    -2] Name or service not known)". Other exceptions are left unchanged.
-    """
-    requests = platform.requests
-    if not isinstance(exception, (requests.ConnectionError, requests.Timeout)):
-        return str(exception)
-
-    # Unwrap the chain: requests wraps the urllib3 error ("args[0]"), which
-    # itself wraps the low-level error (its "reason"). The low-level message
-    # is its last argument ("args[-1]")
-    error = exception.args[0] if exception.args else exception
-    reason = getattr(error, "reason", None) or error
-    args = getattr(reason, "args", None)
-    note = args[-1] if args else reason
-    return _HTTP_CONNECTION_PREFIX.sub("", str(note)) or str(exception)
-
-
 class Metadata:
     """Metadata representation
 
@@ -607,36 +544,52 @@ class Metadata:
         trusted = platform.frictionless.system.trusted
 
         def unsafe() -> FrictionlessException:
-            # The error does not mention the path: made relative to the current
-            # working directory, it would disclose where this directory is
-            return FrictionlessException(Error(note='"$ref" path is not safe'))
+            # The error avoids to disclose the path
+            return FrictionlessException(
+                Error(
+                    note='"$ref" path is not safe '
+                    "(see the Advanced topics > Security documentation)"
+                )
+            )
 
         path = uri
         url = urlparse(uri)
-        if url.scheme == "file":
-            # Resolved against a local profile (see `metadata_validate`), or
-            # written as is: only accepted when trusted. Any other host would
-            # be reached through the network (e.g. SMB on Windows)
+        scheme = url.scheme
+        if scheme == "file":
+            # Accept only recognized authorities:
+            #  - "local_token": a "$ref" resolved against a local profile carries
+            #    this random sentinel as its authority (set in `metadata_validate`);
+            #    always accepted, because the profile was loaded by the validator
+            #    itself.
+            #  - "" / "localhost": a "file:" URI written literally in a document;
+            #    only accepted when trusted, since an untrusted document must not
+            #    read local files.
+            # Any other authority denotes a remote host (e.g. an SMB share on
+            # Windows, a remote file server): this retriever handles local files
+            # only, and such a host is an SSRF vector, so it is rejected
+            # regardless of trust.
             hosts = [context.local_token] + (["", "localhost"] if trusted else [])
             if url.netloc not in hosts:
                 raise unsafe()
             path = url2pathname(url.path)
-        elif url.scheme in ["http", "https"]:
+
+            # Path-safety, only in untrusted mode: the path is only accepted
+            # if inside the current working directory
+            if not trusted:
+                try:
+                    path = os.path.relpath(path)
+                except ValueError:  # different drive on Windows
+                    raise unsafe()
+                if not helpers.is_safe_path(path):
+                    raise unsafe()
+        elif scheme in ("http", "https"):
             pass
         elif helpers.is_remote_path(uri):
-            note = '"$ref" scheme is not supported'
+            note = f'"$ref" scheme "{scheme}" is not supported'
             raise FrictionlessException(Error(note=note))
         elif not trusted:
             # A plain path is not resolved against a local profile
             raise unsafe()
-
-        if not trusted and url.scheme == "file":
-            try:
-                path = os.path.relpath(path)
-            except ValueError:  # on another drive (Windows)
-                raise unsafe()
-            if not helpers.is_safe_path(path):
-                raise unsafe()
 
         cache = context.json_schema_cache
         if uri not in cache:
@@ -709,7 +662,8 @@ class Metadata:
             # A base URI has to be absolute to resolve relative "$ref"s correctly
             profile_uri = profile
             if not helpers.is_remote_path(profile):
-                # Its host tells "$ref"s resolved against it apart (see
+                # We set the URI's authority component to a random token
+                # sentinel to tell relative "$ref"s resolved against it apart (see
                 # `ValidationContext.local_token`)
                 path_uri = Path(os.path.abspath(profile)).as_uri()
                 profile_uri = path_uri.replace(
@@ -721,8 +675,7 @@ class Metadata:
         from referencing import Registry, Resource
         from referencing.jsonschema import DRAFT202012
 
-        # "$ref"s are retrieved by frictionless instead of jsonschema,
-        # whose automatic retrieval is deprecated
+        # "$ref"s retrieval
         registry = Registry(
             retrieve=lambda uri: cls.metadata_retrieve_json_schema(uri, context=context)
         )
@@ -908,3 +861,68 @@ class Metadata:
 
         descriptor.update(self.custom)  # type: ignore
         return descriptor  # type: ignore
+
+
+def _profile_error_note(exception: Exception) -> str:
+    """Return the note of a jsonschema profile validation failure
+
+    The "$ref" retrieval errors raised by frictionless (in the "__cause__"
+    chain) are more explicit than the jsonschema wrapper around them.
+
+    The exceptions of the referencing library are reworded when they embed the
+    referenced document in their message: a "$ref" can target any file of
+    the working directory, whose content must not be disclosed.
+    """
+    # local import for a rarely-hit path
+    from referencing import exceptions as referencing_exceptions
+
+    cause = exception
+    while cause is not None:
+        if isinstance(cause, FrictionlessException):
+            return cause.error.note
+        if isinstance(cause, referencing_exceptions.PointerToNowhere):
+            note = (
+                f"JSON pointer '{cause.ref}' does not exist "
+                "within the referenced document"
+            )
+            if cause.ref == "/":
+                note += " (to point to the whole document, use '#')"
+            return note
+        if isinstance(cause, referencing_exceptions.NoSuchAnchor):
+            return (
+                f"anchor '{cause.anchor}' does not exist within the referenced document"
+            )
+        if isinstance(cause, referencing_exceptions.CannotDetermineSpecification):
+            return "cannot determine the specification of the referenced document"
+        cause = cause.__cause__
+    return str(exception)
+
+
+# urllib3 prefixes network error messages with the representation of the
+# connection or pool, e.g. "HTTPSConnection(host='example.com', port=443): "
+_HTTP_CONNECTION_PREFIX = re.compile(
+    r"^\w*HTTPS?Connection(Pool)?\(host='[^']*', port=\d+\):\s*"
+)
+
+
+def _network_error_note(exception: Exception) -> str:
+    """Return a concise message for a network error
+
+    A requests exception is verbose: it embeds the urllib3 representation of
+    the pool and of the connection, repeating the URL and hiding the
+    low-level cause behind nested parentheses and quotes. Only the
+    informative tail is kept, e.g. "Failed to resolve 'example.com' ([Errno
+    -2] Name or service not known)". Other exceptions are left unchanged.
+    """
+    requests = platform.requests
+    if not isinstance(exception, (requests.ConnectionError, requests.Timeout)):
+        return str(exception)
+
+    # Unwrap the chain: requests wraps the urllib3 error ("args[0]"), which
+    # itself wraps the low-level error (its "reason"). The low-level message
+    # is its last argument ("args[-1]")
+    error = exception.args[0] if exception.args else exception
+    reason = getattr(error, "reason", None) or error
+    args = getattr(reason, "args", None)
+    note = args[-1] if args else reason
+    return _HTTP_CONNECTION_PREFIX.sub("", str(note)) or str(exception)

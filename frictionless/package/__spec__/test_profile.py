@@ -378,12 +378,12 @@ def test_package_profile_relative_ref_resolved_from_profile(
         (
             "profile.json",
             "ftp://example.com/target.json",
-            '"$ref" scheme is not supported',
+            '"$ref" scheme "ftp" is not supported',
         ),
         (
             "profile.json",
             'data:application/json,{"required":["x"]}',
-            '"$ref" scheme is not supported',
+            '"$ref" scheme "data" is not supported',
         ),
     ],
 )

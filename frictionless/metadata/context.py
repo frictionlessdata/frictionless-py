@@ -35,7 +35,7 @@ class ValidationContext:
     local_token: str = attrs.field(factory=lambda: secrets.token_hex(16))
     """
     Unguessable token inserted in URIs from local profiles (as the "authority"
-    component) as a signature. A "$ref" resolved
+    component) as a signature. A relative "$ref" resolved
     against a local profile keeps it, which tells it apart from a "file:" URI
     written in a remote document (that cannot guess it).
     """
