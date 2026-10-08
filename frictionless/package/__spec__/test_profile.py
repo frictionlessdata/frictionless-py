@@ -114,19 +114,30 @@ def _connection_error(reason):
     )
 
 
+def _name_resolution_error(host):
+    """A urllib3 2.x NameResolutionError (DNS failure)
+
+    urllib3 1.26 has no NameResolutionError (some environments resolve to it,
+    e.g. Python 3.9). The note extraction under test is class-agnostic, so the
+    urllib3 2.x error is simulated with NewConnectionError on such versions.
+    """
+    reason = socket.gaierror(-2, "Name or service not known")
+    conn = urllib3.connection.HTTPSConnection(host, 443)
+    error_class = getattr(urllib3.exceptions, "NameResolutionError", None)
+    if error_class is not None:
+        return error_class(host, conn, reason)
+    return urllib3.exceptions.NewConnectionError(
+        conn, f"Failed to resolve '{host}' ({reason})"
+    )
+
+
 # Network errors are reported concisely, instead of the verbose urllib3
 # message, which repeats the URL and hides the low-level cause
 @pytest.mark.parametrize(
     "exception, reason",
     [
         pytest.param(
-            _connection_error(
-                urllib3.exceptions.NameResolutionError(
-                    "no-such-host.invalid",
-                    urllib3.connection.HTTPSConnection("no-such-host.invalid", 443),
-                    socket.gaierror(-2, "Name or service not known"),
-                )
-            ),
+            _connection_error(_name_resolution_error("no-such-host.invalid")),
             "Failed to resolve 'no-such-host.invalid' "
             "([Errno -2] Name or service not known)",
             id="dns",
