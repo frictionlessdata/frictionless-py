@@ -21,6 +21,15 @@ with system.use_context(trusted=True):
     extract('/path/to/file/is/absolute.csv')
 ```
 
+By default (`trusted=False`):
+- the local paths of a **descriptor** must stay inside the working directory
+- `file://` URIs are refused for profiles
+- a remote profile cannot read local files through its `"$ref"`s:
+
+See the [Security](security.md) page for the details, and for what the default mode does **not** protect (the working directory itself, and the network).
+
+For a service validating user-provided descriptors, keep `trusted` at its default: the flag is designed for trusted **local** workflows.
+
 ### onerror
 
 To raise warning or errors on data problems, it's possible to use `onerror` context value. It's default to `ignore` and can be set to `warn` or `error`:
@@ -42,7 +51,7 @@ with system.use_context(standards='v1'):
 
 ### http_session
 
-It's possible to provide a custom `requests.Session`:
+It's possible to provide a custom `requests.Session`. The session is used for every remote download: data files, remote descriptors, profiles, and profile `"$ref"`s:
 
 ```python
 session = requests.Session()
@@ -50,6 +59,8 @@ with system.use_context(http_session=session):
     with Resource(BASEURL % "data/table.csv") as resource:
         assert resource.header == ["id", "name"]
 ```
+
+For a service validating untrusted descriptors, see the [Security](security.md) for more details on how to harden the session.
 
 ## System methods
 

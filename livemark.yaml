@@ -82,6 +82,7 @@ pages:
       items:
         - path: docs/advanced/design
         - path: docs/advanced/system
+        - path: docs/advanced/security
         - path: docs/advanced/extending
     - name: Data Resources
       items:

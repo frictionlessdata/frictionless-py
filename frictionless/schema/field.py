@@ -19,12 +19,12 @@ import attrs
 
 from .. import errors, settings
 from ..exception import FrictionlessException
-from ..metadata import Metadata
+from ..metadata import Metadata, ValidationContext
 from ..system import system
 from . import missing_values as missing_values_module
 
 if TYPE_CHECKING:
-    from ..types import IDescriptor, IStandards
+    from ..types import IDescriptor
     from . import types
     from .schema import Schema
 
@@ -259,10 +259,11 @@ class Field(Metadata):
         cls,
         descriptor: IDescriptor,
         *,
-        datapackage_version: Optional[IStandards] = None,
+        context: Optional[ValidationContext] = None,
     ):
+        context = context or ValidationContext()
         metadata_errors = list(
-            super().metadata_validate(descriptor, datapackage_version=datapackage_version)
+            super().metadata_validate(descriptor, context=context)
         )
         if metadata_errors:
             yield from metadata_errors
@@ -282,7 +283,7 @@ class Field(Metadata):
         # Missing Values version gate
         # A field never declares its own `$schema`; the version is the one
         # imposed top-down by an ancestor (`None` undeclared stays lenient).
-        version = cls.effective_datapackage_version(descriptor, datapackage_version)
+        version = cls.effective_datapackage_version(descriptor, context.datapackage_version)
         for note in missing_values_module.version_gate_notes(missing_values, version):
             yield errors.FieldError(note=note)
 

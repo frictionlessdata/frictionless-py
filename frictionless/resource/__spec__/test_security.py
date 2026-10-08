@@ -3,9 +3,47 @@ import sys
 
 import pytest
 
-from frictionless import FrictionlessException, Resource, platform
+from frictionless import FrictionlessException, Resource, platform, system
 
 # General
+
+
+# A "file://" URI is a local disk access that "os.path.isabs" does not
+# recognize: it must not bypass the safety checks
+@pytest.mark.skipif(sys.version_info < (3, 10), reason="pytest-vcr bug in Python3.8/9")
+def test_resource_source_path_error_bad_path_not_safe_file_uri():
+    path = "file://" + os.path.abspath("data/table.csv")
+    with pytest.raises(FrictionlessException) as excinfo:
+        Resource({"name": "name", "path": path})
+    error = excinfo.value.error
+    reasons = excinfo.value.reasons
+    assert len(reasons) == 1
+    assert error.type == "resource-error"
+    assert error.note == "descriptor is not valid"
+    assert reasons[0].type == "resource-error"
+    assert reasons[0].note.count('table.csv" is not safe')
+
+
+@pytest.mark.skipif(sys.version_info < (3, 10), reason="pytest-vcr bug in Python3.8/9")
+def test_resource_extrapaths_error_bad_path_not_safe_file_uri():
+    extrapath = "file://" + os.path.abspath("data/chunk2.csv")
+    with pytest.raises(FrictionlessException) as excinfo:
+        Resource({"name": "name", "path": "path", "extrapaths": [extrapath]})
+    error = excinfo.value.error
+    reasons = excinfo.value.reasons
+    assert len(reasons) == 1
+    assert error.type == "resource-error"
+    assert error.note == "descriptor is not valid"
+    assert reasons[0].type == "resource-error"
+    assert reasons[0].note.count('chunk2.csv" is not safe')
+
+
+def test_resource_source_path_file_uri_trusted():
+    path = "file://" + os.path.abspath("data/table.csv")
+    with system.use_context(trusted=True):
+        resource = Resource({"name": "name", "path": path})
+        report = resource.validate()
+    assert report.valid
 
 
 @pytest.mark.skipif(sys.version_info < (3, 10), reason="pytest-vcr bug in Python3.8/9")
