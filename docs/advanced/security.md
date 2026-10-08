@@ -20,6 +20,8 @@ For a profile `"$ref"`, additional rules apply:
 - a `file://` URI is refused
 - only `http(s)` and local `"$ref"`s are supported: other schemes, such as `data:` or `ftp:`, are refused.
 
+When a profile `"$ref"` points to a non-existent JSON pointer or anchor, the error message names the pointer, but does not disclose the content of the referenced document: a `"$ref"` can target any file of the working directory, whose content may be confidential.
+
 ## What the default mode does not protect
 
 - **The working directory is readable:** by design, Frictionless reads the files of the working directory: as data (validation errors display cell contents), as a profile, or as a local profile `"$ref"`. In presence of untrusted input, do not run the framework from a directory that contains secrets.

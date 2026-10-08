@@ -46,6 +46,39 @@ _HTTP_CONNECTION_PREFIX = re.compile(
 )
 
 
+def _profile_error_note(exception: Exception) -> str:
+    """Return the note of a jsonschema profile validation failure
+
+    The "$ref" retrieval errors raised by frictionless (in the "__cause__"
+    chain) are more explicit than the jsonschema wrapper around them. The
+    exceptions of the referencing library are reworded when they embed the
+    referenced document in their message: a "$ref" can target any file of
+    the working directory, whose content must not be disclosed.
+    """
+    from referencing import exceptions as referencing_exceptions
+
+    cause = exception
+    while cause is not None:
+        if isinstance(cause, FrictionlessException):
+            return cause.error.note
+        if isinstance(cause, referencing_exceptions.PointerToNowhere):
+            note = (
+                f"JSON pointer '{cause.ref}' does not exist "
+                "within the referenced document"
+            )
+            if cause.ref == "/":
+                note += " (to point to the whole document, use '#')"
+            return note
+        if isinstance(cause, referencing_exceptions.NoSuchAnchor):
+            return (
+                f"anchor '{cause.anchor}' does not exist within the referenced document"
+            )
+        if isinstance(cause, referencing_exceptions.CannotDetermineSpecification):
+            return "cannot determine the specification of the referenced document"
+        cause = cause.__cause__
+    return str(exception)
+
+
 def _network_error_note(exception: Exception) -> str:
     """Return a concise message for a network error
 
@@ -706,14 +739,8 @@ class Metadata:
             errors = list(validator.iter_errors(descriptor))  # type: ignore
         except Exception as exception:
             # Our own error (raised while retrieving a "$ref") is more explicit
-            # than the referencing wrapper around it
-            reason = str(exception)
-            cause = exception.__cause__
-            while cause is not None:
-                if isinstance(cause, FrictionlessException):
-                    reason = cause.error.note
-                    break
-                cause = cause.__cause__
+            # than the jsonschema wrapper around it
+            reason = _profile_error_note(exception)
             note = f'failed to resolve json-schema profile because "{reason}"'
             raise FrictionlessException(Error(note=note)) from exception
 

@@ -3,6 +3,7 @@ import socket
 import sys
 
 import pytest
+import referencing.exceptions
 import requests
 import urllib3
 import yaml
@@ -179,6 +180,73 @@ def test_package_profile_remote_retrieval_network_error_note(
     # the urllib3 boilerplate is not repeated in the note
     assert "Max retries exceeded" not in note
     assert "HTTPSConnectionPool" not in note
+
+
+# A failing JSON pointer or anchor must not disclose the content of the
+# referenced document: a "$ref" can target any file of the working directory
+@pytest.mark.parametrize(
+    "ref, reason",
+    [
+        (
+            "secret.json#/nope",
+            "JSON pointer '/nope' does not exist within the referenced document",
+        ),
+        (
+            "secret.json#/",
+            "JSON pointer '/' does not exist within the referenced document "
+            "(to point to the whole document, use '#')",
+        ),
+        (
+            "secret.json#nope",
+            "anchor 'nope' does not exist within the referenced document",
+        ),
+        (
+            "#/nope",
+            "JSON pointer '/nope' does not exist within the referenced document",
+        ),
+    ],
+)
+def test_package_profile_ref_error_does_not_disclose_document(
+    ref, reason, tmp_path, monkeypatch
+):
+    monkeypatch.chdir(tmp_path)
+    secret = {"db_password": "s3cr3t"}
+    (tmp_path / "secret.json").write_text(json.dumps(secret))
+    (tmp_path / "profile.json").write_text(json.dumps({"allOf": [{"$ref": ref}]}))
+    descriptor = {
+        "profile": "profile.json",
+        "resources": [{"name": "table", "data": [["id"], [1]]}],
+    }
+    report = Package.validate_descriptor(descriptor)
+    notes = [error.note for error in report.errors]
+    assert notes == [f'failed to resolve json-schema profile because "{reason}"']
+    # the content of the referenced document is not disclosed
+    assert "s3cr3t" not in notes[0]
+    assert "db_password" not in notes[0]
+
+
+# The redacted note keeps the original exception in the cause chain,
+# so that --debug can still show the referenced document
+def test_package_profile_pointer_error_keeps_cause(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    (tmp_path / "secret.json").write_text(json.dumps({"db_password": "s3cr3t"}))
+    (tmp_path / "profile.json").write_text(
+        json.dumps({"allOf": [{"$ref": "secret.json#/nope"}]})
+    )
+    descriptor = {
+        "profile": "profile.json",
+        "resources": [{"name": "table", "data": [["id"], [1]]}],
+    }
+    with pytest.raises(FrictionlessException) as excinfo:
+        Package(descriptor).to_descriptor(validate=True)
+    causes = []
+    cause = excinfo.value.__cause__
+    while cause is not None:
+        causes.append(cause)
+        cause = cause.__cause__
+    assert any(
+        isinstance(cause, referencing.exceptions.PointerToNowhere) for cause in causes
+    )
 
 
 # A remote "$ref" in a profile is resolved by frictionless (http session),
