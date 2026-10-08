@@ -30,6 +30,8 @@ class YearmonthField(Field):
             elif isinstance(cell, str):
                 try:
                     year, month = cell.split("-")
+                    if len(month) != 2:
+                        return None
                     year = int(year)
                     month = int(month)
                     if month < 1 or month > 12:
