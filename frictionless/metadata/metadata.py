@@ -39,6 +39,36 @@ if TYPE_CHECKING:
     from ..report import Report
 
 
+# urllib3 prefixes network error messages with the representation of the
+# connection or pool, e.g. "HTTPSConnection(host='example.com', port=443): "
+_HTTP_CONNECTION_PREFIX = re.compile(
+    r"^\w*HTTPS?Connection(Pool)?\(host='[^']*', port=\d+\):\s*"
+)
+
+
+def _network_error_note(exception: Exception) -> str:
+    """Return a concise message for a network error
+
+    A requests exception is verbose: it embeds the urllib3 representation of
+    the pool and of the connection, repeating the URL and hiding the
+    low-level cause behind nested parentheses and quotes. Only the
+    informative tail is kept, e.g. "Failed to resolve 'example.com' ([Errno
+    -2] Name or service not known)". Other exceptions are left unchanged.
+    """
+    requests = platform.requests
+    if not isinstance(exception, (requests.ConnectionError, requests.Timeout)):
+        return str(exception)
+
+    # Unwrap the chain: requests wraps the urllib3 error ("args[0]"), which
+    # itself wraps the low-level error (its "reason"). The low-level message
+    # is its last argument ("args[-1]")
+    error = exception.args[0] if exception.args else exception
+    reason = getattr(error, "reason", None) or error
+    args = getattr(reason, "args", None)
+    note = args[-1] if args else reason
+    return _HTTP_CONNECTION_PREFIX.sub("", str(note)) or str(exception)
+
+
 class Metadata:
     """Metadata representation
 
@@ -515,7 +545,8 @@ class Metadata:
 
         except Exception as exception:
             Error = cls.metadata_Error or platform.frictionless_errors.MetadataError
-            note = f'cannot retrieve metadata "{descriptor}" because "{exception}"'
+            reason = _network_error_note(exception)
+            note = f'cannot retrieve metadata "{descriptor}" because "{reason}"'
             raise FrictionlessException(Error(note=note)) from exception
 
     @classmethod

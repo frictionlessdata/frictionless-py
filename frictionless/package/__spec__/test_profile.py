@@ -1,8 +1,10 @@
 import json
+import socket
 import sys
 
 import pytest
 import requests
+import urllib3
 import yaml
 
 from frictionless import FrictionlessException, Package, Resource, system
@@ -100,6 +102,83 @@ def test_package_profile_unresolvable_ref_keeps_cause_issue_1812(requests_mock):
         causes.append(cause)
         cause = cause.__cause__
     assert any(isinstance(cause, requests.exceptions.SSLError) for cause in causes)
+
+
+def _connection_error(reason):
+    """A requests.ConnectionError faithful to what urllib3 raises"""
+    return requests.exceptions.ConnectionError(
+        urllib3.exceptions.MaxRetryError(
+            None, "https://example.org/schemas/missing.json", reason
+        )
+    )
+
+
+# Network errors are reported concisely, instead of the verbose urllib3
+# message, which repeats the URL and hides the low-level cause
+@pytest.mark.parametrize(
+    "exception, reason",
+    [
+        pytest.param(
+            _connection_error(
+                urllib3.exceptions.NameResolutionError(
+                    "no-such-host.invalid",
+                    urllib3.connection.HTTPSConnection("no-such-host.invalid", 443),
+                    socket.gaierror(-2, "Name or service not known"),
+                )
+            ),
+            "Failed to resolve 'no-such-host.invalid' "
+            "([Errno -2] Name or service not known)",
+            id="dns",
+        ),
+        pytest.param(
+            _connection_error(
+                urllib3.exceptions.NewConnectionError(
+                    urllib3.connection.HTTPConnection("localhost", 9),
+                    "Failed to establish a new connection: "
+                    "[Errno 111] Connection refused",
+                )
+            ),
+            "Failed to establish a new connection: [Errno 111] Connection refused",
+            id="refused",
+        ),
+        pytest.param(
+            _connection_error(
+                urllib3.exceptions.ConnectTimeoutError(
+                    None, "Connection to 192.0.2.1 timed out. (connect timeout=10)"
+                )
+            ),
+            "Connection to 192.0.2.1 timed out. (connect timeout=10)",
+            id="connect_timeout",
+        ),
+        pytest.param(
+            requests.exceptions.ReadTimeout(
+                urllib3.exceptions.ReadTimeoutError(
+                    urllib3.connectionpool.HTTPConnectionPool("127.0.0.1", 443),
+                    "https://example.org/schemas/missing.json",
+                    "Read timed out. (read timeout=10)",
+                )
+            ),
+            "Read timed out. (read timeout=10)",
+            id="read_timeout",
+        ),
+    ],
+)
+def test_package_profile_remote_retrieval_network_error_note(
+    exception, reason, requests_mock
+):
+    requests_mock.get("https://example.org/schemas/missing.json", exc=exception)
+    resource = Resource(name="table", path="data/table.csv")
+    package = Package(resources=[resource], profile="data/profiles/unresolvable-ref.json")
+    report = package.validate()
+    assert not report.valid
+    note = report.errors[0].note
+    assert (
+        'cannot retrieve metadata "https://example.org/schemas/missing.json" '
+        f'because "{reason}"' in note
+    )
+    # the urllib3 boilerplate is not repeated in the note
+    assert "Max retries exceeded" not in note
+    assert "HTTPSConnectionPool" not in note
 
 
 # A remote "$ref" in a profile is resolved by frictionless (http session),
