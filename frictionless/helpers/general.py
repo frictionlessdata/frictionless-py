@@ -266,7 +266,7 @@ def is_zip_descriptor(descriptor: Union[str, Dict[str, Any]]):
 
 
 def is_type(object: type, name: str):
-    return type(object).__name__ == name
+    return type(object).__module__ + "." + type(object).__name__ == name
 
 
 def parse_json_string(string: Optional[str]):
