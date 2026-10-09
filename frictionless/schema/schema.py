@@ -93,6 +93,13 @@ class Schema(Metadata, metaclass=Factory):
     Specifies the foreign keys for the schema.
     """
 
+    unique_keys: List[List[str]] = attrs.field(factory=list)
+    """
+    Specifies the unique keys for the schema. Each unique key is a list of
+    field names whose combined values must be unique across rows; a row with
+    a null value in any of those fields is not checked against that key.
+    """
+
     def __setattr__(self, name: str, value: Any):  # type: ignore
         if name == "missing_values" and isinstance(value, list):
             value, self._missing_values_labels = missing_values_module.split(
@@ -314,6 +321,15 @@ class Schema(Metadata, metaclass=Factory):
                 "type": "array",
                 "items": {"type": "string"},
             },
+            "uniqueKeys": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": {"type": "string"},
+                },
+            },
             "foreignKeys": {
                 "type": "array",
                 "items": {
@@ -410,6 +426,14 @@ class Schema(Metadata, metaclass=Factory):
                 note = 'primary key "%s" does not match the fields "%s"'
                 note = note % (pk, field_names)
                 yield errors.SchemaError(note=note)
+
+        # Unique Keys
+        for uk in descriptor.get("uniqueKeys", []):
+            for name in uk:
+                if name not in field_names:
+                    note = 'unique key "%s" does not match the fields "%s"'
+                    note = note % (uk, field_names)
+                    yield errors.SchemaError(note=note)
 
         # Missing Values
         missing_values = descriptor.get("missingValues", [])

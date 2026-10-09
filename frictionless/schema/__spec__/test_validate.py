@@ -176,6 +176,30 @@ def test_validate_missing_values_version_gate_field_inherits_schema(
 # Fields match
 
 
+# Unique keys
+
+UNIQUE_KEYS_FIELDS = [{"name": "a"}, {"name": "b"}]
+
+
+@pytest.mark.parametrize(
+    "unique_keys, expected",
+    [
+        ([["a"], ["a", "b"]], []),
+        ([], ["[] should be non-empty at property 'uniqueKeys'"]),
+        ([[]], ["[] should be non-empty at property 'uniqueKeys/0'"]),
+        (["a"], ["'a' is not of type 'array' at property 'uniqueKeys/0'"]),
+        (
+            [["a", "c"]],
+            ["unique key \"['a', 'c']\" does not match the fields \"['a', 'b']\""],
+        ),
+    ],
+)
+def test_validate_unique_keys(unique_keys, expected):
+    descriptor = {"fields": UNIQUE_KEYS_FIELDS, "uniqueKeys": unique_keys}
+    report = Schema.validate_descriptor(descriptor)
+    assert [note for _, note in report.flatten(["type", "note"])] == expected
+
+
 def test_validate_fields_match_unknown_value():
     report = Schema.validate_descriptor(
         {"fields": [{"name": "name", "type": "string"}], "fieldsMatch": "bogus"}

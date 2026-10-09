@@ -294,6 +294,10 @@ class TableResource(Resource):
 
         memory_unique: Dict[str, Any] = {}
         memory_primary: Dict[Tuple[Any], Any] = {}
+        memory_unique_keys: Dict[Tuple[str, ...], Dict[Tuple[Any, ...], int]] = {}
+        for unique_key in self.schema.unique_keys:
+            if set(unique_key).issubset(expected_field_names):
+                memory_unique_keys.setdefault(tuple(unique_key), {})
         foreign_groups: List[Any] = []
         is_integrity = has_primary_key
 
@@ -365,6 +369,19 @@ class TableResource(Resource):
                                 note = "the same as in the row at position %s" % match
                                 error = errors.PrimaryKeyError.from_row(row, note=note)
                                 row.errors.append(error)
+
+                # Unique Key Error
+                for unique_key, memory in memory_unique_keys.items():
+                    cells = tuple(row[name] for name in unique_key)
+                    if None in cells:
+                        continue
+                    match = memory.get(cells)
+                    memory[cells] = row.row_number
+                    if match:
+                        note = 'for "%s": the same as in the row at position %s'
+                        note = note % (", ".join(unique_key), match)
+                        error = errors.UniqueKeyError.from_row(row, note=note)
+                        row.errors.append(error)
 
                 # Foreign Key Error
                 if is_integrity and foreign_groups:

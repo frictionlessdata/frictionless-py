@@ -234,6 +234,17 @@ def test_schema_primary_foreign_keys_as_array():
     ]
 
 
+def test_schema_unique_keys():
+    descriptor = {
+        "fields": [{"name": "a"}, {"name": "b"}],
+        "uniqueKeys": [["a"], ["a", "b"]],
+    }
+    schema = Schema(descriptor)
+    assert schema.unique_keys == [["a"], ["a", "b"]]
+    assert schema.to_descriptor()["uniqueKeys"] == [["a"], ["a", "b"]]
+    assert "uniqueKeys" not in Schema({"fields": [{"name": "a"}]}).to_descriptor()
+
+
 def test_schema_primary_foreign_keys_as_string():
     descriptor = {
         "fields": [

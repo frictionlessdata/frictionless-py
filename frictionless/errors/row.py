@@ -71,6 +71,13 @@ class PrimaryKeyError(RowError):
     template = 'Row at position "{rowNumber}" violates the primary key: {note}'
 
 
+class UniqueKeyError(RowError):
+    type = "unique-key"
+    title = "UniqueKey Error"
+    description = "Values in the unique key fields should be unique for every row"
+    template = 'Row at position "{rowNumber}" violates a unique key: {note}'
+
+
 @attrs.define(kw_only=True)
 class ForeignKeyError(RowError):
     type = "foreign-key"

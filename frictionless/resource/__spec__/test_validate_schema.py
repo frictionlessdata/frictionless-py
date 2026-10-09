@@ -271,6 +271,69 @@ def test_resource_validate_schema_primary_key_error_composite():
     ]
 
 
+def test_resource_validate_schema_unique_keys_error():
+    source = [
+        ["a", "b", "c"],
+        [1, "x", "p"],
+        [1, "y", "q"],
+        [2, "x", "p"],
+        [1, "x", "r"],
+        [1, None, "p"],
+        [1, None, "p"],
+    ]
+    schema = Schema.from_descriptor(
+        {
+            "fields": [
+                {"name": "a", "type": "integer"},
+                {"name": "b", "type": "string"},
+                {"name": "c", "type": "string"},
+            ],
+            "uniqueKeys": [["a", "b"], ["b", "c"]],
+        }
+    )
+    resource = TableResource(data=source, schema=schema)
+    report = resource.validate()
+    assert report.flatten(["rowNumber", "fieldNumber", "type", "note"]) == [
+        [4, None, "unique-key", 'for "b, c": the same as in the row at position 2'],
+        [5, None, "unique-key", 'for "a, b": the same as in the row at position 2'],
+    ]
+
+
+def test_resource_validate_schema_unique_keys_and_primary_key():
+    source = [["id", "name"], [1, "Alex"], [2, "Alex"], [2, "John"]]
+    schema = Schema.from_descriptor(
+        {
+            "fields": [
+                {"name": "id", "type": "integer"},
+                {"name": "name", "type": "string"},
+            ],
+            "primaryKey": ["id"],
+            "uniqueKeys": [["name"]],
+        }
+    )
+    resource = TableResource(data=source, schema=schema)
+    report = resource.validate()
+    assert report.flatten(["rowNumber", "type"]) == [
+        [3, "unique-key"],
+        [4, "primary-key"],
+    ]
+
+
+def test_resource_validate_schema_unique_keys_valid():
+    source = [["a", "b"], [1, "x"], [1, "y"], [2, "x"]]
+    schema = Schema.from_descriptor(
+        {
+            "fields": [
+                {"name": "a", "type": "integer"},
+                {"name": "b", "type": "string"},
+            ],
+            "uniqueKeys": [["a", "b"]],
+        }
+    )
+    resource = TableResource(data=source, schema=schema)
+    assert resource.validate().valid
+
+
 # Bugs
 
 
