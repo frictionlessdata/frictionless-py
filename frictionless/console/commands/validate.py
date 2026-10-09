@@ -69,7 +69,10 @@ def console_validate(
     """
     Validate a data source.
 
-    Based on the inferred data source type it will validate resource or package.
+    The inferred source type determines whether data or metadata is validated.
+    Recognized filename endings (for example, schema.json) take precedence over
+    descriptor contents. Use --type resource to validate data referenced by a
+    resource descriptor, regardless of its filename.
     Default output format is YAML with a front matter.
     """
     name = name or resource_name
