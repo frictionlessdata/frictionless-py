@@ -673,6 +673,40 @@ def test_resource_validate_invalid_resource_standards_v2_strict():
     ]
 
 
+# Name (version gate)
+#
+# Datapackage v2 allows any string as a resource name; the v1 pattern applies
+# unless the resource declares a v2 `$schema`.
+
+NAME_NOTE = "'My Table' does not match '^([-a-z0-9._/])+$' at property 'name'"
+
+
+@pytest.mark.parametrize(
+    "schema, expected",
+    [
+        (None, [["resource-error", NAME_NOTE]]),
+        (
+            "https://datapackage.org/profiles/1.0/dataresource.json",
+            [["resource-error", NAME_NOTE]],
+        ),
+        ("https://datapackage.org/profiles/2.0/dataresource.json", []),
+    ],
+    ids=["undeclared", "v1", "v2"],
+)
+def test_resource_validate_name_version_gate(schema, expected):
+    descriptor = {"name": "My Table", "path": "data/table.csv"}
+    if schema is not None:
+        descriptor["$schema"] = schema
+    report = Resource.validate_descriptor(descriptor)
+    assert report.flatten(["type", "note"]) == expected
+
+
+def test_resource_validate_name_valid_v1():
+    descriptor = {"name": "my-table.v1/a_b", "path": "data/table.csv"}
+    report = Resource.validate_descriptor(descriptor)
+    assert report.valid
+
+
 # Format
 
 

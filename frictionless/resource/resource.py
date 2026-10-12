@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import re
 import warnings
 from typing import TYPE_CHECKING, Any, ClassVar, Dict, List, Optional, Union, cast
 
@@ -752,7 +753,8 @@ class Resource(Metadata, metaclass=Factory):  # type: ignore
         "type": "object",
         "required": ["name"],  # TODO: add "type" in v6
         "properties": {
-            "name": {"type": "string", "pattern": settings.NAME_PATTERN},
+            # The v1 pattern of "name" is checked in `metadata_validate` (dropped in v2)
+            "name": {"type": "string"},
             "type": {"type": "string", "pattern": settings.TYPE_PATTERN},
             "title": {"type": "string"},
             "description": {"type": "string"},
@@ -908,6 +910,21 @@ class Resource(Metadata, metaclass=Factory):  # type: ignore
         )
         if metadata_errors:
             yield from metadata_errors
+            return
+
+        # Name
+        # Datapackage v2 allows any string as a name; the v1 pattern applies unless
+        # the version imposed top-down by an ancestor's `$schema`, or this
+        # resource's own `$schema` otherwise, is v2. The profile above ensures that
+        # "name" is present and is a string.
+        name: str = descriptor["name"]
+        version = cls.effective_datapackage_version(
+            descriptor, context.datapackage_version
+        )
+        if version != "v2" and not re.search(settings.NAME_PATTERN, name):
+            pattern = settings.NAME_PATTERN
+            note = f"{name!r} does not match {pattern!r} at property 'name'"
+            yield errors.ResourceError(note=note)
             return
 
         # Security

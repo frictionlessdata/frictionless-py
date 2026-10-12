@@ -757,3 +757,54 @@ def test_package_validate_missing_values_version_gate_inheritance(
     )
     report = Package.validate_descriptor(descriptor)
     assert report.flatten(["type", "note"]) == expected
+
+
+# Resource name version gate — inheritance through the package
+#
+# Datapackage v2 allows any string as a resource name, while v1 restricts it to
+# lowercase alphanumerics plus ".", "-", "_" and "/". The v1 pattern applies
+# unless the version imposed on the resource is v2: a package `$schema` is
+# imposed on its resources (top-down), otherwise the resource's own `$schema`
+# sets the version, and an undeclared version keeps the v1 pattern.
+
+DR_V1_PROFILE = "https://datapackage.org/profiles/1.0/dataresource.json"
+DR_V2_PROFILE = "https://datapackage.org/profiles/2.0/dataresource.json"
+V2_RESOURCE_NAME = "MEDGULL_ANTWERPEN-gps-2025.csv.gz"
+NAME_NOTE = (
+    "'MEDGULL_ANTWERPEN-gps-2025.csv.gz' does not match '^([-a-z0-9._/])+$' "
+    "at property 'name'"
+)
+
+RESOURCE_NAME_VERSION_GATE_CASES = [
+    ("undeclared", None, None, [["resource-error", NAME_NOTE]]),
+    ("resource-v1", None, DR_V1_PROFILE, [["resource-error", NAME_NOTE]]),
+    ("resource-v2", None, DR_V2_PROFILE, []),
+    ("package-v2", DP_V2_PROFILE, None, []),
+    ("package-v2-resource-v2", DP_V2_PROFILE, DR_V2_PROFILE, []),
+    # a resource cannot escape the version imposed by the package
+    ("package-v2-resource-v1", DP_V2_PROFILE, DR_V1_PROFILE, []),
+    (
+        "package-v1-resource-v2",
+        DP_V1_PROFILE,
+        DR_V2_PROFILE,
+        [["resource-error", NAME_NOTE]],
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    "name, package_profile, resource_profile, expected",
+    RESOURCE_NAME_VERSION_GATE_CASES,
+    ids=[case[0] for case in RESOURCE_NAME_VERSION_GATE_CASES],
+)
+def test_package_validate_resource_name_version_gate(
+    name, package_profile, resource_profile, expected
+):
+    resource = {"name": V2_RESOURCE_NAME, "path": "data/table.csv"}
+    if resource_profile is not None:
+        resource["$schema"] = resource_profile
+    descriptor = {"resources": [resource]}
+    if package_profile is not None:
+        descriptor["$schema"] = package_profile
+    report = Package.validate_descriptor(descriptor)
+    assert report.flatten(["type", "note"]) == expected
