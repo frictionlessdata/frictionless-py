@@ -57,7 +57,11 @@ class IntegerField(Field):
                 return cell
             elif isinstance(cell, float) and cell.is_integer():
                 return int(cell)
-            elif isinstance(cell, Decimal) and cell % 1 == 0:
+            elif (
+                isinstance(cell, Decimal)
+                and cell.is_finite()
+                and cell == cell.to_integral_value()
+            ):
                 return int(cell)
             return None
 

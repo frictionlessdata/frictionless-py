@@ -1,4 +1,4 @@
-from decimal import Decimal
+from decimal import Decimal, localcontext
 
 import pytest
 
@@ -43,3 +43,25 @@ def test_integer_read_cell(format, source, target, options):
     field = Field.from_descriptor(descriptor)
     cell, notes = field.read_cell(source)
     assert cell == target
+
+
+@pytest.mark.parametrize(
+    "source, expected",
+    [
+        (Decimal("Infinity"), None),
+        (Decimal("-Infinity"), None),
+        (Decimal("sNaN"), None),
+        (Decimal("1e40"), 10**40),
+        (Decimal("-1e40"), -(10**40)),
+        (Decimal("12345678901234567890"), 12345678901234567890),
+        (Decimal("42.0"), 42),
+        (Decimal("1.5"), None),
+    ],
+)
+def test_integer_read_cell_decimal_context(source, expected):
+    field = Field.from_descriptor({"name": "amount", "type": "integer"})
+    with localcontext() as context:
+        context.prec = 5
+        cell, notes = field.read_cell(source)
+    assert cell == expected
+    assert bool(notes) == (expected is None)
