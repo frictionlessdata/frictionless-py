@@ -119,6 +119,29 @@ def test_resource_validate_schema_minimum_constraint():
     ]
 
 
+def test_resource_validate_schema_exclusive_minimum_and_maximum_constraints():
+    source = [["row", "score"], [2, 1], [3, 2], [4, 3], [5, 4], [6]]
+    schema = Schema.from_descriptor(
+        {
+            "fields": [
+                {"name": "row", "type": "integer"},
+                {
+                    "name": "score",
+                    "type": "integer",
+                    "constraints": {"exclusiveMinimum": 1, "exclusiveMaximum": 4},
+                },
+            ]
+        }
+    )
+    resource = TableResource(data=source, schema=schema)
+    checklist = Checklist(pick_errors=["constraint-error"])
+    report = resource.validate(checklist)
+    assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
+        [2, 2, "constraint-error"],
+        [5, 2, "constraint-error"],
+    ]
+
+
 def test_resource_validate_schema_maximum_constraint():
     source = [["row", "score"], [2, 1], [3, 2], [4, 3], [5, 4], [6]]
     schema = Schema.from_descriptor(

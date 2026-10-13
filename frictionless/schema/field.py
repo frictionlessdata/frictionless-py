@@ -136,7 +136,7 @@ class Field(Metadata):
         for name in self.supported_constraints:
             constraint = self.constraints.get(name)
             if constraint is not None:
-                if name in ["minimum", "maximum"]:
+                if name in ["minimum", "maximum", "exclusiveMinimum", "exclusiveMaximum"]:
                     constraint = value_reader(constraint)
                 if name == "pattern":
                     constraint = re.compile("^{0}$".format(constraint))
@@ -234,6 +234,8 @@ class Field(Metadata):
                     "maxLength": {"type": "integer"},
                     "minimum": {},
                     "maximum": {},
+                    "exclusiveMinimum": {},
+                    "exclusiveMaximum": {},
                 },
             },
             "rdfType": {"type": "string"},
@@ -371,6 +373,32 @@ def check_maximum(constraint: Any, cell: Any):
         return True
     try:
         if cell <= constraint:
+            return True
+    except decimal.InvalidOperation:
+        # For non-finite numbers NaN, INF and -INF
+        # the constraint always is not satisfied
+        return False
+    return False
+
+
+def check_exclusiveMinimum(constraint: Any, cell: Any):
+    if cell is None:
+        return True
+    try:
+        if cell > constraint:
+            return True
+    except decimal.InvalidOperation:
+        # For non-finite numbers NaN, INF and -INF
+        # the constraint always is not satisfied
+        return False
+    return False
+
+
+def check_exclusiveMaximum(constraint: Any, cell: Any):
+    if cell is None:
+        return True
+    try:
+        if cell < constraint:
             return True
     except decimal.InvalidOperation:
         # For non-finite numbers NaN, INF and -INF

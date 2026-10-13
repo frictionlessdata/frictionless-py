@@ -73,6 +73,38 @@ from frictionless.exception import FrictionlessException
         ({"maximum": "08:09:10"}, "time", True),
         ({"maximum": 4}, "year", True),
         ({"maximum": "2001-01"}, "yearmonth", True),
+        # exclusiveMinimum constraint (applies to the same types as minimum and maximum)
+        ({"exclusiveMinimum": 4}, "any", False),
+        ({"exclusiveMinimum": 4}, "array", False),
+        ({"exclusiveMinimum": 4}, "boolean", False),
+        ({"exclusiveMinimum": "1789-07-14"}, "date", True),
+        ({"exclusiveMinimum": "1789-07-14T08:00:00Z"}, "datetime", True),
+        ({"exclusiveMinimum": 4}, "duration", False),
+        ({"exclusiveMinimum": 4}, "geojson", False),
+        ({"exclusiveMinimum": 4}, "geopoint", False),
+        ({"exclusiveMinimum": 4}, "integer", True),
+        ({"exclusiveMinimum": 4}, "number", True),
+        ({"exclusiveMinimum": 4}, "object", False),
+        ({"exclusiveMinimum": 4}, "string", False),
+        ({"exclusiveMinimum": "07:07:07"}, "time", True),
+        ({"exclusiveMinimum": 4}, "year", True),
+        ({"exclusiveMinimum": "1789-07"}, "yearmonth", True),
+        # exclusiveMaximum constraint (applies to the same types as minimum and maximum)
+        ({"exclusiveMaximum": 4}, "any", False),
+        ({"exclusiveMaximum": 4}, "array", False),
+        ({"exclusiveMaximum": 4}, "boolean", False),
+        ({"exclusiveMaximum": "1789-07-14"}, "date", True),
+        ({"exclusiveMaximum": "1789-07-14T08:00:00Z"}, "datetime", True),
+        ({"exclusiveMaximum": 4}, "duration", False),
+        ({"exclusiveMaximum": 4}, "geojson", False),
+        ({"exclusiveMaximum": 4}, "geopoint", False),
+        ({"exclusiveMaximum": 4}, "integer", True),
+        ({"exclusiveMaximum": 4}, "number", True),
+        ({"exclusiveMaximum": 4}, "object", False),
+        ({"exclusiveMaximum": 4}, "string", False),
+        ({"exclusiveMaximum": "07:07:07"}, "time", True),
+        ({"exclusiveMaximum": 4}, "year", True),
+        ({"exclusiveMaximum": "1789-07"}, "yearmonth", True),
         # pattern constraint (apply to string)
         ({"pattern": "[0-9]+"}, "any", False),
         ({"pattern": "[0-9]+"}, "array", False),
@@ -189,6 +221,65 @@ def test_field_read_cell_maximum():
     assert read(1) == (1, None)
     # Null value passes
     assert read("") == (None, None)
+
+
+def test_field_read_cell_exclusiveMinimum():
+    field = Field.from_descriptor(
+        {
+            "name": "name",
+            "type": "integer",
+            "constraints": {"exclusiveMinimum": 2},
+        }
+    )
+    read = field.read_cell
+    note = {"exclusiveMinimum": 'constraint "exclusiveMinimum" is "2"'}
+    assert read("3") == (3, None)
+    assert read(3) == (3, None)
+    assert read("2") == (2, note)
+    assert read(2) == (2, note)
+    assert read("1") == (1, note)
+    # Null value passes
+    assert read("") == (None, None)
+
+
+def test_field_read_cell_exclusiveMaximum():
+    field = Field.from_descriptor(
+        {
+            "name": "name",
+            "type": "integer",
+            "constraints": {"exclusiveMaximum": 2},
+        }
+    )
+    read = field.read_cell
+    note = {"exclusiveMaximum": 'constraint "exclusiveMaximum" is "2"'}
+    assert read("3") == (3, note)
+    assert read("2") == (2, note)
+    assert read(2) == (2, note)
+    assert read("1") == (1, None)
+    assert read(1) == (1, None)
+    # Null value passes
+    assert read("") == (None, None)
+
+
+def test_field_read_cell_exclusive_bounds_date():
+    field = Field.from_descriptor(
+        {
+            "name": "name",
+            "type": "date",
+            "constraints": {
+                "exclusiveMinimum": "2020-01-01",
+                "exclusiveMaximum": "2020-12-31",
+            },
+        }
+    )
+    read = field.read_cell
+    assert read("2020-06-15")[1] is None
+    assert read("2020-01-01")[1] == {
+        "exclusiveMinimum": 'constraint "exclusiveMinimum" is "2020-01-01"'
+    }
+    assert read("2020-12-31")[1] == {
+        "exclusiveMaximum": 'constraint "exclusiveMaximum" is "2020-12-31"'
+    }
 
 
 def test_field_read_cell_pattern():
