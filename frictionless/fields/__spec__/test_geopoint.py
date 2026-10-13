@@ -47,3 +47,14 @@ def test_geopoint_read_cell(format, source, target):
     field = Field.from_descriptor({"name": "name", "type": "geopoint", "format": format})
     cell, notes = field.read_cell(source)
     assert cell == target
+
+
+@pytest.mark.parametrize("sequence_type", [list, tuple])
+@pytest.mark.parametrize("coordinate", [0, 1])
+def test_geopoint_rejects_nan_coordinate(sequence_type, coordinate):
+    source = [0.0, 0.0]
+    source[coordinate] = float("nan")
+    field = Field.from_descriptor({"name": "point", "type": "geopoint"})
+    cell, notes = field.read_cell(sequence_type(source))
+    assert cell is None
+    assert notes
