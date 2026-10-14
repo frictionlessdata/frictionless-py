@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 from decimal import Decimal
-from typing import Any, NamedTuple
+from typing import Any, NamedTuple, cast
 
 import attrs
 
@@ -31,9 +31,9 @@ class GeopointField(Field):
                         lon = lon.strip()
                         lat = lat.strip()
                     elif self.format == "array":
-                        lon, lat = json.loads(cell)
+                        lon, lat = json.loads(cell, parse_float=Decimal)
                     elif self.format == "object":
-                        cell = json.loads(cell)
+                        cell = json.loads(cell, parse_float=Decimal)
                         if len(cell) != 2:
                             return None
                         lon = cell["lon"]
@@ -44,7 +44,17 @@ class GeopointField(Field):
 
             # Validate
             try:
-                cell = geopoint(*cell)
+                if self.format == "object" and isinstance(cell, dict):
+                    coordinates = cast("dict[str, Any]", cell)
+                    if len(coordinates) != 2:
+                        return None
+                    cell = (coordinates["lon"], coordinates["lat"])
+                cell = geopoint(
+                    *(
+                        Decimal(str(value)) if isinstance(value, float) else value
+                        for value in cell
+                    )
+                )
                 if cell.lon > 180 or cell.lon < -180:
                     return None
                 if cell.lat > 90 or cell.lat < -90:
@@ -62,9 +72,15 @@ class GeopointField(Field):
         # Create writer
         def value_writer(cell: Any):
             if self.format == "array":
-                return json.dumps(list(cell))
+                return "[" + ", ".join(_json_coordinate(value) for value in cell) + "]"
             elif self.format == "object":
-                return json.dumps({"lon": cell.lon, "lat": cell.lat})
+                return (
+                    '{"lon": '
+                    + _json_coordinate(cell.lon)
+                    + ', "lat": '
+                    + _json_coordinate(cell.lat)
+                    + "}"
+                )
             return ",".join(map(str, cell))
 
         return value_writer
@@ -73,9 +89,17 @@ class GeopointField(Field):
 # Internal
 
 
+def _json_coordinate(value: Any) -> str:
+    if isinstance(value, Decimal):
+        if not value.is_finite():
+            raise ValueError("Geopoint coordinates must be finite")
+        return str(value)
+    return json.dumps(value)
+
+
 class geopoint(NamedTuple):
-    lon: int
-    lat: int
+    lon: int | float | Decimal
+    lat: int | float | Decimal
 
     def __repr__(self):
         return str([float(self[0]), float(self[1])])
