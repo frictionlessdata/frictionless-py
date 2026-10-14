@@ -64,6 +64,8 @@ class DateField(Field):
 
         # Create writer
         def value_writer(cell: Any):
+            if format == "any":
+                return date(cell.year, cell.month, cell.day).isoformat()
             return cell.strftime(format)
 
         return value_writer

@@ -58,6 +58,8 @@ class TimeField(Field):
 
         # Create writer
         def value_writer(cell: Any):
+            if format == "any":
+                return cell.isoformat()
             cell = cell.strftime(format)
             cell = cell.replace("+0000", "Z")
             return cell
