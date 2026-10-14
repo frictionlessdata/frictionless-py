@@ -759,13 +759,13 @@ def test_package_validate_missing_values_version_gate_inheritance(
     assert report.flatten(["type", "note"]) == expected
 
 
-# Resource name version gate — inheritance through the package
+# Name version gate (package and resource names)
 #
-# Datapackage v2 allows any string as a resource name, while v1 restricts it to
-# lowercase alphanumerics plus ".", "-", "_" and "/". The v1 pattern applies
-# unless the version imposed on the resource is v2: a package `$schema` is
-# imposed on its resources (top-down), otherwise the resource's own `$schema`
-# sets the version, and an undeclared version keeps the v1 pattern.
+# Datapackage v2 allows any string as a package or resource name, while v1
+# restricts it to lowercase alphanumerics plus ".", "-", "_" and "/". As for
+# missing values, the v1 pattern is only checked under an explicitly declared
+# v1: a package `$schema` is imposed on its resources (top-down), otherwise the
+# resource's own `$schema` sets the version, and an undeclared version is lenient.
 
 DR_V1_PROFILE = "https://datapackage.org/profiles/1.0/dataresource.json"
 DR_V2_PROFILE = "https://datapackage.org/profiles/2.0/dataresource.json"
@@ -776,7 +776,7 @@ NAME_NOTE = (
 )
 
 RESOURCE_NAME_VERSION_GATE_CASES = [
-    ("undeclared", None, None, [["resource-error", NAME_NOTE]]),
+    ("undeclared", None, None, []),
     ("resource-v1", None, DR_V1_PROFILE, [["resource-error", NAME_NOTE]]),
     ("resource-v2", None, DR_V2_PROFILE, []),
     ("package-v2", DP_V2_PROFILE, None, []),
@@ -804,6 +804,30 @@ def test_package_validate_resource_name_version_gate(
     if resource_profile is not None:
         resource["$schema"] = resource_profile
     descriptor = {"resources": [resource]}
+    if package_profile is not None:
+        descriptor["$schema"] = package_profile
+    report = Package.validate_descriptor(descriptor)
+    assert report.flatten(["type", "note"]) == expected
+
+
+PACKAGE_NAME = "My Package"
+PACKAGE_NAME_NOTE = "'My Package' does not match '^([-a-z0-9._/])+$' at property 'name'"
+
+
+@pytest.mark.parametrize(
+    "package_profile, expected",
+    [
+        (None, []),
+        (DP_V1_PROFILE, [["package-error", PACKAGE_NAME_NOTE]]),
+        (DP_V2_PROFILE, []),
+    ],
+    ids=["undeclared", "package-v1", "package-v2"],
+)
+def test_package_validate_package_name_version_gate(package_profile, expected):
+    descriptor = {
+        "name": PACKAGE_NAME,
+        "resources": [{"name": "table", "path": "data/table.csv"}],
+    }
     if package_profile is not None:
         descriptor["$schema"] = package_profile
     report = Package.validate_descriptor(descriptor)

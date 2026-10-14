@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import json
-import re
 import warnings
 from typing import TYPE_CHECKING, Any, ClassVar, Dict, List, Optional, Union, cast
 
@@ -14,6 +13,7 @@ from ..detector import Detector
 from ..dialect import Control, Dialect
 from ..exception import FrictionlessException
 from ..metadata import Metadata, ValidationContext
+from ..metadata import names as names_module
 from ..platform import platform
 from ..report import Report
 from ..schema import Schema
@@ -912,19 +912,16 @@ class Resource(Metadata, metaclass=Factory):  # type: ignore
             yield from metadata_errors
             return
 
-        # Name
-        # Datapackage v2 allows any string as a name; the v1 pattern applies unless
-        # the version imposed top-down by an ancestor's `$schema`, or this
-        # resource's own `$schema` otherwise, is v2. The profile above ensures that
-        # "name" is present and is a string.
-        name: str = descriptor["name"]
+        # Name version gate
+        # The version is the one imposed top-down by an ancestor's `$schema`, or
+        # this resource's own `$schema` otherwise; `None` (undeclared) stays lenient.
+        # The profile above ensures that "name" is present and is a string.
         version = cls.effective_datapackage_version(
             descriptor, context.datapackage_version
         )
-        if version != "v2" and not re.search(settings.NAME_PATTERN, name):
-            pattern = settings.NAME_PATTERN
-            note = f"{name!r} does not match {pattern!r} at property 'name'"
-            yield errors.ResourceError(note=note)
+        notes = names_module.version_gate_notes(descriptor["name"], version)
+        if notes:
+            yield from (errors.ResourceError(note=note) for note in notes)
             return
 
         # Security
