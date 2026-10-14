@@ -294,6 +294,17 @@ class Field(Metadata):
         for note in missing_values_module.version_gate_notes(missing_values, version):
             yield errors.FieldError(note=note)
 
+        # Exclusive bounds version gate
+        # `exclusiveMinimum`/`exclusiveMaximum` are a datapackage v2 addition.
+        # They are rejected only when the version is explicitly resolved to v1;
+        # an undeclared version (`None`) stays lenient and accepts them.
+        if version == "v1":
+            for name in ("exclusiveMinimum", "exclusiveMaximum"):
+                if name in descriptor.get("constraints", {}):
+                    yield errors.FieldError(
+                        note=f'constraint "{name}" requires datapackage v2'
+                    )
+
         # Examples
         example = descriptor.get("example")
         if example:
