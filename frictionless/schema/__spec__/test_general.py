@@ -2,6 +2,7 @@ import io
 import json
 import sys
 import textwrap
+from datetime import date
 from decimal import Decimal
 from importlib import import_module
 
@@ -134,6 +135,68 @@ def test_schema_read_cells_wrong_type():
     assert cells == target
     assert notes[1] == {"type": 'type is "number/default"'}
     assert notes[2] == {"type": 'type is "integer/default"'}
+
+
+def test_schema_write_cells_roundtrip():
+    schema = Schema.from_descriptor(
+        {
+            "fields": [
+                {"name": "when", "type": "date"},
+                {"name": "id", "type": "integer"},
+                {"name": "amount", "type": "number"},
+                {"name": "active", "type": "boolean"},
+                {"name": "items", "type": "array"},
+                {"name": "metadata", "type": "object"},
+            ]
+        }
+    )
+    source = [date(2026, 10, 14), 7, Decimal("1.25"), True, [1, 2], {"key": "value"}]
+    cells, notes = schema.write_cells(source)
+    assert cells == ["2026-10-14", "7", "1.25", "true", "[1, 2]", '{"key": "value"}']
+    assert notes == [None] * 6
+    assert schema.read_cells(cells) == (source, [None] * 6)
+
+
+def test_schema_write_cells_custom_format_and_missing_values():
+    schema = Schema.from_descriptor(
+        {
+            "fields": [
+                {"name": "when", "type": "date", "format": "%d/%m/%Y"},
+                {
+                    "name": "active",
+                    "type": "boolean",
+                    "trueValues": ["yes"],
+                    "falseValues": ["no"],
+                },
+                {"name": "optional", "type": "integer", "missingValues": ["N/A"]},
+                {"name": "last", "type": "string"},
+            ],
+            "missingValues": ["NULL"],
+        }
+    )
+    source = [date(2026, 10, 14), False, None]
+    cells, notes = schema.write_cells(source)
+    assert cells == ["14/10/2026", "no", "N/A", "NULL"]
+    assert notes == [None] * 4
+    assert source == [date(2026, 10, 14), False, None]
+    assert schema.read_cells(cells) == (source + [None], [None] * 4)
+
+
+def test_schema_create_cell_writers():
+    schema = Schema.from_descriptor(
+        {
+            "fields": [
+                {"name": "id", "type": "integer"},
+                {"name": "optional", "type": "string"},
+            ],
+            "missingValues": ["NULL"],
+        }
+    )
+    writers = schema.create_cell_writers()
+    assert list(writers) == ["id", "optional"]
+    assert writers["id"](7) == ("7", None)
+    assert writers["optional"](None) == ("NULL", None)
+    assert writers["optional"](None, ignore_missing=True) == (None, None)
 
 
 def test_schema_missing_values():

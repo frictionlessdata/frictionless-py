@@ -245,7 +245,7 @@ class Schema(Metadata, metaclass=Factory):
         return res_cells, res_notes
 
     def create_cell_writers(self):
-        return {field.name: field.create_cell_reader() for field in self.fields}
+        return {field.name: field.create_cell_writer() for field in self.fields}
 
     # Flatten
 
@@ -387,9 +387,7 @@ class Schema(Metadata, metaclass=Factory):
         context: Optional[ValidationContext] = None,
     ):
         context = context or ValidationContext()
-        metadata_errors = list(
-            super().metadata_validate(descriptor, context=context)
-        )
+        metadata_errors = list(super().metadata_validate(descriptor, context=context))
         if metadata_errors:
             yield from metadata_errors
             return
@@ -419,7 +417,9 @@ class Schema(Metadata, metaclass=Factory):
         # Missing Values version gate
         # The version is the one imposed top-down by an ancestor's `$schema`, or
         # this schema's own `$schema` otherwise; `None` (undeclared) stays lenient.
-        version = cls.effective_datapackage_version(descriptor, context.datapackage_version)
+        version = cls.effective_datapackage_version(
+            descriptor, context.datapackage_version
+        )
         for note in missing_values_module.version_gate_notes(missing_values, version):
             yield errors.SchemaError(note=note)
 
