@@ -9,7 +9,10 @@ least one current value has a label.
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union
+
+if TYPE_CHECKING:
+    from ..types import IStandards
 
 IEntries = List[Union[str, Dict[str, str]]]
 
@@ -68,7 +71,9 @@ def validation_notes(entries: IEntries) -> List[str]:
     return notes
 
 
-def version_gate_notes(entries: IEntries, version: Optional[str]) -> List[str]:
+def version_gate_notes(
+    entries: IEntries, version: Optional[IStandards]
+) -> List[str]:
     """Notes when object entries appear under an explicitly declared v1 schema
 
     The object form `{value, label?}` is a datapackage v2 addition. It is

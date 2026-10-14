@@ -13,7 +13,7 @@ from ..detector import Detector
 from ..dialect import Control, Dialect
 from ..exception import FrictionlessException
 from ..metadata import Metadata, ValidationContext
-from ..metadata import names as names_module
+from ..metadata.names import validate_name
 from ..platform import platform
 from ..report import Report
 from ..schema import Schema
@@ -919,9 +919,9 @@ class Resource(Metadata, metaclass=Factory):  # type: ignore
         version = cls.effective_datapackage_version(
             descriptor, context.datapackage_version
         )
-        notes = names_module.version_gate_notes(descriptor["name"], version)
-        if notes:
-            yield from (errors.ResourceError(note=note) for note in notes)
+        note = validate_name(descriptor["name"], version)
+        if note:
+            yield errors.ResourceError(note=note)
             return
 
         # Security

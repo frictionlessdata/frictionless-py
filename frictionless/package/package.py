@@ -10,7 +10,7 @@ from .. import errors, fields, helpers, settings
 from ..checklist import Checklist
 from ..exception import FrictionlessException
 from ..metadata import Metadata, ValidationContext
-from ..metadata import names as names_module
+from ..metadata.names import validate_name
 from ..platform import platform
 from ..report import Report
 from ..resource import Resource
@@ -683,9 +683,9 @@ class Package(Metadata, metaclass=Factory):
             version = cls.effective_datapackage_version(
                 descriptor, context.datapackage_version
             )
-            notes = names_module.version_gate_notes(name, version)
-            if notes:
-                yield from (errors.PackageError(note=note) for note in notes)
+            note = validate_name(name, version)
+            if note:
+                yield errors.PackageError(note=note)
                 return
 
         # Security
