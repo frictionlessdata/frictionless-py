@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import decimal
+import operator
 import re
 from functools import partial
 from typing import (
@@ -136,7 +136,12 @@ class Field(Metadata):
         for name in self.supported_constraints:
             constraint = self.constraints.get(name)
             if constraint is not None:
-                if name in ["minimum", "maximum", "exclusiveMinimum", "exclusiveMaximum"]:
+                if name in [
+                    "minimum",
+                    "maximum",
+                    "exclusiveMinimum",
+                    "exclusiveMaximum",
+                ]:
                     constraint = value_reader(constraint)
                 if name == "pattern":
                     constraint = re.compile("^{0}$".format(constraint))
@@ -264,9 +269,7 @@ class Field(Metadata):
         context: Optional[ValidationContext] = None,
     ):
         context = context or ValidationContext()
-        metadata_errors = list(
-            super().metadata_validate(descriptor, context=context)
-        )
+        metadata_errors = list(super().metadata_validate(descriptor, context=context))
         if metadata_errors:
             yield from metadata_errors
             return
@@ -285,7 +288,9 @@ class Field(Metadata):
         # Missing Values version gate
         # A field never declares its own `$schema`; the version is the one
         # imposed top-down by an ancestor (`None` undeclared stays lenient).
-        version = cls.effective_datapackage_version(descriptor, context.datapackage_version)
+        version = cls.effective_datapackage_version(
+            descriptor, context.datapackage_version
+        )
         for note in missing_values_module.version_gate_notes(missing_values, version):
             yield errors.FieldError(note=note)
 
@@ -355,56 +360,26 @@ def check_maxLength(constraint: Any, cell: Any):
     return False
 
 
-def check_minimum(constraint: Any, cell: Any):
+def _check_bound(
+    constraint: Any, cell: Any, *, compare: Callable[[Any, Any], bool]
+) -> bool:
+    # `compare(cell, constraint)` is one of operator.ge/le/gt/lt
     if cell is None:
         return True
-    try:
-        if cell >= constraint:
-            return True
-    except decimal.InvalidOperation:
-        # For non-finite numbers NaN, INF and -INF
-        # the constraint always is not satisfied
+
+    # Detect `NaN` in a type agnostic way: NaN is not equal to itself (IEEE 754)
+    # and is incomparable. Handling NaN defensively here prevents, e.g., raising
+    # decimal.InvalidOperation during the comparison. +/-Inf compare normally
+    # and pass through.
+    if cell != cell:
         return False
-    return False
+    return bool(compare(cell, constraint))
 
 
-def check_maximum(constraint: Any, cell: Any):
-    if cell is None:
-        return True
-    try:
-        if cell <= constraint:
-            return True
-    except decimal.InvalidOperation:
-        # For non-finite numbers NaN, INF and -INF
-        # the constraint always is not satisfied
-        return False
-    return False
-
-
-def check_exclusiveMinimum(constraint: Any, cell: Any):
-    if cell is None:
-        return True
-    try:
-        if cell > constraint:
-            return True
-    except decimal.InvalidOperation:
-        # For non-finite numbers NaN, INF and -INF
-        # the constraint always is not satisfied
-        return False
-    return False
-
-
-def check_exclusiveMaximum(constraint: Any, cell: Any):
-    if cell is None:
-        return True
-    try:
-        if cell < constraint:
-            return True
-    except decimal.InvalidOperation:
-        # For non-finite numbers NaN, INF and -INF
-        # the constraint always is not satisfied
-        return False
-    return False
+check_minimum = partial(_check_bound, compare=operator.ge)
+check_maximum = partial(_check_bound, compare=operator.le)
+check_exclusiveMinimum = partial(_check_bound, compare=operator.gt)
+check_exclusiveMaximum = partial(_check_bound, compare=operator.lt)
 
 
 def check_pattern(constraint: Pattern[str], cell: Optional[str]):
