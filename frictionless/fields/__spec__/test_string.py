@@ -24,6 +24,9 @@ from frictionless import Field
         ("binary", "dGVzdA==", "dGVzdA=="),
         ("binary", "", None),
         ("binary", "string", None),
+        ("binary", "!!!!", None),
+        ("binary", "@@@@", None),
+        ("binary", "()()", None),
         ("binary", 0, None),
     ],
 )
