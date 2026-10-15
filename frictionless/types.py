@@ -24,6 +24,10 @@ if TYPE_CHECKING:
 
 
 IStandards = Literal["v1", "v2"]
+IResolvedStandards = Literal["v1", "v2", "unknown"]
+"""Data Package standard version resolved from a descriptor tree: "unknown"
+when a custom `$schema`/`profile` URL makes the version unambiguous to
+nobody but its author (gates then accept a superset of v1 and v2)."""
 IDescriptor = Dict[str, Any]
 IByteStream = BinaryIO
 ITextStream = TextIO

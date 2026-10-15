@@ -296,7 +296,8 @@ class Field(Metadata):
 
         # Exclusive bounds version gate
         # `exclusiveMinimum`/`exclusiveMaximum` are a datapackage v2 addition,
-        # rejected under unambiguous v1.
+        # rejected under unambiguous v1 (an "unknown" version, from a
+        # custom profile, accepts the superset).
         if version == "v1":
             for name in ("exclusiveMinimum", "exclusiveMaximum"):
                 if name in descriptor.get("constraints", {}):

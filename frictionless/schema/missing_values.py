@@ -9,10 +9,10 @@ least one current value has a label.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Tuple, Union
 
 if TYPE_CHECKING:
-    from ..types import IStandards
+    from ..types import IResolvedStandards
 
 IEntries = List[Union[str, Dict[str, str]]]
 
@@ -71,11 +71,12 @@ def validation_notes(entries: IEntries) -> List[str]:
     return notes
 
 
-def version_gate_notes(entries: IEntries, version: Optional[IStandards]) -> List[str]:
+def version_gate_notes(entries: IEntries, version: IResolvedStandards) -> List[str]:
     """Notes when object entries appear under a v1 schema
 
     The object form `{value, label?}` is a datapackage v2 addition, rejected
-    when the resolved version is unambiguously v1.
+    when the resolved version is unambiguously v1 (an "unknown" version,
+    from a custom profile, accepts the superset).
     """
     if version != "v1":
         return []

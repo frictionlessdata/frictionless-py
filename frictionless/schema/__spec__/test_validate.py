@@ -110,7 +110,8 @@ def test_validate_field_missing_values_uniqueness():
 #
 # The object form `{value, label?}` is a datapackage v2 addition, rejected
 # under v1 — which is also the version of an absent `$schema`. A custom
-# (unrecognized) profile is treated as v2 by default.
+# (unrecognized) profile resolves to an "unknown" version: gates accept a
+# superset of v1 and v2.
 
 V1_PROFILE = "https://datapackage.org/profiles/1.0/tableschema.json"
 V2_PROFILE = "https://datapackage.org/profiles/2.0/tableschema.json"
@@ -159,7 +160,8 @@ def test_validate_missing_values_version_gate(name, schema, source, expected):
 #
 # `exclusiveMinimum`/`exclusiveMaximum` are a datapackage v2 addition,
 # rejected under v1 — which is also the version of an absent `$schema`. A
-# custom (unrecognized) profile is treated as v2 by default.
+# custom (unrecognized) profile resolves to an "unknown" version: gates
+# accept a superset of v1 and v2.
 
 EXCLUSIVE_BOUNDS = {"exclusiveMinimum": 1, "exclusiveMaximum": 10}
 EXCLUSIVE_GATE_NOTES = [

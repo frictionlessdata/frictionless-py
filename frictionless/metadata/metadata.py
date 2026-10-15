@@ -707,10 +707,11 @@ class Metadata:
         "context" carries the information shared down the recursion, such as
         the Data Package standard version resolved from an ancestor's `$schema`
         (top-down inheritance). An absent `$schema` resolves to an explicit
-        "v1" (as mandated by the spec); the resulting version is imposed on
-        all children, whatever `$schema` they declare themselves. Subclasses
-        read it (via `effective_datapackage_version`) to gate version-specific
-        properties.
+        "v1" (as mandated by the spec), a custom profile URL to "unknown"
+        (gates accept a superset of v1 and v2); the resulting version is
+        imposed on all children, whatever `$schema` they declare themselves.
+        Subclasses read it (via `effective_datapackage_version`) to gate
+        version-specific properties.
         """
         context = context or ValidationContext()
         Error = error_class
@@ -799,12 +800,13 @@ class Metadata:
     @staticmethod
     def _resolve_datapackage_version(
         schema_profile: Optional[str],
-    ) -> types.IStandards:
-        """Resolve the Data Package standard version from a `$schema` value.
+    ) -> types.IResolvedStandards:
+        """Resolve the Data Package standard version from a profile URL.
 
-        - a missing `$schema` defaults to "v1" (as mandated by the spec);
         - a standard datapackage.org profile uses the version from its URL;
-        - any custom profile falls back to the latest known standard.
+        - any custom profile URL resolves to "unknown": the version is known
+          to nobody but the profile's author, so version gates accept a
+          superset of v1 and v2.
         """
         if not schema_profile:
             return "v1"
@@ -816,7 +818,7 @@ class Metadata:
                     return "v1"
                 if match.group(1) == "2":
                     return "v2"
-        return settings.DEFAULT_STANDARDS
+        return "unknown"
 
     @staticmethod
     def _is_standard_profile(schema_profile: str) -> bool:
@@ -905,14 +907,18 @@ class Metadata:
     def effective_datapackage_version(
         cls,
         descriptor: types.IDescriptor,
-        inherited: Optional[types.IStandards],
-    ) -> Optional[types.IStandards]:
+        inherited: Optional[types.IResolvedStandards],
+    ) -> types.IResolvedStandards:
         """Version imposed top-down on this descriptor and its descendants.
 
         An ancestor's resolved version wins (a descendant cannot escape it,
         whatever `$schema` it declares); otherwise the descriptor's own
-        `$schema`, if any, sets the version. An absent `$schema` resolves to
-        an explicit "v1" (as mandated by the spec).
+        `$schema` sets the version. An absent `$schema` resolves to an
+        explicit "v1" (as mandated by the spec) — a legacy `profile` is a
+        v1-only property, so a descriptor using it is explicitly v1 too;
+        a custom `$schema` URL resolves to "unknown" (its version is known
+        to nobody but its author, so version gates accept a superset of v1
+        and v2).
         """
         if inherited is not None:
             return inherited
@@ -921,9 +927,9 @@ class Metadata:
             return cls._resolve_datapackage_version(schema_profile)
         # An absent `$schema` is an explicit "v1" (as mandated by the spec)
         # for the classes that can declare one. A field never declares
-        # `$schema`: a standalone field carries no version and only inherits
-        # one from its ancestors.
-        return "v1" if cls._accepts_schema_profile() else None
+        # `$schema`: a standalone field carries no version of its own and
+        # only inherits one from its ancestors ("unknown": lax).
+        return "v1" if cls._accepts_schema_profile() else "unknown"
 
     @classmethod
     def metadata_import(

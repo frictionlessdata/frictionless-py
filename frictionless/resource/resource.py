@@ -210,14 +210,15 @@ class Resource(Metadata, metaclass=Factory):  # type: ignore
     See `Metadata._schema_profile`.
     """
 
-    _datapackage_version: Optional[types.IStandards] = attrs.field(
+    _datapackage_version: Optional[types.IResolvedStandards] = attrs.field(
         default=None, alias="datapackage_version"
     )
     """
     Data Package standard version resolved at import time: the one imposed
-    by an ancestor (top-down inheritance), or this resource's own `$schema`.
-    Private (not exported): a detached validation keeps the tree semantics.
-    See `Metadata.effective_datapackage_version`.
+    by an ancestor (top-down inheritance), or this resource's own `$schema`
+    ("unknown" when a custom profile URL is involved). Private (not
+    exported): a detached validation keeps the tree semantics. See
+    `Metadata.effective_datapackage_version`.
     """
 
     detector: Detector = attrs.field(factory=Detector)
