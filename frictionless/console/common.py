@@ -126,6 +126,11 @@ schema = Option(
     help="Specify a path to a schema",
 )
 
+jsonschema = Option(
+    default=None,
+    help="Specify a path to a JSON Schema profile (converted to a Table Schema)",
+)
+
 # Checklist
 
 checklist = Option(
