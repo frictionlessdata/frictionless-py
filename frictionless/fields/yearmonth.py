@@ -15,6 +15,8 @@ class YearmonthField(Field):
         "required",
         "minimum",
         "maximum",
+        "exclusiveMinimum",
+        "exclusiveMaximum",
         "enum",
     ]
 

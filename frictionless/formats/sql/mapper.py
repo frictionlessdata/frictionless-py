@@ -257,6 +257,10 @@ class SqlMapper(Mapper):
                 checks.append(Check("%s >= %s" % (quoted_name, value)))
             elif const == "maximum":
                 checks.append(Check("%s <= %s" % (quoted_name, value)))
+            elif const == "exclusiveMinimum":
+                checks.append(Check("%s > %s" % (quoted_name, value)))
+            elif const == "exclusiveMaximum":
+                checks.append(Check("%s < %s" % (quoted_name, value)))
             elif const == "pattern":
                 if self.dialect.name == "postgresql":
                     checks.append(Check("%s ~ '%s'" % (quoted_name, value)))
