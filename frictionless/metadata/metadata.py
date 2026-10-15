@@ -78,6 +78,14 @@ class Metadata:
     `$schema` is not a valid Python identifier.
     """
 
+    metadata_v2_profile = None
+    """
+    Canonical Data Package v2 profile URL of this class, used by `upgrade` to
+    set the root `$schema` (e.g. "https://datapackage.org/profiles/2.0/
+    datapackage.json" for a package). `None` when the class has no versioned
+    profile (e.g. a field).
+    """
+
     def __new__(cls, *args: Any, **kwargs: Any):
         obj = super().__new__(cls)
         obj.custom = obj.custom.copy()
@@ -291,7 +299,9 @@ class Metadata:
             metadata.metadata_descriptor_initial = metadata.to_descriptor()
         return metadata  # type: ignore
 
-    def to_descriptor(self, *, validate: bool = False) -> types.IDescriptor:
+    def to_descriptor(
+        self, *, validate: bool = False, upgrade: bool = False
+    ) -> types.IDescriptor:
         """Export the instance as a descriptor.
 
         The descriptor is a canonical form of the metadata: it preserves all
@@ -302,14 +312,23 @@ class Metadata:
         descriptor.
 
         If `validate = True`, the descriptor will additionally be validated.
+
+        If `upgrade = True`, the descriptor (and its children) is first
+        transformed into the Data Package v2 form — see `upgrade`.
         """
         descriptor = self.metadata_export()
+        if upgrade:
+            descriptor = type(self)._upgrade_descriptor(descriptor)
         if validate:
             Error = self.metadata_Error or platform.frictionless_errors.MetadataError
             # Seed the context with the version inherited at import time (if
-            # any): a detached instance keeps the semantics of its tree
+            # any): a detached instance keeps the semantics of its tree.
+            # An upgraded descriptor is self-contained (its version is
+            # declared at the root): it is validated positionally
             context = ValidationContext(
-                datapackage_version=getattr(self, "_datapackage_version", None)
+                datapackage_version=None
+                if upgrade
+                else getattr(self, "_datapackage_version", None)
             )
             errors = list(self.metadata_validate(descriptor, context=context))
             if errors:
@@ -336,6 +355,24 @@ class Metadata:
             "datapackage_version", getattr(self, "_datapackage_version", None)
         )
         return type(self).from_descriptor(self.to_descriptor(), **options)
+
+    def upgrade(self) -> Self:
+        """Upgrade this metadata to the Data Package v2 standard
+
+        Returns a new instance (this one is left untouched) whose descriptor
+        tree — this object and its children — is transformed into the v2
+        form: the root gets `$schema` (as its first property) set to the
+        canonical v2 profile of the class, the legacy `profile` property is
+        migrated (a custom URL is retained in `$schema`; a
+        "tabular-data-resource" profile becomes "type": "table"), and
+        `$schema` never appears on children (it is removed: a `$schema` may
+        be provided at the root only).
+
+        A `$schema` or `profile` pointing to a custom profile URL is kept
+        as-is: an automatic upgrade of a custom profile is not possible (its
+        upgrade path is up to its author).
+        """
+        return type(self).from_descriptor(self.to_descriptor(upgrade=True))
 
     def to_dict(self) -> types.IDescriptor:
         """Export metadata as dictionary (alias for "to_descriptor")"""
@@ -772,7 +809,7 @@ class Metadata:
         if not schema_profile:
             return "v1"
         url = urlparse(schema_profile)
-        if url.netloc == "datapackage.org":
+        if Metadata._is_standard_profile(schema_profile):
             match = re.search(r"/profiles/(\d+)\.\d+/", url.path)
             if match:
                 if match.group(1) == "1":
@@ -780,6 +817,89 @@ class Metadata:
                 if match.group(1) == "2":
                     return "v2"
         return settings.DEFAULT_STANDARDS
+
+    @staticmethod
+    def _is_standard_profile(schema_profile: str) -> bool:
+        """Whether a `$schema` value is a datapackage.org standard profile
+        URL (i.e. a profile this library knows how to upgrade)"""
+        url = urlparse(schema_profile)
+        return url.netloc == "datapackage.org" and re.search(
+            r"/profiles/\d+\.\d+/", url.path
+        ) is not None
+
+    @classmethod
+    def _upgrade_descriptor(
+        cls, descriptor: types.IDescriptor, *, root: bool = True
+    ) -> types.IDescriptor:
+        """Transform a descriptor tree into the Data Package v2 form
+
+        Root (only the root can declare `$schema`):
+        - the legacy `profile` property is migrated: a custom profile URL is
+          retained in `$schema` instead of the canonical v2 URL;
+          "tabular-data-resource" becomes "type": "table"; other values
+          (e.g. "data-package"/"data-resource") are dropped;
+        - a `$schema` pointing to a standard profile is replaced by the
+          canonical v2 profile of the class; a custom `$schema` URL is kept
+          as-is (an automatic upgrade of a custom profile is not possible);
+        - otherwise `$schema` is set (as the first property) to the canonical
+          v2 profile of the class.
+
+        Children: `$schema` is removed (root-only) and the same legacy
+        `profile` handling is applied (a custom profile URL is kept in
+        place: it cannot be expressed as a child `$schema`).
+        """
+        descriptor = dict(descriptor)
+
+        # Children first: the same transformation as a root, but `$schema`
+        # is root-only (removed, never added)
+        profile = cls.metadata_ensure_profile()
+        for name in profile.get("properties", {}):
+            if name in ("$schema", "profile"):
+                continue
+            value = descriptor.get(name)
+            if not isinstance(value, (dict, list)):
+                continue
+            ItemClass = cls.metadata_select_property_class(name)
+            if not ItemClass:
+                continue
+            if isinstance(value, list):
+                for ix, item in enumerate(value):  # type: ignore
+                    if isinstance(item, dict):
+                        TypedItemClass = ItemClass.metadata_select_class(
+                            item.get("type")  # type: ignore
+                        )
+                        value[ix] = TypedItemClass._upgrade_descriptor(  # type: ignore
+                            item, root=False
+                        )
+            else:
+                descriptor[name] = ItemClass._upgrade_descriptor(value, root=False)
+
+        # Legacy `profile` property (standards v1)
+        profile_url = None
+        profile_value = descriptor.pop("profile", None)
+        if profile_value == settings.DEFAULT_TABULAR_RESOURCE_PROFILE:
+            descriptor["type"] = "table"
+        elif profile_value and urlparse(profile_value).netloc:
+            # custom profile URL: retained (see the docstring)
+            profile_url = profile_value
+
+        if not root:
+            descriptor.pop("$schema", None)  # a `$schema` is root-only
+            if profile_url:
+                descriptor["profile"] = profile_url
+            return descriptor
+
+        # `$schema` (first property) — only for the classes with a versioned
+        # profile (a field, for instance, has nothing to declare)
+        if cls.metadata_v2_profile:
+            schema_profile = descriptor.pop("$schema", None)
+            if profile_url:
+                schema_profile = profile_url
+            elif not schema_profile or cls._is_standard_profile(schema_profile):
+                schema_profile = cls.metadata_v2_profile
+            # else: a custom `$schema` URL is kept (see the docstring)
+            descriptor = {"$schema": schema_profile, **descriptor}
+        return descriptor
 
     @classmethod
     def effective_datapackage_version(
@@ -905,8 +1025,9 @@ class Metadata:
             descriptor[name] = value
 
         # Special handling of `$schema`
+        # The spec recommends `$schema` as the first property
         if self._schema_profile is not None:
-            descriptor["$schema"] = self._schema_profile
+            descriptor = {"$schema": self._schema_profile, **descriptor}
 
         descriptor.update(self.custom)  # type: ignore
         return descriptor  # type: ignore

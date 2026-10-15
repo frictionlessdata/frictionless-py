@@ -764,6 +764,10 @@ class Resource(Metadata, metaclass=Factory):  # type: ignore
     # Metadata
 
     metadata_type = "resource"
+    metadata_v2_profile = "https://datapackage.org/profiles/2.0/dataresource.json"
+    """
+    Canonical Data Package v2 profile URL (used by `upgrade`).
+    """
     metadata_Error = errors.ResourceError
     metadata_profile = {
         "type": "object",

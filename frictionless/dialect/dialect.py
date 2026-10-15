@@ -251,6 +251,10 @@ class Dialect(Metadata, metaclass=Factory):
     # Metadata
 
     metadata_type = "dialect"
+    metadata_v2_profile = "https://datapackage.org/profiles/2.0/tabledialect.json"
+    """
+    Canonical Data Package v2 profile URL (used by `upgrade`).
+    """
     metadata_Error = errors.DialectError
     metadata_profile = {
         "type": "object",

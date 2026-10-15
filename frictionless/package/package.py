@@ -577,6 +577,10 @@ class Package(Metadata, metaclass=Factory):
     # Metadata
 
     metadata_type = "package"
+    metadata_v2_profile = "https://datapackage.org/profiles/2.0/datapackage.json"
+    """
+    Canonical Data Package v2 profile URL (used by `upgrade`).
+    """
     metadata_Error = errors.PackageError
     metadata_profile = {
         "type": "object",

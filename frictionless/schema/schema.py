@@ -305,6 +305,10 @@ class Schema(Metadata, metaclass=Factory):
     # Metadata
 
     metadata_type = "schema"
+    metadata_v2_profile = "https://datapackage.org/profiles/2.0/tableschema.json"
+    """
+    Canonical Data Package v2 profile URL (used by `upgrade`).
+    """
     metadata_Error = errors.SchemaError
     metadata_profile = {
         "type": "object",
