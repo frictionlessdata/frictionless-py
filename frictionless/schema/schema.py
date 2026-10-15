@@ -41,6 +41,16 @@ class Schema(Metadata, metaclass=Factory):
     See `Metadata._schema_profile`.
     """
 
+    _datapackage_version: Optional[types.IStandards] = attrs.field(
+        default=None, alias="datapackage_version"
+    )
+    """
+    Data Package standard version resolved at import time: the one imposed
+    by an ancestor (top-down inheritance), or this schema's own `$schema`.
+    Private (not exported): a detached validation keeps the tree semantics.
+    See `Metadata.effective_datapackage_version`.
+    """
+
     # TODO: why it's optional??
     name: Optional[str] = None
     """
@@ -417,8 +427,9 @@ class Schema(Metadata, metaclass=Factory):
             yield errors.SchemaError(note=note)
 
         # Missing Values version gate
-        # The version is the one imposed top-down by an ancestor's `$schema`, or
-        # this schema's own `$schema` otherwise; `None` (undeclared) stays lenient.
+        # The version is the one imposed top-down by an ancestor (whatever
+        # `$schema` this schema declares), or resolved from this schema's own
+        # `$schema` otherwise (absent: explicit "v1").
         version = cls.effective_datapackage_version(descriptor, context.datapackage_version)
         for note in missing_values_module.version_gate_notes(missing_values, version):
             yield errors.SchemaError(note=note)

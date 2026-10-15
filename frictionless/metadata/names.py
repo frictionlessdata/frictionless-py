@@ -13,8 +13,8 @@ def validate_name(name: str, version: Optional[IStandards]) -> Optional[str]:
     """Note when a package or resource name breaks the v1 pattern
 
     Datapackage v2 allows any string as the `name` of a package or a resource,
-    while v1 restricts it to `settings.NAME_PATTERN`. The pattern is only
-    checked when the version is explicitly resolved to v1.
+    while v1 restricts it to `settings.NAME_PATTERN` (v1 is also the version
+    of an absent `$schema`).
     """
     if version != "v1" or re.search(settings.NAME_PATTERN, name):
         return None

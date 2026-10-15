@@ -676,8 +676,9 @@ class Package(Metadata, metaclass=Factory):
             return
 
         # Name version gate
-        # The version is the one of this package's own `$schema`; `None` (undeclared)
-        # stays lenient. The profile above ensures that "name" is a string if present.
+        # The version is the one of this package's own `$schema` (an absent
+        # `$schema` resolves to an explicit "v1"), imposed on all children.
+        # The profile above ensures that "name" is a string if present.
         name = descriptor.get("name")
         if name is not None:
             version = cls.effective_datapackage_version(

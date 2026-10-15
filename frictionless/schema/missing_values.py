@@ -71,14 +71,11 @@ def validation_notes(entries: IEntries) -> List[str]:
     return notes
 
 
-def version_gate_notes(
-    entries: IEntries, version: Optional[IStandards]
-) -> List[str]:
-    """Notes when object entries appear under an explicitly declared v1 schema
+def version_gate_notes(entries: IEntries, version: Optional[IStandards]) -> List[str]:
+    """Notes when object entries appear under a v1 schema
 
-    The object form `{value, label?}` is a datapackage v2 addition. It is
-    rejected only when the version is explicitly resolved to v1; an undeclared
-    version (`None`) stays lenient and accepts the v1 union v2 superset.
+    The object form `{value, label?}` is a datapackage v2 addition, rejected
+    when the resolved version is unambiguously v1.
     """
     if version != "v1":
         return []

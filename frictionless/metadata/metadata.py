@@ -239,8 +239,13 @@ class Metadata:
 
         If `allow_invalid = True`, the class creation will try to continue
         despite the descriptor having errors.
+
+        The optional "datapackage_version" option is the Data Package standard
+        version imposed by an ancestor (top-down inheritance); it seeds the
+        validation and the import, overriding the descriptor's own `$schema`.
         """
         descriptor_path = None
+        inherited_version = options.pop("datapackage_version", None)
 
         if isinstance(descriptor, str):
             descriptor_path = descriptor
@@ -268,14 +273,19 @@ class Metadata:
         Error = Class.metadata_Error or platform.frictionless_errors.MetadataError
 
         Class.metadata_transform(descriptor)
-        errors = list(Class.metadata_validate(descriptor))
+        context = ValidationContext(datapackage_version=inherited_version)
+        errors = list(Class.metadata_validate(descriptor, context=context))
 
         if not allow_invalid:
             if errors:
                 error = Error(note="descriptor is not valid")
                 raise FrictionlessException(error, reasons=errors)
 
-        metadata = Class.metadata_import(descriptor, **helpers.remove_non_values(options))
+        metadata = Class.metadata_import(
+            descriptor,
+            datapackage_version=inherited_version,
+            **helpers.remove_non_values(options),
+        )
         if descriptor_path:
             metadata.metadata_descriptor_path = descriptor_path
             metadata.metadata_descriptor_initial = metadata.to_descriptor()
@@ -296,7 +306,12 @@ class Metadata:
         descriptor = self.metadata_export()
         if validate:
             Error = self.metadata_Error or platform.frictionless_errors.MetadataError
-            errors = list(self.metadata_validate(descriptor))
+            # Seed the context with the version inherited at import time (if
+            # any): a detached instance keeps the semantics of its tree
+            context = ValidationContext(
+                datapackage_version=getattr(self, "_datapackage_version", None)
+            )
+            errors = list(self.metadata_validate(descriptor, context=context))
             if errors:
                 error = Error(note="descriptor is not valid")
                 raise FrictionlessException(error, reasons=errors)
@@ -311,7 +326,15 @@ class Metadata:
         return descriptor
 
     def to_copy(self, **options: Any) -> Self:
-        """Create a copy of the metadata"""
+        """Create a copy of the metadata
+
+        The copy keeps the Data Package version the instance inherited from
+        its ancestors (if any), so that a detached copy validates like it did
+        within its tree.
+        """
+        options.setdefault(
+            "datapackage_version", getattr(self, "_datapackage_version", None)
+        )
         return type(self).from_descriptor(self.to_descriptor(), **options)
 
     def to_dict(self) -> types.IDescriptor:
@@ -645,11 +668,12 @@ class Metadata:
         otherwise it defaults to the class profile.
 
         "context" carries the information shared down the recursion, such as
-        the Data Package standard version imposed by an ancestor's `$schema`
-        (top-down inheritance). When no version is imposed, the descriptor may
-        declare its own `$schema`; the resulting version is propagated to all
-        children. Subclasses read it (via `effective_datapackage_version`)
-        to gate version-specific properties.
+        the Data Package standard version resolved from an ancestor's `$schema`
+        (top-down inheritance). An absent `$schema` resolves to an explicit
+        "v1" (as mandated by the spec); the resulting version is imposed on
+        all children, whatever `$schema` they declare themselves. Subclasses
+        read it (via `effective_datapackage_version`) to gate version-specific
+        properties.
         """
         context = context or ValidationContext()
         Error = error_class
@@ -765,17 +789,21 @@ class Metadata:
     ) -> Optional[types.IStandards]:
         """Version imposed top-down on this descriptor and its descendants.
 
-        An ancestor's `$schema` wins (a descendant cannot escape it); otherwise
-        the descriptor's own `$schema`, if any, sets the version. Returns `None`
-        when no `$schema` is declared anywhere in the chain (undeclared version,
-        which validation treats leniently).
+        An ancestor's resolved version wins (a descendant cannot escape it,
+        whatever `$schema` it declares); otherwise the descriptor's own
+        `$schema`, if any, sets the version. An absent `$schema` resolves to
+        an explicit "v1" (as mandated by the spec).
         """
         if inherited is not None:
             return inherited
         schema_profile = descriptor.get("$schema")
         if schema_profile:
             return cls._resolve_datapackage_version(schema_profile)
-        return None
+        # An absent `$schema` is an explicit "v1" (as mandated by the spec)
+        # for the classes that can declare one. A field never declares
+        # `$schema`: a standalone field carries no version and only inherits
+        # one from its ancestors.
+        return "v1" if cls._accepts_schema_profile() else None
 
     @classmethod
     def metadata_import(
@@ -788,10 +816,19 @@ class Metadata:
         """Deserialization of a descriptor to a class instance
 
         The deserialization and serialization must be lossless.
+
+        The optional "datapackage_version" option is the version imposed by
+        an ancestor (top-down inheritance); by default the version is
+        resolved positionally from this descriptor. It is threaded to the
+        children like in `metadata_validate`, and stored by the classes
+        declaring the `_datapackage_version` field so that a detached
+        validation keeps the tree semantics.
         """
         merged_options = {}
         profile = cls.metadata_ensure_profile()
         basepath = options.pop("basepath", None)
+        inherited_version = options.pop("datapackage_version", None)
+        version = inherited_version or cls.effective_datapackage_version(descriptor, None)
 
         # Special handling of `$schema`
         # Only the subclasses declaring the `schema_profile` field
@@ -815,13 +852,25 @@ class Metadata:
                         if isinstance(item, dict):
                             type = item.get("type")  # type: ignore
                             ItemClass = Class.metadata_select_class(type)  # type: ignore
-                            value[ix] = ItemClass.metadata_import(item, basepath=basepath)  # type: ignore
+                            value[ix] = ItemClass.metadata_import(
+                                item,  # type: ignore
+                                basepath=basepath,
+                                datapackage_version=version,
+                            )
                         elif isinstance(item, str):
-                            value[ix] = Class.from_descriptor(item, basepath=basepath)
+                            value[ix] = Class.from_descriptor(
+                                item, basepath=basepath, datapackage_version=version
+                            )
                 elif isinstance(value, dict):
-                    value = Class.metadata_import(value, basepath=basepath)  # type: ignore
+                    value = Class.metadata_import(
+                        value,  # type: ignore
+                        basepath=basepath,
+                        datapackage_version=version,
+                    )
             merged_options.setdefault(stringcase.snakecase(name), value)  # type: ignore
         merged_options.update(options)  # type: ignore
+        if attrs.has(cls) and "_datapackage_version" in attrs.fields_dict(cls):
+            merged_options["datapackage_version"] = version
         if with_basepath:
             merged_options["basepath"] = basepath
         metadata = cls(**merged_options)

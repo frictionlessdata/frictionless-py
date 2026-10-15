@@ -675,8 +675,8 @@ def test_resource_validate_invalid_resource_standards_v2_strict():
 
 # Name (version gate)
 #
-# Datapackage v2 allows any string as a resource name; the v1 pattern is only
-# checked when the resource explicitly declares a v1 `$schema`.
+# Datapackage v2 allows any string as a resource name; the v1 pattern is
+# checked under v1 — which is also the version of an absent `$schema`.
 
 NAME_NOTE = "'My Table' does not match '^([-a-z0-9._/])+$' at property 'name'"
 
@@ -684,7 +684,8 @@ NAME_NOTE = "'My Table' does not match '^([-a-z0-9._/])+$' at property 'name'"
 @pytest.mark.parametrize(
     "schema, expected",
     [
-        (None, []),
+        # an absent `$schema` is an explicit v1
+        (None, [["resource-error", NAME_NOTE]]),
         (
             "https://datapackage.org/profiles/1.0/dataresource.json",
             [["resource-error", NAME_NOTE]],
