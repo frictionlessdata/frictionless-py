@@ -871,10 +871,10 @@ class Metadata:
                             item.get("type")  # type: ignore
                         )
                         value[ix] = TypedItemClass._upgrade_descriptor(  # type: ignore
-                            item, root=False
+                            item, root=False  # type: ignore
                         )
             else:
-                descriptor[name] = ItemClass._upgrade_descriptor(value, root=False)
+                descriptor[name] = ItemClass._upgrade_descriptor(value, root=False)  # type: ignore
 
         # Legacy `profile` property (standards v1)
         profile_url = None
@@ -1001,7 +1001,7 @@ class Metadata:
         if with_basepath:
             merged_options["basepath"] = basepath
         metadata = cls(**merged_options)
-        metadata.custom = descriptor
+        metadata.custom = descriptor  # type: ignore
         return metadata
 
     def metadata_export(self, *, exclude: List[str] = []) -> types.IDescriptor:

@@ -1,5 +1,3 @@
-import pytest
-
 from frictionless import Dialect, Package, Schema
 from frictionless.resources.table import TableResource
 
