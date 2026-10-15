@@ -287,7 +287,7 @@ class Field(Metadata):
 
         # Missing Values version gate
         # A field never declares its own `$schema`; the version is the one
-        # imposed top-down by an ancestor (`None` undeclared stays lenient).
+        # imposed top-down by an ancestor.
         version = cls.effective_datapackage_version(
             descriptor, context.datapackage_version
         )
@@ -295,9 +295,9 @@ class Field(Metadata):
             yield errors.FieldError(note=note)
 
         # Exclusive bounds version gate
-        # `exclusiveMinimum`/`exclusiveMaximum` are a datapackage v2 addition.
-        # They are rejected only when the version is explicitly resolved to v1;
-        # an undeclared version (`None`) stays lenient and accepts them.
+        # `exclusiveMinimum`/`exclusiveMaximum` are a datapackage v2 addition,
+        # rejected under unambiguous v1 (an "unknown" version, from a
+        # custom profile, accepts the superset).
         if version == "v1":
             for name in ("exclusiveMinimum", "exclusiveMaximum"):
                 if name in descriptor.get("constraints", {}):

@@ -176,10 +176,15 @@ def test_sql_adapter_constraints_not_valid_error(sqlite_url, field_name, cell):
 
 @pytest.mark.parametrize("cell, valid", [(5, True), (4, False), (8, False)])
 def test_sql_adapter_exclusive_constraints(sqlite_url, cell, valid):
+    # The exclusive bounds being a v2 addition, the v2 `$schema` is declared
+    # both on the schema (imported standalone: an absent `$schema` is an
+    # explicit v1) and on the resource (which imposes its version top-down on
+    # the schema and its fields)
     resource = TableResource(
         data=[["value"], [cell]],
         schema=Schema.from_descriptor(
             {
+                "$schema": "https://datapackage.org/profiles/2.0/tableschema.json",
                 "fields": [
                     {
                         "name": "value",
@@ -189,6 +194,7 @@ def test_sql_adapter_exclusive_constraints(sqlite_url, cell, valid):
                 ]
             }
         ),
+        schema_profile="https://datapackage.org/profiles/2.0/dataresource.json",
     )
     control = formats.SqlControl(table="table")
     if valid:

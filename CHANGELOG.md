@@ -2,11 +2,17 @@
 
 Here described only the breaking and most significant changes. The full changelog and documentation for all released versions could be found in nicely formatted [commit history](https://github.com/frictionlessdata/frictionless-py/commits/main).
 
-## Next
+## v5.20.1
 
 - feat: Data Package v2, support `exclusiveMinimum`, `exclusiveMaximum` 
   properties 
   ([#1840](https://github.com/frictionlessdata/frictionless-py/pull/1840))
+- feat: Data Package v2, relax constraints on `name` property
+- doc: new page "Advanced Topics" > "Data Package version" that details how 
+  frictionless-py handles different versions of datapackage.
+- fix: missing `$schema` property is properly interpreted as datapackage 
+  version 1 ; with custom `$schema` profile, the validation is lenient and 
+  handles a superset of v1 and v2 features
 
 ## v5.20.0
 

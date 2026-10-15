@@ -8,7 +8,7 @@ import attrs
 if TYPE_CHECKING:
     from referencing import Resource
 
-    from ..types import IStandards
+    from ..types import IResolvedStandards
 
 
 @attrs.frozen
@@ -19,10 +19,13 @@ class ValidationContext:
     one (see `attrs.evolve`).
     """
 
-    datapackage_version: Optional[IStandards] = None
+    datapackage_version: Optional[IResolvedStandards] = None
     """
-    Data Package standard version imposed by an ancestor's `$schema`
-    (top-down inheritance). `None` when no ancestor declares one.
+    Data Package standard version imposed by an ancestor (top-down
+    inheritance: an ancestor's resolved version always wins over the
+    descriptor's own `$schema`). `None` when no ancestor has resolved one yet
+    (a fresh context); "unknown" when a custom `$schema` URL makes the
+    version known to nobody but its author.
     """
 
     json_schema_cache: Dict[str, Resource] = attrs.field(factory=dict)

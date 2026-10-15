@@ -210,6 +210,17 @@ class Resource(Metadata, metaclass=Factory):  # type: ignore
     See `Metadata._schema_profile`.
     """
 
+    _datapackage_version: Optional[types.IResolvedStandards] = attrs.field(
+        default=None, alias="datapackage_version"
+    )
+    """
+    Data Package standard version resolved at import time: the one imposed
+    by an ancestor (top-down inheritance), or this resource's own `$schema`
+    ("unknown" when a custom profile URL is involved). Private (not
+    exported): a detached validation keeps the tree semantics. See
+    `Metadata.effective_datapackage_version`.
+    """
+
     detector: Detector = attrs.field(factory=Detector)
     """
     File/table detector.
@@ -336,7 +347,13 @@ class Resource(Metadata, metaclass=Factory):  # type: ignore
     @property
     def schema(self) -> Schema:
         if isinstance(self._schema, str):
-            self._schema = Schema.from_descriptor(self._schema, basepath=self.basepath)
+            # The path-referenced schema is under this resource: it inherits
+            # the resource's resolved version (top-down)
+            self._schema = Schema.from_descriptor(
+                self._schema,
+                basepath=self.basepath,
+                datapackage_version=self._datapackage_version,
+            )
         return self._schema
 
     @schema.setter
@@ -748,6 +765,10 @@ class Resource(Metadata, metaclass=Factory):  # type: ignore
     # Metadata
 
     metadata_type = "resource"
+    metadata_v2_profile = "https://datapackage.org/profiles/2.0/dataresource.json"
+    """
+    Canonical Data Package v2 profile URL (used by `upgrade`).
+    """
     metadata_Error = errors.ResourceError
     metadata_profile = {
         "type": "object",
@@ -913,8 +934,9 @@ class Resource(Metadata, metaclass=Factory):  # type: ignore
             return
 
         # Name version gate
-        # The version is the one imposed top-down by an ancestor's `$schema`, or
-        # this resource's own `$schema` otherwise; `None` (undeclared) stays lenient.
+        # The version is the one imposed top-down by an ancestor (whatever
+        # `$schema` this resource declares), or resolved from this resource's
+        # own `$schema` otherwise (absent: explicit "v1").
         # The profile above ensures that "name" is present and is a string.
         version = cls.effective_datapackage_version(
             descriptor, context.datapackage_version

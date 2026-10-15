@@ -61,6 +61,8 @@ def test_schema_to_copy():
 # is preserved, the notation is not. Object entries are emitted only when at
 # least one label exists; otherwise the entries canonicalize to plain strings.
 
+V2_PROFILE = "https://datapackage.org/profiles/2.0/tableschema.json"
+
 MISSING_VALUES_EXPORT_CASES = [
     ("strings", ["", "NA"], ["", "NA"]),
     (
@@ -78,7 +80,10 @@ MISSING_VALUES_EXPORT_CASES = [
     ids=[case[0] for case in MISSING_VALUES_EXPORT_CASES],
 )
 def test_schema_to_descriptor_missing_values_canonical_form(name, source, expected):
+    # The object form being a v2 addition, the descriptors declare a v2
+    # `$schema` (an absent `$schema` is an explicit v1, which gates it out)
     descriptor = {
+        "$schema": V2_PROFILE,
         "fields": [{"name": "name", "type": "string"}],
         "missingValues": source,
     }
@@ -86,7 +91,11 @@ def test_schema_to_descriptor_missing_values_canonical_form(name, source, expect
     assert exported == expected
     # the canonical form is a fixed point: re-importing it exports identically
     reimported = Schema.from_descriptor(
-        {"fields": [{"name": "name", "type": "string"}], "missingValues": exported}
+        {
+            "$schema": V2_PROFILE,
+            "fields": [{"name": "name", "type": "string"}],
+            "missingValues": exported,
+        }
     )
     assert reimported.to_descriptor()["missingValues"] == exported
 
