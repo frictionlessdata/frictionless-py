@@ -2,7 +2,7 @@ import sys
 
 import pytest
 
-from frictionless import Dialect
+from frictionless import Detector, Dialect, Schema
 from frictionless.resources import TableResource
 
 BASEURL = "https://raw.githubusercontent.com/frictionlessdata/frictionless-py/master/%s"
@@ -67,6 +67,36 @@ def test_resource_stats_fields():
         resource.open()
         resource.read_rows()
         assert resource.stats.fields == 17
+
+
+@pytest.mark.parametrize("schema_sync", [True, False])
+@pytest.mark.parametrize("field_names", [["id"], ["id", "name", "missing"]])
+def test_resource_stats_fields_with_partial_schema(schema_sync, field_names):
+    descriptor = {
+        "fields": [
+            {"name": name, "type": "string", "constraints": {"required": True}}
+            for name in field_names
+        ]
+    }
+    if not schema_sync:
+        descriptor["fieldsMatch"] = "partial"
+    resource = TableResource(
+        data=[["id", "name"], ["1", "Alice"]],
+        schema=Schema.from_descriptor(descriptor),
+        detector=Detector(schema_sync=schema_sync),
+    )
+
+    report = resource.validate()
+
+    assert report.tasks[0].stats["fields"] == 2
+    assert resource.schema.field_names == field_names
+    assert report.valid == ("missing" not in field_names)
+
+
+def test_resource_stats_fields_without_header():
+    with TableResource(data=[[1, 2]], dialect=Dialect(header=False)) as resource:
+        resource.read_rows()
+        assert resource.stats.fields == 2
 
 
 @pytest.mark.vcr
