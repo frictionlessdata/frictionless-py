@@ -617,7 +617,8 @@ class Resource(Metadata, metaclass=Factory):  # type: ignore
             checklist: a Checklist object
             name: limit validation to one resource (if applicable)
             on_row: callbacke for every row
-            paraller: allow parallel validation (multiprocessing)
+            parallel: accepted for API compatibility; resource validation itself
+                is not split across multiple processes
             limit_rows: limit amount of rows to this number
             limit_errors: limit amount of errors to this number
 

@@ -176,6 +176,11 @@ print(report)
 
 As we can see, the result is in a similar format to what we have already seen, and shows errors as we expected: we have one invalid resource and one valid resource.
 
+> Package validation can use multiprocessing if the `parallel` flag is provided. This runs
+> independent resources in the package concurrently; it does not split validation of a single
+> file/resource across multiple processes. Parallel execution is also disabled when foreign keys
+> are used, because those checks can depend on multiple resources.
+
 ## Validating an Inquiry
 
 > The Inquiry is an advanced concept mostly used by software integrators. For example, under the hood, Frictionless Framework uses inquiries to implement client-server validation within the built-in API. Please skip this section if this information feels unnecessary for you.
@@ -208,7 +213,9 @@ print(report)
 
 At first sight, it might not be clear why such a construct exists, but when your validation workflow gets complex, the Inquiry can provide a lot of flexibility and power.
 
-> The Inquiry will use multiprocessing if there is the `parallel` flag provided. It might speed up your validation dramatically especially on a 4+ cores processor.
+> The Inquiry will use multiprocessing if there is the `parallel` flag provided. This runs
+> independent inquiry tasks concurrently; it does not split validation of a single file/resource
+> across multiple processes.
 
 ## Validation Report
 
