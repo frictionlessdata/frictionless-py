@@ -2,7 +2,7 @@
 
 Here described only the breaking and most significant changes. The full changelog and documentation for all released versions could be found in nicely formatted [commit history](https://github.com/frictionlessdata/frictionless-py/commits/main).
 
-## v5.20.1
+## v5.21.0
 
 - feat: Data Package v2, support `exclusiveMinimum`, `exclusiveMaximum` 
   properties 
