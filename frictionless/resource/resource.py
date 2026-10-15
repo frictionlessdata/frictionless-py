@@ -13,6 +13,7 @@ from ..detector import Detector
 from ..dialect import Control, Dialect
 from ..exception import FrictionlessException
 from ..metadata import Metadata, ValidationContext
+from ..metadata.names import validate_name
 from ..platform import platform
 from ..report import Report
 from ..schema import Schema
@@ -752,7 +753,8 @@ class Resource(Metadata, metaclass=Factory):  # type: ignore
         "type": "object",
         "required": ["name"],  # TODO: add "type" in v6
         "properties": {
-            "name": {"type": "string", "pattern": settings.NAME_PATTERN},
+            # The v1 pattern of "name" is checked in `metadata_validate` (dropped in v2)
+            "name": {"type": "string"},
             "type": {"type": "string", "pattern": settings.TYPE_PATTERN},
             "title": {"type": "string"},
             "description": {"type": "string"},
@@ -908,6 +910,18 @@ class Resource(Metadata, metaclass=Factory):  # type: ignore
         )
         if metadata_errors:
             yield from metadata_errors
+            return
+
+        # Name version gate
+        # The version is the one imposed top-down by an ancestor's `$schema`, or
+        # this resource's own `$schema` otherwise; `None` (undeclared) stays lenient.
+        # The profile above ensures that "name" is present and is a string.
+        version = cls.effective_datapackage_version(
+            descriptor, context.datapackage_version
+        )
+        note = validate_name(descriptor["name"], version)
+        if note:
+            yield errors.ResourceError(note=note)
             return
 
         # Security
