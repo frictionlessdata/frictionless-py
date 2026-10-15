@@ -914,11 +914,12 @@ class Metadata:
         An ancestor's resolved version wins (a descendant cannot escape it,
         whatever `$schema` it declares); otherwise the descriptor's own
         `$schema` sets the version. An absent `$schema` resolves to an
-        explicit "v1" (as mandated by the spec) — a legacy `profile` is a
-        v1-only property, so a descriptor using it is explicitly v1 too;
-        a custom `$schema` URL resolves to "unknown" (its version is known
-        to nobody but its author, so version gates accept a superset of v1
-        and v2).
+        explicit "v1" (as mandated by the spec): only `$schema` plays —
+        a legacy `profile` coexisting with a `$schema` is ignored, so
+        declaring both behaves exactly as `$schema` alone (full backward
+        compatibility). A custom `$schema` URL resolves to "unknown" (its
+        version is known to nobody but its author, so version gates accept
+        a superset of v1 and v2).
         """
         if inherited is not None:
             return inherited

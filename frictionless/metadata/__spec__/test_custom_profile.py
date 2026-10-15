@@ -3,8 +3,10 @@ from frictionless import Package, Resource, Schema
 # A custom `$schema` URL — the v2 way to point at a profile — makes the Data
 # Package version known to nobody but the profile's author: it resolves to
 # "unknown", and version gates then accept a superset of v1 and v2 (instead
-# of guessing a standard version). A legacy `profile` is a v1-only property:
-# a descriptor using it is explicitly v1, whatever the profile value.
+# of guessing a standard version). Only `$schema` plays in the resolution:
+# a legacy `profile` is ignored when a `$schema` is declared (full backward
+# compatibility), and resolves to v1 without one (absent `$schema`:
+# explicit v1).
 
 CUSTOM = "https://example.com/my-profile.json"
 
@@ -19,8 +21,8 @@ def test_custom_profile_resolves_to_unknown_version():
     # a `$schema` pointing outside the datapackage.org profiles
     assert Package.effective_datapackage_version({"$schema": CUSTOM}, None) == "unknown"
 
-    # a legacy `profile` (standards v1) is a v1-only property: any value —
-    # including a custom profile URL — keeps the descriptor explicitly v1
+    # a legacy `profile` (standards v1) without a `$schema` resolves to
+    # v1 (absent `$schema`: explicit v1), whatever the profile value
     assert Package.effective_datapackage_version({"profile": "data-package"}, None) == "v1"
     assert (
         Package.effective_datapackage_version({"profile": "tabular-data-package"}, None)
@@ -43,6 +45,22 @@ def test_custom_profile_resolves_to_unknown_version():
     assert Package.effective_datapackage_version({"$schema": V1_PROFILE}, None) == "v1"
     assert Package.effective_datapackage_version({"$schema": V2_PROFILE}, None) == "v2"
     assert Package.effective_datapackage_version({}, None) == "v1"
+
+    # a legacy `profile` coexisting with a `$schema` is ignored: the
+    # version is the `$schema`'s (declaring both behaves exactly as
+    # `$schema` alone — full backward compatibility)
+    assert (
+        Package.effective_datapackage_version(
+            {"$schema": V2_PROFILE, "profile": "data-package"}, None
+        )
+        == "v2"
+    )
+    assert (
+        Package.effective_datapackage_version(
+            {"$schema": V1_PROFILE, "profile": "data-package"}, None
+        )
+        == "v1"
+    )
 
 
 def test_unknown_version_is_inherited_top_down():
