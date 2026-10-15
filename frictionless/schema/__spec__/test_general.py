@@ -362,6 +362,64 @@ def test_schema_invalid_example():
     assert reasons[0].note == 'example value "bad" for field "name" is not valid'
 
 
+@pytest.mark.parametrize(
+    "field_type, example",
+    [
+        ("string", 0),
+        ("string", False),
+        ("integer", False),
+        ("number", False),
+        ("integer", []),
+        ("string", {}),
+        ("object", []),
+        ("array", {}),
+    ],
+)
+def test_schema_invalid_falsy_example(field_type, example):
+    with pytest.raises(FrictionlessException) as excinfo:
+        Schema(
+            {
+                "fields": [
+                    {"name": "sample", "type": field_type, "example": example},
+                ]
+            }
+        )
+    assert excinfo.value.error.type == "schema-error"
+    assert excinfo.value.reasons[0].type == "field-error"
+    assert excinfo.value.reasons[0].note == (
+        f'example value "{example}" for field "sample" is not valid'
+    )
+
+
+@pytest.mark.parametrize(
+    "field_type, example",
+    [
+        ("integer", 0),
+        ("number", 0),
+        ("number", 0.0),
+        ("boolean", False),
+        ("array", []),
+        ("object", {}),
+        ("string", ""),
+        ("string", None),
+    ],
+)
+def test_schema_valid_falsy_example(field_type, example):
+    schema = Schema(
+        {
+            "fields": [
+                {"name": "sample", "type": field_type, "example": example},
+            ]
+        }
+    )
+    assert schema.get_field("sample").type == field_type
+
+
+def test_schema_without_example():
+    schema = Schema({"fields": [{"name": "sample", "type": "string"}]})
+    assert "example" not in schema.get_field("sample").to_descriptor()
+
+
 @pytest.mark.parametrize("create_descriptor", [(False,), (True,)])
 def test_schema_standard_specs_properties(create_descriptor):
     helpers = import_module("frictionless.helpers")
