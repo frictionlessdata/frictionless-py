@@ -67,6 +67,16 @@ def test_xlsx_parser_format_error_sheet_by_index_not_existent():
     assert error.note == 'Excel document "data/sheet2.xlsx" does not have a sheet "3"'
 
 
+def test_xlsx_parser_missing_extra_dependency(monkeypatch: pytest.MonkeyPatch):
+    # https://github.com/frictionlessdata/frictionless-py/issues/1756
+    monkeypatch.setitem(sys.modules, "openpyxl", None)
+    monkeypatch.delitem(platform.__dict__, "openpyxl", raising=False)
+    resource = TableResource(path="data/table.xlsx")
+    with pytest.raises(FrictionlessException) as excinfo:
+        resource.open()
+    assert excinfo.value.error.note == 'Please install "frictionless[excel]"'
+
+
 def test_xlsx_parser_sheet_by_name():
     path = "data/sheet2.xlsx"
     control = formats.ExcelControl(sheet="Sheet2")
