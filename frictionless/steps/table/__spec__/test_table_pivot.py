@@ -24,3 +24,33 @@ def test_step_table_pivot_issue_1220():
         {"region": "east", "boy": 33, "girl": 29},
         {"region": "west", "boy": 35, "girl": 23},
     ]
+
+
+def test_step_table_pivot_string_aggfun_issue_1764():
+    source = TableResource(path="data/transform-pivot.csv")
+    pipeline = Pipeline.from_descriptor(
+        {
+            "steps": [
+                {"type": "table-normalize"},
+                {
+                    "type": "table-pivot",
+                    "f1": "region",
+                    "f2": "gender",
+                    "f3": "units",
+                    "aggfun": "sum",
+                },
+            ]
+        }
+    )
+    target = source.transform(pipeline)
+    assert target.schema.to_descriptor() == {
+        "fields": [
+            {"name": "region", "type": "string"},
+            {"name": "boy", "type": "integer"},
+            {"name": "girl", "type": "integer"},
+        ]
+    }
+    assert target.read_rows() == [
+        {"region": "east", "boy": 33, "girl": 29},
+        {"region": "west", "boy": 35, "girl": 23},
+    ]
