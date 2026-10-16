@@ -85,7 +85,7 @@ class field_add(Step):
         else:
             if self.formula:
                 function = lambda row: simpleeval.simple_eval(self.formula, names=row)  # type: ignore
-            value = value or function  # type: ignore
+            value = function if value is None else value  # type: ignore
             resource.data = table.addfield(self.name, value=value, index=index)  # type: ignore
 
     # Metadata
