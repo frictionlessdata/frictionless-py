@@ -15,6 +15,7 @@ from frictionless import Field
         ("default", "2000-13-20", None),
         ("default", "2000-13", None),
         ("default", "2000-0", None),
+        ("default", "96777-8", None),
         ("default", "13", None),
         ("default", -10, None),
         ("default", 20, None),

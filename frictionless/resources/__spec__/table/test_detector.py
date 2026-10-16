@@ -30,6 +30,17 @@ def test_resource_detector_field_type():
     ]
 
 
+def test_resource_detector_does_not_infer_unpadded_yearmonth_issue_1714():
+    resource = TableResource(data=[["screening_code"], ["96777-8"]])
+
+    resource.infer()
+
+    assert resource.schema.to_descriptor() == {
+        "fields": [{"name": "screening_code", "type": "string"}]
+    }
+    assert resource.read_rows() == [{"screening_code": "96777-8"}]
+
+
 def test_resource_detector_field_names():
     detector = Detector(field_names=["new1", "new2"])
     resource = TableResource(path="data/table.csv", detector=detector)
