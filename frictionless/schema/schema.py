@@ -41,6 +41,17 @@ class Schema(Metadata, metaclass=Factory):
     See `Metadata._schema_profile`.
     """
 
+    _datapackage_version: Optional[types.IResolvedStandards] = attrs.field(
+        default=None, alias="datapackage_version"
+    )
+    """
+    Data Package standard version resolved at import time: the one imposed
+    by an ancestor (top-down inheritance), or this schema's own `$schema`
+    ("unknown" when a custom profile URL is involved). Private (not
+    exported): a detached validation keeps the tree semantics. See
+    `Metadata.effective_datapackage_version`.
+    """
+
     # TODO: why it's optional??
     name: Optional[str] = None
     """
@@ -295,6 +306,10 @@ class Schema(Metadata, metaclass=Factory):
     # Metadata
 
     metadata_type = "schema"
+    metadata_v2_profile = "https://datapackage.org/profiles/2.0/tableschema.json"
+    """
+    Canonical Data Package v2 profile URL (used by `upgrade`).
+    """
     metadata_Error = errors.SchemaError
     metadata_profile = {
         "type": "object",
@@ -387,7 +402,9 @@ class Schema(Metadata, metaclass=Factory):
         context: Optional[ValidationContext] = None,
     ):
         context = context or ValidationContext()
-        metadata_errors = list(super().metadata_validate(descriptor, context=context))
+        metadata_errors = list(
+            super().metadata_validate(descriptor, context=context)
+        )
         if metadata_errors:
             yield from metadata_errors
             return
@@ -415,11 +432,10 @@ class Schema(Metadata, metaclass=Factory):
             yield errors.SchemaError(note=note)
 
         # Missing Values version gate
-        # The version is the one imposed top-down by an ancestor's `$schema`, or
-        # this schema's own `$schema` otherwise; `None` (undeclared) stays lenient.
-        version = cls.effective_datapackage_version(
-            descriptor, context.datapackage_version
-        )
+        # The version is the one imposed top-down by an ancestor (whatever
+        # `$schema` this schema declares), or resolved from this schema's own
+        # `$schema` otherwise (absent: explicit "v1").
+        version = cls.effective_datapackage_version(descriptor, context.datapackage_version)
         for note in missing_values_module.version_gate_notes(missing_values, version):
             yield errors.SchemaError(note=note)
 

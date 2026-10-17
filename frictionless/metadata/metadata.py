@@ -78,6 +78,14 @@ class Metadata:
     `$schema` is not a valid Python identifier.
     """
 
+    metadata_v2_profile = None
+    """
+    Canonical Data Package v2 profile URL of this class, used by `upgrade` to
+    set the root `$schema` (e.g. "https://datapackage.org/profiles/2.0/
+    datapackage.json" for a package). `None` when the class has no versioned
+    profile (e.g. a field).
+    """
+
     def __new__(cls, *args: Any, **kwargs: Any):
         obj = super().__new__(cls)
         obj.custom = obj.custom.copy()
@@ -239,8 +247,13 @@ class Metadata:
 
         If `allow_invalid = True`, the class creation will try to continue
         despite the descriptor having errors.
+
+        The optional "datapackage_version" option is the Data Package standard
+        version imposed by an ancestor (top-down inheritance); it seeds the
+        validation and the import, overriding the descriptor's own `$schema`.
         """
         descriptor_path = None
+        inherited_version = options.pop("datapackage_version", None)
 
         if isinstance(descriptor, str):
             descriptor_path = descriptor
@@ -268,20 +281,27 @@ class Metadata:
         Error = Class.metadata_Error or platform.frictionless_errors.MetadataError
 
         Class.metadata_transform(descriptor)
-        errors = list(Class.metadata_validate(descriptor))
+        context = ValidationContext(datapackage_version=inherited_version)
+        errors = list(Class.metadata_validate(descriptor, context=context))
 
         if not allow_invalid:
             if errors:
                 error = Error(note="descriptor is not valid")
                 raise FrictionlessException(error, reasons=errors)
 
-        metadata = Class.metadata_import(descriptor, **helpers.remove_non_values(options))
+        metadata = Class.metadata_import(
+            descriptor,
+            datapackage_version=inherited_version,
+            **helpers.remove_non_values(options),
+        )
         if descriptor_path:
             metadata.metadata_descriptor_path = descriptor_path
             metadata.metadata_descriptor_initial = metadata.to_descriptor()
         return metadata  # type: ignore
 
-    def to_descriptor(self, *, validate: bool = False) -> types.IDescriptor:
+    def to_descriptor(
+        self, *, validate: bool = False, upgrade: bool = False
+    ) -> types.IDescriptor:
         """Export the instance as a descriptor.
 
         The descriptor is a canonical form of the metadata: it preserves all
@@ -292,11 +312,25 @@ class Metadata:
         descriptor.
 
         If `validate = True`, the descriptor will additionally be validated.
+
+        If `upgrade = True`, the descriptor (and its children) is first
+        transformed into the Data Package v2 form — see `upgrade`.
         """
         descriptor = self.metadata_export()
+        if upgrade:
+            descriptor = type(self)._upgrade_descriptor(descriptor)
         if validate:
             Error = self.metadata_Error or platform.frictionless_errors.MetadataError
-            errors = list(self.metadata_validate(descriptor))
+            # Seed the context with the version inherited at import time (if
+            # any): a detached instance keeps the semantics of its tree.
+            # An upgraded descriptor is self-contained (its version is
+            # declared at the root): it is validated positionally
+            context = ValidationContext(
+                datapackage_version=None
+                if upgrade
+                else getattr(self, "_datapackage_version", None)
+            )
+            errors = list(self.metadata_validate(descriptor, context=context))
             if errors:
                 error = Error(note="descriptor is not valid")
                 raise FrictionlessException(error, reasons=errors)
@@ -311,8 +345,34 @@ class Metadata:
         return descriptor
 
     def to_copy(self, **options: Any) -> Self:
-        """Create a copy of the metadata"""
+        """Create a copy of the metadata
+
+        The copy keeps the Data Package version the instance inherited from
+        its ancestors (if any), so that a detached copy validates like it did
+        within its tree.
+        """
+        options.setdefault(
+            "datapackage_version", getattr(self, "_datapackage_version", None)
+        )
         return type(self).from_descriptor(self.to_descriptor(), **options)
+
+    def upgrade(self) -> Self:
+        """Upgrade this metadata to the Data Package v2 standard
+
+        Returns a new instance (this one is left untouched) whose descriptor
+        tree — this object and its children — is transformed into the v2
+        form: the root gets `$schema` (as its first property) set to the
+        canonical v2 profile of the class, the legacy `profile` property is
+        migrated (a custom URL is retained in `$schema`; a
+        "tabular-data-resource" profile becomes "type": "table"), and
+        `$schema` never appears on children (it is removed: a `$schema` may
+        be provided at the root only).
+
+        A `$schema` or `profile` pointing to a custom profile URL is kept
+        as-is: an automatic upgrade of a custom profile is not possible (its
+        upgrade path is up to its author).
+        """
+        return type(self).from_descriptor(self.to_descriptor(upgrade=True))
 
     def to_dict(self) -> types.IDescriptor:
         """Export metadata as dictionary (alias for "to_descriptor")"""
@@ -645,11 +705,13 @@ class Metadata:
         otherwise it defaults to the class profile.
 
         "context" carries the information shared down the recursion, such as
-        the Data Package standard version imposed by an ancestor's `$schema`
-        (top-down inheritance). When no version is imposed, the descriptor may
-        declare its own `$schema`; the resulting version is propagated to all
-        children. Subclasses read it (via `effective_datapackage_version`)
-        to gate version-specific properties.
+        the Data Package standard version resolved from an ancestor's `$schema`
+        (top-down inheritance). An absent `$schema` resolves to an explicit
+        "v1" (as mandated by the spec), a custom profile URL to "unknown"
+        (gates accept a superset of v1 and v2); the resulting version is
+        imposed on all children, whatever `$schema` they declare themselves.
+        Subclasses read it (via `effective_datapackage_version`) to gate
+        version-specific properties.
         """
         context = context or ValidationContext()
         Error = error_class
@@ -738,44 +800,137 @@ class Metadata:
     @staticmethod
     def _resolve_datapackage_version(
         schema_profile: Optional[str],
-    ) -> types.IStandards:
-        """Resolve the Data Package standard version from a `$schema` value.
+    ) -> types.IResolvedStandards:
+        """Resolve the Data Package standard version from a profile URL.
 
-        - a missing `$schema` defaults to "v1" (as mandated by the spec);
         - a standard datapackage.org profile uses the version from its URL;
-        - any custom profile falls back to the latest known standard.
+        - any custom profile URL resolves to "unknown": the version is known
+          to nobody but the profile's author, so version gates accept a
+          superset of v1 and v2.
         """
         if not schema_profile:
             return "v1"
         url = urlparse(schema_profile)
-        if url.netloc == "datapackage.org":
+        if Metadata._is_standard_profile(schema_profile):
             match = re.search(r"/profiles/(\d+)\.\d+/", url.path)
             if match:
                 if match.group(1) == "1":
                     return "v1"
                 if match.group(1) == "2":
                     return "v2"
-        return settings.DEFAULT_STANDARDS
+        return "unknown"
+
+    @staticmethod
+    def _is_standard_profile(schema_profile: str) -> bool:
+        """Whether a `$schema` value is a datapackage.org standard profile
+        URL (i.e. a profile this library knows how to upgrade)"""
+        url = urlparse(schema_profile)
+        return url.netloc == "datapackage.org" and re.search(
+            r"/profiles/\d+\.\d+/", url.path
+        ) is not None
+
+    @classmethod
+    def _upgrade_descriptor(
+        cls, descriptor: types.IDescriptor, *, root: bool = True
+    ) -> types.IDescriptor:
+        """Transform a descriptor tree into the Data Package v2 form
+
+        Root (only the root can declare `$schema`):
+        - the legacy `profile` property is migrated: a custom profile URL is
+          retained in `$schema` instead of the canonical v2 URL;
+          "tabular-data-resource" becomes "type": "table"; other values
+          (e.g. "data-package"/"data-resource") are dropped;
+        - a `$schema` pointing to a standard profile is replaced by the
+          canonical v2 profile of the class; a custom `$schema` URL is kept
+          as-is (an automatic upgrade of a custom profile is not possible);
+        - otherwise `$schema` is set (as the first property) to the canonical
+          v2 profile of the class.
+
+        Children: `$schema` is removed (root-only) and the same legacy
+        `profile` handling is applied (a custom profile URL is kept in
+        place: it cannot be expressed as a child `$schema`).
+        """
+        descriptor = dict(descriptor)
+
+        # Children first: the same transformation as a root, but `$schema`
+        # is root-only (removed, never added)
+        profile = cls.metadata_ensure_profile()
+        for name in profile.get("properties", {}):
+            if name in ("$schema", "profile"):
+                continue
+            value = descriptor.get(name)
+            if not isinstance(value, (dict, list)):
+                continue
+            ItemClass = cls.metadata_select_property_class(name)
+            if not ItemClass:
+                continue
+            if isinstance(value, list):
+                for ix, item in enumerate(value):  # type: ignore
+                    if isinstance(item, dict):
+                        TypedItemClass = ItemClass.metadata_select_class(
+                            item.get("type")  # type: ignore
+                        )
+                        value[ix] = TypedItemClass._upgrade_descriptor(  # type: ignore
+                            item, root=False  # type: ignore
+                        )
+            else:
+                descriptor[name] = ItemClass._upgrade_descriptor(value, root=False)  # type: ignore
+
+        # Legacy `profile` property (standards v1)
+        profile_url = None
+        profile_value = descriptor.pop("profile", None)
+        if profile_value == settings.DEFAULT_TABULAR_RESOURCE_PROFILE:
+            descriptor["type"] = "table"
+        elif profile_value and urlparse(profile_value).netloc:
+            # custom profile URL: retained (see the docstring)
+            profile_url = profile_value
+
+        if not root:
+            descriptor.pop("$schema", None)  # a `$schema` is root-only
+            if profile_url:
+                descriptor["profile"] = profile_url
+            return descriptor
+
+        # `$schema` (first property) — only for the classes with a versioned
+        # profile (a field, for instance, has nothing to declare)
+        if cls.metadata_v2_profile:
+            schema_profile = descriptor.pop("$schema", None)
+            if profile_url:
+                schema_profile = profile_url
+            elif not schema_profile or cls._is_standard_profile(schema_profile):
+                schema_profile = cls.metadata_v2_profile
+            # else: a custom `$schema` URL is kept (see the docstring)
+            descriptor = {"$schema": schema_profile, **descriptor}
+        return descriptor
 
     @classmethod
     def effective_datapackage_version(
         cls,
         descriptor: types.IDescriptor,
-        inherited: Optional[types.IStandards],
-    ) -> Optional[types.IStandards]:
+        inherited: Optional[types.IResolvedStandards],
+    ) -> types.IResolvedStandards:
         """Version imposed top-down on this descriptor and its descendants.
 
-        An ancestor's `$schema` wins (a descendant cannot escape it); otherwise
-        the descriptor's own `$schema`, if any, sets the version. Returns `None`
-        when no `$schema` is declared anywhere in the chain (undeclared version,
-        which validation treats leniently).
+        An ancestor's resolved version wins (a descendant cannot escape it,
+        whatever `$schema` it declares); otherwise the descriptor's own
+        `$schema` sets the version. An absent `$schema` resolves to an
+        explicit "v1" (as mandated by the spec): only `$schema` plays —
+        a legacy `profile` coexisting with a `$schema` is ignored, so
+        declaring both behaves exactly as `$schema` alone (full backward
+        compatibility). A custom `$schema` URL resolves to "unknown" (its
+        version is known to nobody but its author, so version gates accept
+        a superset of v1 and v2).
         """
         if inherited is not None:
             return inherited
         schema_profile = descriptor.get("$schema")
         if schema_profile:
             return cls._resolve_datapackage_version(schema_profile)
-        return None
+        # An absent `$schema` is an explicit "v1" (as mandated by the spec)
+        # for the classes that can declare one. A field never declares
+        # `$schema`: a standalone field carries no version of its own and
+        # only inherits one from its ancestors ("unknown": lax).
+        return "v1" if cls._accepts_schema_profile() else "unknown"
 
     @classmethod
     def metadata_import(
@@ -788,10 +943,19 @@ class Metadata:
         """Deserialization of a descriptor to a class instance
 
         The deserialization and serialization must be lossless.
+
+        The optional "datapackage_version" option is the version imposed by
+        an ancestor (top-down inheritance); by default the version is
+        resolved positionally from this descriptor. It is threaded to the
+        children like in `metadata_validate`, and stored by the classes
+        declaring the `_datapackage_version` field so that a detached
+        validation keeps the tree semantics.
         """
         merged_options = {}
         profile = cls.metadata_ensure_profile()
         basepath = options.pop("basepath", None)
+        inherited_version = options.pop("datapackage_version", None)
+        version = inherited_version or cls.effective_datapackage_version(descriptor, None)
 
         # Special handling of `$schema`
         # Only the subclasses declaring the `schema_profile` field
@@ -815,17 +979,29 @@ class Metadata:
                         if isinstance(item, dict):
                             type = item.get("type")  # type: ignore
                             ItemClass = Class.metadata_select_class(type)  # type: ignore
-                            value[ix] = ItemClass.metadata_import(item, basepath=basepath)  # type: ignore
+                            value[ix] = ItemClass.metadata_import(
+                                item,  # type: ignore
+                                basepath=basepath,
+                                datapackage_version=version,
+                            )
                         elif isinstance(item, str):
-                            value[ix] = Class.from_descriptor(item, basepath=basepath)
+                            value[ix] = Class.from_descriptor(
+                                item, basepath=basepath, datapackage_version=version
+                            )
                 elif isinstance(value, dict):
-                    value = Class.metadata_import(value, basepath=basepath)  # type: ignore
+                    value = Class.metadata_import(
+                        value,  # type: ignore
+                        basepath=basepath,
+                        datapackage_version=version,
+                    )
             merged_options.setdefault(stringcase.snakecase(name), value)  # type: ignore
         merged_options.update(options)  # type: ignore
+        if attrs.has(cls) and "_datapackage_version" in attrs.fields_dict(cls):
+            merged_options["datapackage_version"] = version
         if with_basepath:
             merged_options["basepath"] = basepath
         metadata = cls(**merged_options)
-        metadata.custom = descriptor
+        metadata.custom = descriptor  # type: ignore
         return metadata
 
     def metadata_export(self, *, exclude: List[str] = []) -> types.IDescriptor:
@@ -856,8 +1032,9 @@ class Metadata:
             descriptor[name] = value
 
         # Special handling of `$schema`
+        # The spec recommends `$schema` as the first property
         if self._schema_profile is not None:
-            descriptor["$schema"] = self._schema_profile
+            descriptor = {"$schema": self._schema_profile, **descriptor}
 
         descriptor.update(self.custom)  # type: ignore
         return descriptor  # type: ignore

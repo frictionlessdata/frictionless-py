@@ -89,8 +89,11 @@ def test_schema_read_cells_null_values():
 
 
 def test_schema_read_cells_object_missing_values():
+    # The object form being a v2 addition, the descriptor declares a v2
+    # `$schema` (an absent `$schema` is an explicit v1, which gates it out)
     schema = Schema.from_descriptor(
         {
+            "$schema": "https://datapackage.org/profiles/2.0/tableschema.json",
             "fields": [
                 {"name": "name", "type": "string"},
                 {"name": "age", "type": "integer"},

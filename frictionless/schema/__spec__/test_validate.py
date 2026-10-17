@@ -35,6 +35,9 @@ def test_validate_required_invalid():
 # Object entries must have a unique value and an optional unique label;
 # absent labels do not collide with each other. Plain string entries keep
 # the lax v1 behavior (duplicates allowed).
+#
+# The object form being a v2 addition, these descriptors declare a v2 `$schema`
+# (an absent `$schema` is an explicit v1, which gates the object form out).
 
 MISSING_VALUES_UNIQUENESS_CASES = [
     ("valid-strings", ["", "NA"], []),
@@ -73,7 +76,11 @@ MISSING_VALUES_UNIQUENESS_CASES = [
 )
 def test_validate_missing_values_uniqueness(name, source, expected):
     report = Schema.validate_descriptor(
-        {"fields": [{"name": "name", "type": "string"}], "missingValues": source}
+        {
+            "$schema": V2_PROFILE,
+            "fields": [{"name": "name", "type": "string"}],
+            "missingValues": source,
+        }
     )
     assert report.flatten(["type", "note"]) == expected
 
@@ -81,6 +88,7 @@ def test_validate_missing_values_uniqueness(name, source, expected):
 def test_validate_field_missing_values_uniqueness():
     report = Schema.validate_descriptor(
         {
+            "$schema": V2_PROFILE,
             "fields": [
                 {
                     "name": "name",
@@ -90,7 +98,7 @@ def test_validate_field_missing_values_uniqueness():
                         {"value": "-99", "label": "OMITTED"},
                     ],
                 }
-            ]
+            ],
         }
     )
     assert report.flatten(["type", "note"]) == [
@@ -100,10 +108,10 @@ def test_validate_field_missing_values_uniqueness():
 
 # Missing values (version gate)
 #
-# The object form `{value, label?}` is a datapackage v2 addition.
-# It is rejected only under an explicitly declared v1 `$schema`.
-# An absent `$schema` (undeclared version) keeps accepting the v1 union v2
-# superset, and a custom (unrecognized) profile is treated as v2 by default.
+# The object form `{value, label?}` is a datapackage v2 addition, rejected
+# under v1 — which is also the version of an absent `$schema`. A custom
+# (unrecognized) profile resolves to an "unknown" version: gates accept a
+# superset of v1 and v2.
 
 V1_PROFILE = "https://datapackage.org/profiles/1.0/tableschema.json"
 V2_PROFILE = "https://datapackage.org/profiles/2.0/tableschema.json"
@@ -122,7 +130,13 @@ MISSING_VALUES_VERSION_GATE_CASES = [
     ("v1-strings-valid", V1_PROFILE, ["", "NA"], []),
     ("v2-objects-valid", V2_PROFILE, OBJECT_MISSING_VALUES, []),
     ("custom-objects-valid", CUSTOM_PROFILE, OBJECT_MISSING_VALUES, []),
-    ("no-schema-objects-valid", None, OBJECT_MISSING_VALUES, []),
+    # an absent `$schema` is an explicit v1
+    (
+        "no-schema-objects-rejected",
+        None,
+        OBJECT_MISSING_VALUES,
+        [["schema-error", GATE_NOTE]],
+    ),
 ]
 
 
@@ -142,6 +156,54 @@ def test_validate_missing_values_version_gate(name, schema, source, expected):
     assert report.flatten(["type", "note"]) == expected
 
 
+# Exclusive bounds (version gate)
+#
+# `exclusiveMinimum`/`exclusiveMaximum` are a datapackage v2 addition,
+# rejected under v1 — which is also the version of an absent `$schema`. A
+# custom (unrecognized) profile resolves to an "unknown" version: gates
+# accept a superset of v1 and v2.
+
+EXCLUSIVE_BOUNDS = {"exclusiveMinimum": 1, "exclusiveMaximum": 10}
+EXCLUSIVE_GATE_NOTES = [
+    'constraint "exclusiveMinimum" requires datapackage v2',
+    'constraint "exclusiveMaximum" requires datapackage v2',
+]
+
+EXCLUSIVE_BOUNDS_VERSION_GATE_CASES = [
+    (
+        "v1-rejected",
+        V1_PROFILE,
+        EXCLUSIVE_BOUNDS,
+        [["field-error", note] for note in EXCLUSIVE_GATE_NOTES],
+    ),
+    ("v1-absent-valid", V1_PROFILE, {}, []),
+    ("v2-valid", V2_PROFILE, EXCLUSIVE_BOUNDS, []),
+    ("custom-profile-valid", CUSTOM_PROFILE, EXCLUSIVE_BOUNDS, []),
+    # an absent `$schema` is an explicit v1
+    (
+        "no-schema-rejected",
+        None,
+        EXCLUSIVE_BOUNDS,
+        [["field-error", note] for note in EXCLUSIVE_GATE_NOTES],
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    "name, schema, constraints, expected",
+    EXCLUSIVE_BOUNDS_VERSION_GATE_CASES,
+    ids=[case[0] for case in EXCLUSIVE_BOUNDS_VERSION_GATE_CASES],
+)
+def test_validate_exclusive_bounds_version_gate(name, schema, constraints, expected):
+    descriptor = {
+        "fields": [{"name": "name", "type": "integer", "constraints": constraints}],
+    }
+    if schema is not None:
+        descriptor["$schema"] = schema
+    report = Schema.validate_descriptor(descriptor)
+    assert report.flatten(["type", "note"]) == expected
+
+
 # Missing values version gate — inheritance
 #
 # A `$schema` imposes its version on all descendants (top-down): a schema's
@@ -150,7 +212,8 @@ def test_validate_missing_values_version_gate(name, schema, source, expected):
 MISSING_VALUES_FIELD_INHERITS_SCHEMA_CASES = [
     ("v1-schema-rejects-field-objects", V1_PROFILE, [["field-error", GATE_NOTE]]),
     ("v2-schema-accepts-field-objects", V2_PROFILE, []),
-    ("no-schema-accepts-field-objects", None, []),
+    # an absent `$schema` is an explicit v1
+    ("no-schema-rejects-field-objects", None, [["field-error", GATE_NOTE]]),
 ]
 
 
