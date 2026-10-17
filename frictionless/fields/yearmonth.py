@@ -28,18 +28,20 @@ class YearmonthField(Field):
             if isinstance(cell, (tuple, list)):
                 if len(cell) != 2:  # type: ignore
                     return None
+                if not all(isinstance(value, int) for value in cell):
+                    return None
                 cell = yearmonth(year=cell[0], month=cell[1])  # type: ignore
             elif isinstance(cell, str):
                 try:
                     year, month = cell.split("-")
                     year = int(year)
                     month = int(month)
-                    if month < 1 or month > 12:
-                        return None
                     cell = yearmonth(year, month)
                 except Exception:
                     return None
             else:
+                return None
+            if cell.month < 1 or cell.month > 12:
                 return None
             return cell
 
