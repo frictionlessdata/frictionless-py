@@ -15,6 +15,10 @@ class DurationField(Field):
     builtin = True
     supported_constraints = [
         "required",
+        "minimum",
+        "maximum",
+        "exclusiveMinimum",
+        "exclusiveMaximum",
         "enum",
     ]
 
