@@ -31,7 +31,8 @@ class field_update(Step):
 
     value: Optional[Any] = None
     """
-    Cell value to set for the field.
+    Cell value to set for the field. Falsy values other than None are supported.
+    None leaves the existing values unchanged unless a formula or function is provided.
     """
 
     formula: Optional[Any] = None
@@ -70,8 +71,11 @@ class field_update(Step):
             pass_row = True
         if function:
             resource.data = table.convert(self.name, function, pass_row=pass_row)  # type: ignore
-        elif self.value:
-            resource.data = table.update(self.name, self.value)  # type: ignore
+        elif self.value is not None:
+            table = table.update(self.name, self.value)  # type: ignore
+            if new_name:
+                table = table.rename({self.name: new_name})  # type: ignore
+            resource.data = table
         elif new_name:
             resource.data = table.rename({self.name: new_name})  # type: ignore
         if new_name and resource.schema.primary_key:
