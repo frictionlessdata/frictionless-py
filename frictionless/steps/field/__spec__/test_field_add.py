@@ -1,4 +1,6 @@
-from frictionless import Pipeline, steps
+import pytest
+
+from frictionless import Pipeline, Schema, steps
 from frictionless.resources import TableResource
 
 # General
@@ -121,3 +123,93 @@ def test_step_field_add_with_incremental():
         {"number": 2, "id": 2, "name": "france", "population": 66},
         {"number": 3, "id": 3, "name": "spain", "population": 47},
     ]
+
+
+@pytest.mark.parametrize("value", [False, 0, 0.0, "", [], {}, ()])
+def test_step_field_add_with_falsy_value(value):
+    source = TableResource(
+        data=[["id"], [1], [2]],
+        schema=Schema.from_descriptor(
+            {"fields": [{"name": "id", "type": "integer"}], "missingValues": []}
+        ),
+    )
+    target = source.transform(Pipeline(steps=[steps.field_add(name="note", value=value)]))
+    rows = target.read_rows()
+    assert [row["note"] for row in rows] == [value, value]
+    assert all(type(row["note"]) is type(value) for row in rows)
+
+
+@pytest.mark.parametrize("value", [False, 0, "", [], {}, "constant"])
+@pytest.mark.parametrize(
+    "options",
+    [
+        {"function": lambda row: row["id"] * 10},
+        {"formula": "id * 100"},
+        {"formula": "id * 100", "function": lambda row: row["id"] * 10},
+    ],
+)
+def test_step_field_add_value_takes_precedence(value, options):
+    source = TableResource(
+        data=[["id"], [1], [2]],
+        schema=Schema.from_descriptor(
+            {"fields": [{"name": "id", "type": "integer"}], "missingValues": []}
+        ),
+    )
+    target = source.transform(
+        Pipeline(steps=[steps.field_add(name="note", value=value, **options)])
+    )
+    assert [row["note"] for row in target.read_rows()] == [value, value]
+
+
+@pytest.mark.parametrize(
+    "options, expected",
+    [
+        ({}, [None, None]),
+        ({"value": None}, [None, None]),
+        ({"value": None, "function": lambda row: row["id"] * 10}, [10, 20]),
+        ({"value": None, "formula": "id * 100"}, [100, 200]),
+        (
+            {
+                "value": None,
+                "formula": "id * 100",
+                "function": lambda row: row["id"] * 10,
+            },
+            [100, 200],
+        ),
+    ],
+)
+def test_step_field_add_with_none_value(options, expected):
+    source = TableResource(data=[["id"], [1], [2]])
+    target = source.transform(Pipeline(steps=[steps.field_add(name="note", **options)]))
+    assert [row["note"] for row in target.read_rows()] == expected
+
+
+def test_step_field_add_with_false_value_csv_roundtrip(tmp_path):
+    source_path = tmp_path / "source.csv"
+    source_path.write_text("id\n1\n2\n", encoding="utf-8")
+    source = TableResource(path=source_path.name, basepath=str(tmp_path))
+    target = source.transform(
+        Pipeline(
+            steps=[
+                steps.field_add(
+                    name="flag",
+                    value=False,
+                    descriptor={
+                        "type": "boolean",
+                        "trueValues": ["Yes"],
+                        "falseValues": ["No"],
+                        "constraints": {"required": True},
+                    },
+                ),
+            ]
+        )
+    )
+    assert target.validate().valid
+    target_path = tmp_path / "target.csv"
+    target.write(str(target_path))
+    restored = TableResource(
+        path=target_path.name, basepath=str(tmp_path), schema=target.schema
+    )
+    assert restored.validate().valid
+    assert restored.read_rows() == [{"id": 1, "flag": False}, {"id": 2, "flag": False}]
+    assert target_path.read_text(encoding="utf-8") == "id,flag\n1,No\n2,No\n"
