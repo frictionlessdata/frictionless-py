@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import datetime
 import operator
 import re
 from functools import partial
@@ -20,8 +21,10 @@ import attrs
 from .. import errors, settings
 from ..exception import FrictionlessException
 from ..metadata import Metadata, ValidationContext
+from ..platform import platform
 from ..system import system
 from . import missing_values as missing_values_module
+from .duration import compare_duration
 
 if TYPE_CHECKING:
     from ..types import IDescriptor
@@ -294,12 +297,15 @@ class Field(Metadata):
         for note in missing_values_module.version_gate_notes(missing_values, version):
             yield errors.FieldError(note=note)
 
-        # Exclusive bounds version gate
-        # `exclusiveMinimum`/`exclusiveMaximum` are a datapackage v2 addition,
-        # rejected under unambiguous v1 (an "unknown" version, from a
-        # custom profile, accepts the superset).
+        # Bounds version gate
+        # Exclusive bounds, and all duration bounds, are datapackage v2
+        # additions, rejected under unambiguous v1 (an "unknown" version,
+        # from a custom profile, accepts the superset).
         if version == "v1":
-            for name in ("exclusiveMinimum", "exclusiveMaximum"):
+            bounds = ["exclusiveMinimum", "exclusiveMaximum"]
+            if cls.type == "duration":
+                bounds += ["minimum", "maximum"]
+            for name in bounds:
                 if name in descriptor.get("constraints", {}):
                     yield errors.FieldError(
                         note=f'constraint "{name}" requires datapackage v2'
@@ -384,6 +390,9 @@ def _check_bound(
     # and pass through.
     if cell != cell:
         return False
+    if isinstance(cell, (datetime.timedelta, platform.isodate.Duration)):
+        relation = compare_duration(cell, constraint)
+        return relation is not None and compare(relation, 0)
     return bool(compare(cell, constraint))
 
 
