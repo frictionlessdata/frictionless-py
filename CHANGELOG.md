@@ -2,6 +2,21 @@
 
 Here described only the breaking and most significant changes. The full changelog and documentation for all released versions could be found in nicely formatted [commit history](https://github.com/frictionlessdata/frictionless-py/commits/main).
 
+## Next
+
+- feat: `Schema.from_jsonschema` now carries the JsonSchema's constraint 
+  keywords onto the fields it builds (BREAKING)
+  - `minLength`/`maxLength` (string), `minimum`/`maximum` (integer, number), 
+  `minItems`/`maxItems` (array), `minProperties`/`maxProperties` (object) and 
+  `enum` are carried
+  - a table that validated before, because the mapper dropped the 
+  JsonSchema's constraint, is now reported invalid when it violates that 
+  constraint
+  - a constraint whose value the field cannot read is not carried, so a 
+  mistyped schema does not make every row invalid
+  - the mapper still builds a Data Package v1 schema, so the v2-only 
+  constraints (`exclusiveMinimum`, `exclusiveMaximum`) are not carried
+
 ## v5.21.0
 
 - feat: Data Package v2, support `exclusiveMinimum`, `exclusiveMaximum` 
