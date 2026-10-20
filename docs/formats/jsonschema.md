@@ -23,6 +23,9 @@ mapper builds, so a table that violates one of them is reported invalid:
 | `minProperties`, `maxProperties` | `minLength`, `maxLength` | object |
 | `enum` | `enum` | string, integer, number, boolean, array, object, and a typeless property whose members are strings |
 
+`required` is carried onto the field as well: a property named in the
+profile's `required` list becomes a required field.
+
 The page describes JsonSchema draft-07. These draft-07 keywords are not
 carried:
 
@@ -38,6 +41,9 @@ carried:
   asks for.
 - `additionalItems`, `contains`, `patternProperties` and `propertyNames`,
   because they describe a structure that a Table Schema field does not have.
+- `definitions` and `contentMediaType` and `contentEncoding`, because they
+  apply a subschema or describe the content of a string, and a Table Schema
+  field has neither.
 - `items`, `properties`, `additionalProperties`, `allOf`, `anyOf`, `oneOf`,
   `if`, `then`, `else`, `not` and `dependencies`, for the same reason.
 - `title`, `default`, `examples`, `readOnly` and `writeOnly`, because they are
@@ -57,6 +63,7 @@ types change:
 - a numeric `enum` on a property with no type would make every row of a
   tabular source invalid, because a cell read from a CSV is a string.
 
-A length or an element count has to be a whole number: a `minLength` of 2.5
-is not a length, and carrying it would compare every cell against a count it
-can never satisfy.
+A length or an element count has to be a whole number. A `minLength` of 2.5
+is not a length, and a `minLength` of "5" is not one either: Frictionless
+compares a cell's length against the count, and a count that is not a number
+raises a TypeError rather than reporting a violation.

@@ -127,7 +127,7 @@ class JsonschemaMapper(Mapper):
             # read the same way twice, and storing what the reader produced
             # would put a Decimal in a number field's constraint - which
             # cannot be written out as JSON.
-            constraints = {}
+            constraints: dict[str, Any] = {}
             for keyword, constraint in CONSTRAINTS_BY_TYPE.get(type, {}).items():
                 value = prop.get(keyword)
                 if value is None:

@@ -189,9 +189,7 @@ def test_jsonschema_mapper_enum_enforced_in_validation(tmp_path, monkeypatch):
     assert not validate("table.csv", schema=schema).valid
 
 
-def test_jsonschema_mapper_pattern_is_not_enforced_as_a_full_match(
-    tmp_path, monkeypatch
-):
+def test_jsonschema_mapper_pattern_is_not_enforced_as_a_full_match(tmp_path, monkeypatch):
     # JSON Schema accepts "ba" and "abc" for the pattern "a+". If the mapper
     # carried the pattern as a full match, both would be reported invalid.
     schema = Schema.from_jsonschema(
@@ -335,3 +333,30 @@ def test_jsonschema_mapper_maps_a_maximum_property_count():
     constraints = schema.get_field("meta").constraints
     assert constraints["maxLength"] == 3
     assert "minLength" not in constraints
+
+
+def test_jsonschema_mapper_drops_a_count_that_is_not_a_whole_number():
+    # A count is a number of elements, and Frictionless compares a cell's
+    # length against it. A fractional or a string count is not a number, and
+    # comparing against one raises a TypeError rather than reporting a
+    # violation.
+    schema = Schema.from_jsonschema(
+        {"properties": {"name": {"type": "string", "minLength": 2.5}}}
+    )
+    assert "minLength" not in schema.get_field("name").constraints
+
+
+def test_jsonschema_mapper_drops_a_count_that_is_a_string():
+    schema = Schema.from_jsonschema(
+        {"properties": {"name": {"type": "string", "maxLength": "5"}}}
+    )
+    assert "maxLength" not in schema.get_field("name").constraints
+
+
+def test_jsonschema_mapper_drops_a_count_that_is_a_boolean():
+    # In Python a boolean is an integer, so the guard has to say no to it
+    # explicitly.
+    schema = Schema.from_jsonschema(
+        {"properties": {"name": {"type": "string", "minLength": True}}}
+    )
+    assert "minLength" not in schema.get_field("name").constraints
