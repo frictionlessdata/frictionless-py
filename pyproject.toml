@@ -97,6 +97,7 @@ ods = ["ezodf>=0.3", "lxml>=4.0"]
 pandas = ["pyarrow>=14.0", "pandas>=1.0"]
 parquet = ["pyarrow>=14.0"]
 postgresql = ["sqlalchemy>=1.4", "psycopg>=3.0", "psycopg2>=2.9"]
+shapefile = ["geopandas>=0.14", "pyogrio>=0.7", "TatSu>=5.8.3,<5.15"]
 spss = ["savReaderWriter>=3.0"]
 sql = ["sqlalchemy>=1.4"]
 visidata = ["visidata>=2.10"]
@@ -112,7 +113,7 @@ path = "frictionless/settings.py"
 [tool.hatch.envs.default]
 python = "3.11"
 dependencies = [
-  "frictionless[aws,bigquery,ckan,csv,dev,duckdb,excel,json,github,gsheets,html,mysql,ods,pandas,parquet,postgresql,spss,sql,visidata,wkt,zenodo]",
+  "frictionless[aws,bigquery,ckan,csv,dev,duckdb,excel,json,github,gsheets,html,mysql,ods,pandas,parquet,postgresql,shapefile,spss,sql,visidata,wkt,zenodo]",
 ]
 
 [tool.hatch.envs.default.scripts]
