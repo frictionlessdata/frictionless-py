@@ -5,6 +5,7 @@ from typing import Any
 
 import attrs
 
+from ..helpers.wkt import is_wkt
 from ..platform import platform
 from ..schema import Field
 
@@ -73,14 +74,11 @@ class StringField(Field):
 
         # WKT
         elif self.format == "wkt":
-            parser = platform.wkt.Parser()
 
             def value_reader(cell: Any):
                 if not isinstance(cell, str):
                     return None
-                try:
-                    parser.parse(cell)
-                except Exception:
+                if not is_wkt(cell):
                     return None
                 return cell
 
