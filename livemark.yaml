@@ -135,6 +135,8 @@ pages:
           name: Pandas
         - path: docs/formats/parquet
           name: Parquet
+        - path: docs/formats/shapefile
+          name: Shapefile
         - path: docs/formats/spss
           name: Spss
         - path: docs/formats/sql

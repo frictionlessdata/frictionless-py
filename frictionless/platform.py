@@ -347,6 +347,20 @@ class Platform:
         return pyarrow.parquet
 
     @cached_property
+    @extras(name="shapefile")
+    def geopandas(self):
+        import geopandas  # type: ignore
+
+        return geopandas
+
+    @cached_property
+    @extras(name="shapefile")
+    def pyogrio(self):
+        import pyogrio  # type: ignore
+
+        return pyogrio
+
+    @cached_property
     @extras(name="spss")
     def sav_reader_writer(self):
         import savReaderWriter  # type: ignore
