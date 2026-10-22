@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 import warnings
-from typing import TYPE_CHECKING, Any, ClassVar, Dict, List, Optional, Union, cast
+from typing import TYPE_CHECKING, Any, ClassVar, Dict, List, Optional, Set, Union, cast
 
 import attrs
 from typing_extensions import Self
@@ -683,12 +683,16 @@ class Resource(Metadata, metaclass=Factory):  # type: ignore
         # Validate data
         with self:
             # Validate start
+            failed_indexes: Set[int] = set()
             for index, check in enumerate(checks):
                 for error in check.validate_start():
                     if error.type == "check-error":
-                        del checks[index]
+                        failed_indexes.add(index)
                     if checklist.match(error):
                         errors.append(error)
+            checks = [
+                check for index, check in enumerate(checks) if index not in failed_indexes
+            ]
 
             # Validate file
             if not isinstance(self, platform.frictionless_resources.TableResource):
