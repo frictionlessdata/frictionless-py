@@ -182,6 +182,11 @@ class Dialect(Metadata, metaclass=Factory):
                 if len(labels) <= index:
                     labels.append(cell)
                     continue
+                if not cell:
+                    continue
+                if not labels[index]:
+                    labels[index] = cell
+                    continue
                 labels[index] = self.header_join.join([labels[index], cell])
 
         return labels

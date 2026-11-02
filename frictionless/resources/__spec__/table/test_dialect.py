@@ -138,6 +138,17 @@ def test_resource_dialect_header_csv_multiline_headers_duplicates():
         ]
 
 
+def test_resource_dialect_header_multiline_headers_blank_cells():
+    source = [["id", "name", ""], ["", "first", "value"], [1, "a", 2]]
+    dialect = Dialect(header_rows=[1, 2])
+    with TableResource(data=source, dialect=dialect) as resource:
+        assert resource.labels == ["id", "name first", "value"]
+        assert resource.header == ["id", "name first", "value"]
+        assert resource.read_rows() == [
+            {"id": 1, "name first": "a", "value": 2},
+        ]
+
+
 def test_resource_dialect_header_strip_and_non_strings():
     source = [[" header ", 2, 3, None], ["value1", "value2", "value3", "value4"]]
     dialect = Dialect(header_rows=[1])
