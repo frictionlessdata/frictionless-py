@@ -354,8 +354,8 @@ class TableResource(Resource):
                         # in self.header corresponding to the schema primary key
                         assert not self.header.valid
                     else:
-                        if set(cells) == {None}:
-                            note = 'cells composing the primary keys are all "None"'
+                        if any(cell is None for cell in cells):
+                            note = 'a cell composing the primary key is "None"'
                             error = errors.PrimaryKeyError.from_row(row, note=note)
                             row.errors.append(error)
                         else:

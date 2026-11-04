@@ -10,6 +10,7 @@ from frictionless import (
     Resource,
     Schema,
     platform,
+    validate,
 )
 from frictionless.resources import TableResource
 
@@ -191,6 +192,56 @@ def test_resource_schema_primary_key_error():
                 assert row.errors[0].type == "primary-key"
                 continue
             assert row.valid
+
+
+@pytest.mark.parametrize(
+    "cells",
+    [[None, "b"], ["a", None], ["", "b"], ["a", ""], [None, None]],
+)
+def test_resource_schema_primary_key_missing_component(cells):
+    schema = Schema.from_descriptor(
+        {
+            "fields": [{"name": "id1"}, {"name": "id2"}, {"name": "value"}],
+            "primaryKey": ["id1", "id2"],
+        }
+    )
+    resource = TableResource(
+        data=[["id1", "id2", "value"], [*cells, "data"]], schema=schema
+    )
+    report = resource.validate()
+    assert report.valid is False
+    assert report.flatten(["rowNumber", "type"]) == [[2, "primary-key"]]
+
+
+@pytest.mark.parametrize("cells", [[0, 1], [1, 0], [False, 1], [1, False]])
+def test_resource_schema_primary_key_falsy_components(cells):
+    schema = Schema.from_descriptor(
+        {
+            "fields": [{"name": "id1", "type": "any"}, {"name": "id2", "type": "any"}],
+            "primaryKey": ["id1", "id2"],
+        }
+    )
+    resource = TableResource(data=[["id1", "id2"], cells], schema=schema)
+    assert resource.validate().valid is True
+
+
+def test_package_schema_primary_key_missing_component():
+    report = validate(
+        {
+            "resources": [
+                {
+                    "name": "name",
+                    "data": [["id1", "id2"], ["a", "1"], ["a", None]],
+                    "schema": {
+                        "fields": [{"name": "id1"}, {"name": "id2"}],
+                        "primaryKey": ["id1", "id2"],
+                    },
+                }
+            ]
+        }
+    )
+    assert report.valid is False
+    assert report.flatten(["rowNumber", "type"]) == [[3, "primary-key"]]
 
 
 def test_resource_schema_foreign_keys():
