@@ -70,6 +70,11 @@ def console_describe(
     try:
         # Create dialect
         dialect_obj = helpers.create_dialect(
+            source=source,
+            path=path,
+            format=format,
+            innerpath=innerpath,
+            basepath=basepath,
             descriptor=dialect,
             header_rows=header_rows,
             header_join=header_join,
