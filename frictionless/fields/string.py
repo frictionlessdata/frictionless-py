@@ -66,7 +66,7 @@ class StringField(Field):
                 if not isinstance(cell, str):
                     return None
                 try:
-                    base64.b64decode(cell)
+                    base64.b64decode(cell, validate=True)
                 except Exception:
                     return None
                 return cell
