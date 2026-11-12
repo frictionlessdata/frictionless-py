@@ -326,6 +326,13 @@ class Platform:
         return pandas
 
     @cached_property
+    @extras(name="polars")
+    def polars(self):
+        import polars  # type: ignore
+
+        return polars
+
+    @cached_property
     @extras(name="pandas")
     def pandas_core_dtypes_api(self):
         import pandas.core.dtypes.api  # type: ignore

@@ -28,7 +28,7 @@ class PandasPlugin(Plugin):
 
     def detect_resource(self, resource: Resource):
         if resource.data is not None:
-            if helpers.is_type(resource.data, "DataFrame"):
+            if helpers.is_type(resource.data, "pandas.core.frame.DataFrame"):
                 resource.format = resource.format or "pandas"
         if resource.format == "pandas":
             if resource.data is None:
