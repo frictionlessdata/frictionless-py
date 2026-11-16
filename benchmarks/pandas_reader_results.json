@@ -1,0 +1,460 @@
+{
+  "baseline_revision": "c08fa29cb0708427ae65bb689ded8e2691078a82",
+  "change": "Reuse Series.to_dict() once per emitted row in PandasParser.read_cell_stream_create",
+  "method": "Fresh process per shape/workload; one warmup, three unprofiled repetitions; conversion counts from a separate profiled run after timings and RSS measurement.",
+  "limits": [
+    "Synthetic mixed string/float frames on a shared Linux host; sequential before/after runs, no CPU isolation.",
+    "Parser timing includes schema conversion and stream consumption; validation timing includes complete Resource.validate().",
+    "Peak RSS is process lifetime high water mark in KiB including imports, frame allocation, warmup and all timed repetitions; not incremental parser memory.",
+    "These are in-memory pandas benchmarks; they exclude Parquet decoding and do not measure Parquet batching or memory improvements."
+  ],
+  "runs": [
+    {
+      "label": "before",
+      "versions": {
+        "python": "3.12.11 | packaged by conda-forge | (main, Jun  4 2025, 14:45:31) [GCC 13.3.0]",
+        "platform": "Linux-4.18.0-553.155.1.el8_10.x86_64-x86_64-with-glibc2.28",
+        "frictionless": "5.21.0",
+        "pandas": "3.1.1",
+        "numpy": "2.5.5",
+        "pyarrow": "26.0.1"
+      },
+      "repetitions": 3,
+      "results": [
+        {
+          "rows": 100,
+          "columns": 10,
+          "mode": "parser",
+          "seconds": [
+            0.030289743095636368,
+            0.016069842036813498,
+            0.015901061007753015
+          ],
+          "median_seconds": 0.016069842036813498,
+          "series_to_dict_calls": 1000,
+          "peak_rss_kib": 136492
+        },
+        {
+          "rows": 100,
+          "columns": 10,
+          "mode": "validation",
+          "seconds": [
+            0.02040726807899773,
+            0.052411518059670925,
+            0.019956791074946523
+          ],
+          "median_seconds": 0.02040726807899773,
+          "series_to_dict_calls": 1000,
+          "peak_rss_kib": 136980
+        },
+        {
+          "rows": 100,
+          "columns": 50,
+          "mode": "parser",
+          "seconds": [
+            0.21008709305897355,
+            0.2108816709369421,
+            0.2080779590178281
+          ],
+          "median_seconds": 0.21008709305897355,
+          "series_to_dict_calls": 5000,
+          "peak_rss_kib": 136492
+        },
+        {
+          "rows": 100,
+          "columns": 50,
+          "mode": "validation",
+          "seconds": [
+            0.23342214012518525,
+            0.22738370392471552,
+            0.22511573205702007
+          ],
+          "median_seconds": 0.22738370392471552,
+          "series_to_dict_calls": 5000,
+          "peak_rss_kib": 139088
+        },
+        {
+          "rows": 100,
+          "columns": 94,
+          "mode": "parser",
+          "seconds": [
+            0.6879382010083646,
+            0.6802905590739101,
+            0.725096405018121
+          ],
+          "median_seconds": 0.6879382010083646,
+          "series_to_dict_calls": 9400,
+          "peak_rss_kib": 138104
+        },
+        {
+          "rows": 100,
+          "columns": 94,
+          "mode": "validation",
+          "seconds": [
+            0.7259714901447296,
+            0.7339607779867947,
+            0.7188057519961149
+          ],
+          "median_seconds": 0.7259714901447296,
+          "series_to_dict_calls": 9400,
+          "peak_rss_kib": 140712
+        },
+        {
+          "rows": 100,
+          "columns": 200,
+          "mode": "parser",
+          "seconds": [
+            2.943705972051248,
+            2.9798723321873695,
+            2.903072753921151
+          ],
+          "median_seconds": 2.943705972051248,
+          "series_to_dict_calls": 20000,
+          "peak_rss_kib": 138048
+        },
+        {
+          "rows": 100,
+          "columns": 200,
+          "mode": "validation",
+          "seconds": [
+            3.24493645504117,
+            5.20099326595664,
+            4.7217170568183064
+          ],
+          "median_seconds": 4.7217170568183064,
+          "series_to_dict_calls": 20000,
+          "peak_rss_kib": 139692
+        },
+        {
+          "rows": 500,
+          "columns": 10,
+          "mode": "parser",
+          "seconds": [
+            0.07139689708128572,
+            0.07031977805308998,
+            0.07601929712109268
+          ],
+          "median_seconds": 0.07139689708128572,
+          "series_to_dict_calls": 5000,
+          "peak_rss_kib": 137232
+        },
+        {
+          "rows": 500,
+          "columns": 10,
+          "mode": "validation",
+          "seconds": [
+            0.08858725684694946,
+            0.0898971389979124,
+            0.09056895482353866
+          ],
+          "median_seconds": 0.0898971389979124,
+          "series_to_dict_calls": 5000,
+          "peak_rss_kib": 136832
+        },
+        {
+          "rows": 500,
+          "columns": 50,
+          "mode": "parser",
+          "seconds": [
+            1.047258764039725,
+            1.0648015809711069,
+            1.0265561661217362
+          ],
+          "median_seconds": 1.047258764039725,
+          "series_to_dict_calls": 25000,
+          "peak_rss_kib": 138068
+        },
+        {
+          "rows": 500,
+          "columns": 50,
+          "mode": "validation",
+          "seconds": [
+            1.4408730750437826,
+            1.2506009000353515,
+            1.0823261640034616
+          ],
+          "median_seconds": 1.2506009000353515,
+          "series_to_dict_calls": 25000,
+          "peak_rss_kib": 138816
+        },
+        {
+          "rows": 500,
+          "columns": 94,
+          "mode": "parser",
+          "seconds": [
+            3.1940055380109698,
+            3.1178644748870283,
+            4.4526961978990585
+          ],
+          "median_seconds": 3.1940055380109698,
+          "series_to_dict_calls": 47000,
+          "peak_rss_kib": 140228
+        },
+        {
+          "rows": 500,
+          "columns": 94,
+          "mode": "validation",
+          "seconds": [
+            3.4876767720561475,
+            4.060474708909169,
+            6.217339564813301
+          ],
+          "median_seconds": 4.060474708909169,
+          "series_to_dict_calls": 47000,
+          "peak_rss_kib": 139960
+        },
+        {
+          "rows": 500,
+          "columns": 200,
+          "mode": "parser",
+          "seconds": [
+            15.617133802035823,
+            15.595374681986868,
+            15.700976300984621
+          ],
+          "median_seconds": 15.617133802035823,
+          "series_to_dict_calls": 100000,
+          "peak_rss_kib": 143544
+        },
+        {
+          "rows": 500,
+          "columns": 200,
+          "mode": "validation",
+          "seconds": [
+            15.87081546895206,
+            17.591691508190706,
+            14.96154557610862
+          ],
+          "median_seconds": 15.87081546895206,
+          "series_to_dict_calls": 100000,
+          "peak_rss_kib": 144892
+        }
+      ]
+    },
+    {
+      "label": "after",
+      "versions": {
+        "python": "3.12.11 | packaged by conda-forge | (main, Jun  4 2025, 14:45:31) [GCC 13.3.0]",
+        "platform": "Linux-4.18.0-553.155.1.el8_10.x86_64-x86_64-with-glibc2.28",
+        "frictionless": "5.21.0",
+        "pandas": "3.1.1",
+        "numpy": "2.5.5",
+        "pyarrow": "26.0.1"
+      },
+      "repetitions": 3,
+      "results": [
+        {
+          "rows": 100,
+          "columns": 10,
+          "mode": "parser",
+          "seconds": [
+            0.005548106972128153,
+            0.05569567088969052,
+            0.00589613220654428
+          ],
+          "median_seconds": 0.00589613220654428,
+          "series_to_dict_calls": 100,
+          "peak_rss_kib": 135936
+        },
+        {
+          "rows": 100,
+          "columns": 10,
+          "mode": "validation",
+          "seconds": [
+            0.009503378998488188,
+            0.009303580038249493,
+            0.009251155890524387
+          ],
+          "median_seconds": 0.009303580038249493,
+          "series_to_dict_calls": 100,
+          "peak_rss_kib": 136664
+        },
+        {
+          "rows": 100,
+          "columns": 50,
+          "mode": "parser",
+          "seconds": [
+            0.013657999923452735,
+            0.013250010088086128,
+            0.01298757316544652
+          ],
+          "median_seconds": 0.013250010088086128,
+          "series_to_dict_calls": 100,
+          "peak_rss_kib": 137116
+        },
+        {
+          "rows": 100,
+          "columns": 50,
+          "mode": "validation",
+          "seconds": [
+            0.09545902092941105,
+            0.029713779920712113,
+            0.08759975899010897
+          ],
+          "median_seconds": 0.08759975899010897,
+          "series_to_dict_calls": 100,
+          "peak_rss_kib": 137280
+        },
+        {
+          "rows": 100,
+          "columns": 94,
+          "mode": "parser",
+          "seconds": [
+            0.021270153811201453,
+            0.02138568297959864,
+            0.021274453960359097
+          ],
+          "median_seconds": 0.021274453960359097,
+          "series_to_dict_calls": 100,
+          "peak_rss_kib": 137224
+        },
+        {
+          "rows": 100,
+          "columns": 94,
+          "mode": "validation",
+          "seconds": [
+            0.05235672602429986,
+            0.06029569613747299,
+            0.05186247988604009
+          ],
+          "median_seconds": 0.05235672602429986,
+          "series_to_dict_calls": 100,
+          "peak_rss_kib": 138140
+        },
+        {
+          "rows": 100,
+          "columns": 200,
+          "mode": "parser",
+          "seconds": [
+            0.04519951390102506,
+            0.043076050002127886,
+            0.052340900991111994
+          ],
+          "median_seconds": 0.04519951390102506,
+          "series_to_dict_calls": 100,
+          "peak_rss_kib": 138036
+        },
+        {
+          "rows": 100,
+          "columns": 200,
+          "mode": "validation",
+          "seconds": [
+            0.10612816107459366,
+            0.11152165802195668,
+            0.11048747692257166
+          ],
+          "median_seconds": 0.11048747692257166,
+          "series_to_dict_calls": 100,
+          "peak_rss_kib": 140152
+        },
+        {
+          "rows": 500,
+          "columns": 10,
+          "mode": "parser",
+          "seconds": [
+            0.019305048044770956,
+            0.01907111401669681,
+            0.019170917803421617
+          ],
+          "median_seconds": 0.019170917803421617,
+          "series_to_dict_calls": 500,
+          "peak_rss_kib": 136356
+        },
+        {
+          "rows": 500,
+          "columns": 10,
+          "mode": "validation",
+          "seconds": [
+            0.03148621111176908,
+            0.031547914957627654,
+            0.03656644490547478
+          ],
+          "median_seconds": 0.031547914957627654,
+          "series_to_dict_calls": 500,
+          "peak_rss_kib": 136236
+        },
+        {
+          "rows": 500,
+          "columns": 50,
+          "mode": "parser",
+          "seconds": [
+            0.040133310947567225,
+            0.06069485889747739,
+            0.04013132303953171
+          ],
+          "median_seconds": 0.040133310947567225,
+          "series_to_dict_calls": 500,
+          "peak_rss_kib": 137336
+        },
+        {
+          "rows": 500,
+          "columns": 50,
+          "mode": "validation",
+          "seconds": [
+            0.07843295391649008,
+            0.08315000496804714,
+            0.0852570200804621
+          ],
+          "median_seconds": 0.08315000496804714,
+          "series_to_dict_calls": 500,
+          "peak_rss_kib": 138620
+        },
+        {
+          "rows": 500,
+          "columns": 94,
+          "mode": "parser",
+          "seconds": [
+            0.17223068606108427,
+            0.0627385328989476,
+            0.08455190807580948
+          ],
+          "median_seconds": 0.08455190807580948,
+          "series_to_dict_calls": 500,
+          "peak_rss_kib": 140436
+        },
+        {
+          "rows": 500,
+          "columns": 94,
+          "mode": "validation",
+          "seconds": [
+            0.15227394201792777,
+            0.14111149706877768,
+            0.15932124480605125
+          ],
+          "median_seconds": 0.15227394201792777,
+          "series_to_dict_calls": 500,
+          "peak_rss_kib": 139844
+        },
+        {
+          "rows": 500,
+          "columns": 200,
+          "mode": "parser",
+          "seconds": [
+            0.12247480102814734,
+            0.12230315408669412,
+            0.17339213099330664
+          ],
+          "median_seconds": 0.12247480102814734,
+          "series_to_dict_calls": 500,
+          "peak_rss_kib": 142660
+        },
+        {
+          "rows": 500,
+          "columns": 200,
+          "mode": "validation",
+          "seconds": [
+            0.2720120558515191,
+            0.26719122286885977,
+            0.27411666605621576
+          ],
+          "median_seconds": 0.2720120558515191,
+          "series_to_dict_calls": 500,
+          "peak_rss_kib": 144300
+        }
+      ]
+    }
+  ],
+  "baseline_reader_sha256": "0e52c659970faed3082acc08923499fb3f66f4bd313a4011ee9637be050834d1",
+  "patched_reader_sha256": "9e9dfa844af0118013e54dee56b533f84da104cc76820cb44c935856dcca7f94",
+  "benchmark_sha256": "e7efc1ae13924e3c8b170764c5c2fefa708f97605c9dece6ec121aedc0f7bbdb"
+}

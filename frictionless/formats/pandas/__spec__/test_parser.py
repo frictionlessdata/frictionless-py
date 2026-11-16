@@ -1,13 +1,15 @@
-from datetime import datetime, time, timezone
+from datetime import datetime, time, timedelta, timezone
 from decimal import Decimal
 
 import isodate
 import numpy as np
 import pandas as pd
+import pytest
 from dateutil.tz import tzoffset, tzutc
 from pandas.api.types import is_datetime64_any_dtype
 
 from frictionless import Package, Schema, validate
+from frictionless.formats.pandas import PandasParser
 from frictionless.resources import TableResource
 
 # Infer dtype from real DataFrame as the type is depending on pandas' version
@@ -89,6 +91,130 @@ def test_pandas_parser_from_dataframe_with_primary_key_having_datetime():
                 "VIXOpen": Decimal("17.66"),
             },
         ]
+
+
+@pytest.mark.parametrize("columns", [10, 94, 200])
+@pytest.mark.parametrize("rows", [0, 3])
+def test_pandas_parser_converts_each_row_once(mocker, rows, columns):
+    dataframe = pd.DataFrame(
+        {f"value_{column}": list(range(rows)) for column in range(columns)}, dtype="int64"
+    )
+    to_dict = mocker.spy(pd.Series, "to_dict")
+    resource = TableResource(data=dataframe)
+
+    cells = list(PandasParser(resource).read_cell_stream_create())
+
+    assert cells == [list(dataframe.columns)] + [[row] * columns for row in range(rows)]
+    assert to_dict.call_count == rows
+    assert resource.schema.field_types == ["integer"] * columns
+
+
+@pytest.mark.parametrize("tz", [None, timezone.utc, timezone(timedelta(hours=-5))])
+def test_pandas_parser_mixed_values(tz):
+    timestamp = datetime(2020, 1, 1, tzinfo=tz)
+    dataframe = pd.DataFrame(
+        {
+            "integer": pd.Series([1, None], dtype="Int64"),
+            "boolean": pd.Series([True, None], dtype="boolean"),
+            "number": pd.Series([1.5, None], dtype="Float64"),
+            "string": pd.Series(["中国人", None], dtype="string"),
+            "datetime": pd.to_datetime([timestamp, None]),
+            "object": pd.Series([{"key": "value"}, None], dtype=object),
+            "array": pd.Series([[1, 2], None], dtype=object),
+            "nan": pd.Series(["text", np.nan], dtype=object),
+        }
+    )
+    resource = TableResource(data=dataframe)
+
+    header, first, second = PandasParser(resource).read_cell_stream_create()
+
+    assert header == list(dataframe.columns)
+    assert first == [1, True, 1.5, "中国人", timestamp, {"key": "value"}, [1, 2], "text"]
+    assert [type(value) for value in first[:3]] == [int, bool, float]
+    assert type(first[4]) is datetime
+    # pandas versions differ in whether to_dict boxes pd.NA as None.
+    missing = pd.Series([pd.NA], dtype=object).to_dict()[0]
+    assert all(value is missing for value in second[:4])
+    assert second[4] is pd.NaT
+    assert second[5:7] == [None, None]
+    assert pd.isna(second[7])
+    assert resource.schema.field_types == [
+        "integer",
+        "boolean",
+        "number",
+        "string",
+        "datetime",
+        "object",
+        "array",
+        "string",
+    ]
+
+
+@pytest.mark.parametrize("multiindex", [False, True])
+def test_pandas_parser_index_and_declared_schema(multiindex):
+    index = pd.Index([10, 20], name="id")
+    primary_key = ["id"]
+    index_fields = [{"name": "id", "type": "integer", "constraints": {"required": True}}]
+    if multiindex:
+        index = pd.MultiIndex.from_tuples([(10, "a"), (20, "b")], names=["id", "group"])
+        primary_key.append("group")
+        index_fields.append(
+            {"name": "group", "type": "string", "constraints": {"required": True}}
+        )
+    dataframe = pd.DataFrame({"name": ["first", "second"], "value": [1, 2]}, index=index)
+    inferred = TableResource(data=dataframe)
+    inferred_cells = list(PandasParser(inferred).read_cell_stream_create())
+    assert inferred_cells == [primary_key + ["name", "value"]] + (
+        [[10, "a", "first", 1], [20, "b", "second", 2]]
+        if multiindex
+        else [[10, "first", 1], [20, "second", 2]]
+    )
+    assert inferred.schema.to_descriptor() == {
+        "fields": index_fields
+        + [
+            {"name": "name", "type": "string"},
+            {"name": "value", "type": "integer"},
+        ],
+        "primaryKey": primary_key,
+    }
+    # Declared schemas apply positionally, including names that differ from the frame.
+    schema = Schema.from_descriptor(
+        {
+            "fields": index_fields
+            + [
+                {"name": "label", "type": "string"},
+                {"name": "amount", "type": "integer", "constraints": {"minimum": 2}},
+            ],
+            "primaryKey": primary_key,
+        }
+    )
+    resource = TableResource(data=dataframe, schema=schema)
+
+    with resource:
+        assert resource.header == primary_key + ["label", "amount"]
+        rows = resource.read_rows()
+        assert [list(row.values()) for row in rows] == (
+            [[10, "a", "first", 1], [20, "b", "second", 2]]
+            if multiindex
+            else [[10, "first", 1], [20, "second", 2]]
+        )
+        assert resource.schema.to_descriptor() == schema.to_descriptor()
+
+    report = resource.validate()
+    assert not report.valid
+    assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
+        [None, len(primary_key) + 1, "incorrect-label"],
+        [None, len(primary_key) + 2, "incorrect-label"],
+        [2, len(primary_key) + 2, "constraint-error"],
+    ]
+
+
+def test_pandas_parser_index_only():
+    dataframe = pd.DataFrame(index=pd.Index([10, 20], name="id"))
+    resource = TableResource(data=dataframe)
+
+    assert list(PandasParser(resource).read_cell_stream_create()) == [["id"], [10], [20]]
+    assert resource.schema.primary_key == ["id"]
 
 
 # Write

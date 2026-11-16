@@ -1,5 +1,6 @@
 import datetime
 
+import pandas as pd
 import pytest
 
 from frictionless import formats
@@ -34,6 +35,29 @@ def test_parquet_parser_columns():
             {"id": 1},
             {"id": 2},
         ]
+
+
+def test_parquet_parser_converts_each_row_once(tmp_path, mocker):
+    dataframe = pd.DataFrame(
+        {
+            "label": ["first", "second", "中国人"],
+            **{f"value_{column}": [column] * 3 for column in range(93)},
+        }
+    )
+    path = tmp_path / "wide.parquet"
+    dataframe.to_parquet(path, index=False)
+    expected = dataframe.to_dict("records")
+    to_dict = mocker.spy(pd.Series, "to_dict")
+    resource = TableResource(path=path.name, basepath=str(tmp_path))
+
+    with resource:
+        assert resource.header == list(dataframe.columns)
+        assert resource.read_rows() == expected
+    assert to_dict.call_count == len(dataframe)
+
+    report = resource.validate()
+    assert report.valid
+    assert to_dict.call_count == 2 * len(dataframe)
 
 
 @pytest.mark.ci

@@ -47,13 +47,14 @@ class PandasParser(Parser):
         # Lists
         yield schema.field_names
         for pk, item in dataframe.iterrows():  # type: ignore
+            values = item.to_dict()
             cells: List[Any] = []
             for field in schema.fields:
                 if field.name in schema.primary_key:
                     pk = pk if isinstance(pk, tuple) else [pk]  # type: ignore
                     value = pk[schema.primary_key.index(field.name)]  # type: ignore
                 else:
-                    value = item.to_dict()[field.name]
+                    value = values[field.name]
                 if value is np.nan:
                     value = None
                 elif isinstance(value, pd.Timestamp):
