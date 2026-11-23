@@ -159,7 +159,7 @@ class Dialect(Metadata, metaclass=Factory):
 
     # Read
 
-    def read_labels(self, sample: types.ISample):
+    def read_labels(self, sample: types.ISample) -> List[str]:
         if not self.header:
             return []
 
