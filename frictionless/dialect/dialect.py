@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, ClassVar, Dict, Iterable, List, Optional, Union
+from itertools import groupby
+from typing import TYPE_CHECKING, Any, ClassVar, Iterable, List, Optional, Union
 
 import attrs
 
@@ -156,38 +157,35 @@ class Dialect(Metadata, metaclass=Factory):
     # Read
 
     def read_labels(self, sample: types.ISample):
-        first_content_row = self.create_first_content_row()
+        if not self.header:
+            return []
+
+        first_content_row_number = self._first_content_row_number()
         comment_filter = self.create_comment_filter()
 
-        # Collect lists
-        lists: List[List[str]] = []
+        # Collect the rows holding the labels
+        label_rows: List[List[str]] = []
         for row_number, cells in enumerate(sample, start=1):
             if comment_filter:
                 if not comment_filter(row_number, cells):
                     continue
-            if self.header:
-                if row_number in self.header_rows:
-                    lists.append(helpers.stringify_label(cells))
-            if row_number >= first_content_row:
+            if row_number in self.header_rows:
+                label_rows.append(helpers.stringify_label(cells))
+            if row_number >= first_content_row_number:
                 break
 
-        # Get labels
+        # Build one label per column, even if blank, to keep columns aligned
         labels: List[str] = []
-        prev_cells: Dict[int, Any] = {}
-        for cells in lists:
-            for index, cell in enumerate(cells):
-                if prev_cells.get(index) == cell:
-                    continue
-                prev_cells[index] = cell
-                if len(labels) <= index:
-                    labels.append(cell)
-                    continue
-                if not cell:
-                    continue
-                if not labels[index]:
-                    labels[index] = cell
-                    continue
-                labels[index] = self.header_join.join([labels[index], cell])
+        column_count = max((len(row) for row in label_rows), default=0)
+
+        for index in range(column_count):
+            column = [row[index] for row in label_rows if index < len(row)]
+
+            # Vertically merged cells, once filled, repeat on consecutive rows
+            unrepeated_cells = [cell for cell, _ in groupby(column)]
+            non_blank_cells = [cell for cell in unrepeated_cells if cell]
+
+            labels.append(self.header_join.join(non_blank_cells))
 
         return labels
 
@@ -200,13 +198,13 @@ class Dialect(Metadata, metaclass=Factory):
         return fragment
 
     def read_enumerated_content_stream(self, cell_stream: Iterable[List[Any]]):
-        first_content_row = self.create_first_content_row()
+        first_content_row_number = self._first_content_row_number()
         comment_filter = self.create_comment_filter()
         blank_filter = self.create_blank_filter()
 
         # Emit content stream
         for row_number, cells in enumerate(cell_stream, start=1):
-            if row_number < first_content_row:
+            if row_number < first_content_row_number:
                 continue
             if comment_filter:
                 if not comment_filter(row_number, cells):
@@ -218,7 +216,7 @@ class Dialect(Metadata, metaclass=Factory):
 
     # Filter
 
-    def create_first_content_row(self):
+    def _first_content_row_number(self):
         if self.header and self.header_rows:
             return self.header_rows[-1] + 1
         return 1
