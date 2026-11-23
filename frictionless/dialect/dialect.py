@@ -62,13 +62,15 @@ class Dialect(Metadata, metaclass=Factory):
 
     header_rows: List[int] = attrs.field(factory=settings.DEFAULT_HEADER_ROWS.copy)
     """
-    Specifies the row numbers for the header. Default is [1].
+    Specifies the row numbers for the header. Default is [1]. With several rows,
+    the cells of each column are merged into one label: identical values on
+    consecutive rows are kept once and blank cells are ignored.
     """
 
     header_join: str = settings.DEFAULT_HEADER_JOIN
     """
-    Separator to join text of two column's. The default value is " " and other values
-    could be ":", "-" etc.
+    Separator to join the header rows of a column into one label. The default value
+    is " " and other values could be ":", "-" etc.
     """
 
     header_case: bool = settings.DEFAULT_HEADER_CASE
@@ -85,7 +87,8 @@ class Dialect(Metadata, metaclass=Factory):
 
     comment_rows: List[int] = attrs.field(factory=list)
     """
-    A list of rows to ignore. For example: [1, 2]
+    A list of rows to ignore, for example: [1, 2]. Row numbers refer to the
+    source file: ignored rows are not read but still count in the numbering.
     """
 
     skip_blank_rows: bool = False
