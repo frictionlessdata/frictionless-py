@@ -149,6 +149,13 @@ def test_resource_dialect_header_multiline_headers_blank_cells():
         ]
 
 
+def test_resource_dialect_header_multiline_headers_repeat_after_blank_cell():
+    source = [["a"], [""], ["a"], [1]]
+    dialect = Dialect(header_rows=[1, 2, 3])
+    with TableResource(data=source, dialect=dialect) as resource:
+        assert resource.labels == ["a a"]
+
+
 def test_resource_dialect_header_strip_and_non_strings():
     source = [[" header ", 2, 3, None], ["value1", "value2", "value3", "value4"]]
     dialect = Dialect(header_rows=[1])
