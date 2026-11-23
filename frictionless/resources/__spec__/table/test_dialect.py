@@ -1,3 +1,7 @@
+from typing import List
+
+import pytest
+
 from frictionless import Control, Dialect, Schema, fields, formats, resources
 from frictionless.resources import TableResource
 
@@ -114,46 +118,31 @@ def test_resource_dialect_header_xlsx_multiline():
         ]
 
 
-def test_resource_dialect_header_csv_multiline_headers_join():
-    source = b"k1\nk2\nv1\nv2\nv3"
-    dialect = Dialect(header_rows=[1, 2], header_join=":")
-    with TableResource(data=source, format="csv", dialect=dialect) as resource:
-        assert resource.header == ["k1:k2"]
-        assert resource.read_rows() == [
-            {"k1:k2": "v1"},
-            {"k1:k2": "v2"},
-            {"k1:k2": "v3"},
-        ]
-
-
-def test_resource_dialect_header_csv_multiline_headers_duplicates():
-    source = b"k1\nk1\nv1\nv2\nv3"
-    dialect = Dialect(header_rows=[1, 2])
-    with TableResource(data=source, format="csv", dialect=dialect) as resource:
-        assert resource.header == ["k1"]
-        assert resource.read_rows() == [
-            {"k1": "v1"},
-            {"k1": "v2"},
-            {"k1": "v3"},
-        ]
-
-
-def test_resource_dialect_header_multiline_headers_blank_cells():
-    source = [["id", "name", ""], ["", "first", "value"], [1, "a", 2]]
-    dialect = Dialect(header_rows=[1, 2])
+@pytest.mark.parametrize(
+    "header_cells, header_join, expected_labels",
+    [
+        pytest.param([["k1"], ["k2"]], ":", ["k1:k2"], id="custom-join"),
+        pytest.param([["k1"], ["k1"]], " ", ["k1"], id="consecutive-repeat"),
+        pytest.param(
+            [["id", "name", ""], ["", "first", "value"]],
+            " ",
+            ["id", "name first", "value"],
+            id="blank-cells",
+        ),
+        pytest.param([["a"], [""], ["a"]], " ", ["a a"], id="repeat-after-blank"),
+    ],
+)
+def test_resource_dialect_header_multiline_labels(
+    header_cells: List[List[str]], header_join: str, expected_labels: List[str]
+):
+    data_row = list(range(len(expected_labels)))
+    source = [*header_cells, data_row]
+    header_rows = list(range(1, len(header_cells) + 1))
+    dialect = Dialect(header_rows=header_rows, header_join=header_join)
     with TableResource(data=source, dialect=dialect) as resource:
-        assert resource.labels == ["id", "name first", "value"]
-        assert resource.header == ["id", "name first", "value"]
-        assert resource.read_rows() == [
-            {"id": 1, "name first": "a", "value": 2},
-        ]
-
-
-def test_resource_dialect_header_multiline_headers_repeat_after_blank_cell():
-    source = [["a"], [""], ["a"], [1]]
-    dialect = Dialect(header_rows=[1, 2, 3])
-    with TableResource(data=source, dialect=dialect) as resource:
-        assert resource.labels == ["a a"]
+        assert resource.labels == expected_labels
+        assert resource.header == expected_labels
+        assert resource.read_rows() == [dict(zip(expected_labels, data_row))]
 
 
 def test_resource_dialect_header_strip_and_non_strings():
