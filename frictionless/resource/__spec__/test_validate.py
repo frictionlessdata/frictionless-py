@@ -303,6 +303,106 @@ def test_resource_validate_custom_check_bad_name():
 # Bugs
 
 
+def test_resource_validate_check_with_two_check_errors_issue_1361():
+    source = [["row", "name"], [1, "Alex"], [2, "John"]]
+    checklist = Checklist.from_descriptor(
+        {
+            "checks": [
+                {"type": "deviated-value", "fieldName": "name", "average": "bad"},
+            ]
+        }
+    )
+    resource = Resource(source)
+    report = resource.validate(checklist)
+    assert report.flatten(["type", "note"]) == [
+        ["check-error", 'deviated value check requires field "name" to be numeric'],
+        [
+            "check-error",
+            'deviated value check supports only average functions "mean, median, mode"',
+        ],
+    ]
+
+
+def test_resource_validate_check_with_two_check_errors_keeps_next_check():
+    source = [["row", "name"], [1, "Alex"], [2, "John"]]
+    checklist = Checklist.from_descriptor(
+        {
+            "checks": [
+                {"type": "deviated-value", "fieldName": "name", "average": "bad"},
+                {"type": "forbidden-value", "fieldName": "row", "values": [2]},
+            ]
+        }
+    )
+    resource = Resource(source)
+    report = resource.validate(checklist)
+    assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
+        [None, None, "check-error"],
+        [None, None, "check-error"],
+        [3, 1, "forbidden-value"],
+    ]
+
+
+def test_resource_validate_consecutive_check_errors_are_all_reported():
+    source = [["row", "name"], [1, "Alex"], [2, "John"]]
+    checklist = Checklist.from_descriptor(
+        {
+            "checks": [
+                {"type": "forbidden-value", "fieldName": "bad1", "values": [1]},
+                {"type": "forbidden-value", "fieldName": "bad2", "values": [1]},
+                {"type": "forbidden-value", "fieldName": "row", "values": [2]},
+            ]
+        }
+    )
+    resource = Resource(source)
+    report = resource.validate(checklist)
+    assert report.flatten(["rowNumber", "fieldNumber", "type", "note"]) == [
+        [None, None, "check-error", 'forbidden value check requires field "bad1"'],
+        [None, None, "check-error", 'forbidden value check requires field "bad2"'],
+        [3, 1, "forbidden-value", 'forbidden values are "[2]"'],
+    ]
+
+
+def test_resource_validate_check_error_keeps_next_check():
+    source = [["row", "name"], [1, "Alex"], [2, "John"]]
+    checklist = Checklist.from_descriptor(
+        {
+            "checks": [
+                {"type": "forbidden-value", "fieldName": "bad", "values": [1]},
+                {"type": "forbidden-value", "fieldName": "row", "values": [2]},
+            ]
+        }
+    )
+    resource = Resource(source)
+    report = resource.validate(checklist)
+    assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
+        [None, None, "check-error"],
+        [3, 1, "forbidden-value"],
+    ]
+
+
+def test_resource_validate_check_error_skips_rows_and_end_of_failed_check():
+    calls = []
+
+    class custom(Check):
+        def validate_start(self):
+            yield errors.CheckError(note="custom check is not configured")
+
+        def validate_row(self, row):
+            calls.append("row")
+            yield from []
+
+        def validate_end(self):
+            calls.append("end")
+            yield from []
+
+    resource = Resource([["row"], [1], [2]])
+    report = resource.validate(Checklist(checks=[custom()]))
+    assert report.flatten(["type", "note"]) == [
+        ["check-error", "custom check is not configured"],
+    ]
+    assert calls == []
+
+
 def test_resource_validate_infer_fields_issue_223():
     source = [["name1", "name2"], ["123", "abc"], ["456", "def"], ["789", "ghi"]]
     detector = Detector(schema_patch={"fields": {"name": {"type": "string"}}})
