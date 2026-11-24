@@ -1,3 +1,5 @@
+from datetime import date
+
 import pytest
 
 from frictionless import Field
@@ -129,6 +131,50 @@ def test_field_constraint_field_type(constraints, type, valid):
         assert valid
     except FrictionlessException:
         assert not valid
+
+
+@pytest.mark.parametrize(
+    "name", ["minimum", "maximum", "exclusiveMinimum", "exclusiveMaximum"]
+)
+@pytest.mark.parametrize(
+    "type, value",
+    [
+        ("integer", "abc"),
+        ("integer", {}),
+        ("number", "abc"),
+        ("date", "not-a-date"),
+        ("datetime", "not-a-datetime"),
+        ("time", "not-a-time"),
+        ("year", "abc"),
+        ("yearmonth", "abc"),
+    ],
+)
+def test_field_bound_constraint_invalid_value(name, type, value):
+    descriptor = {"name": "field", "type": type, "constraints": {name: value}}
+    with pytest.raises(FrictionlessException) as excinfo:
+        Field.from_descriptor(descriptor)
+    reasons = excinfo.value.reasons
+    assert [reason.type for reason in reasons] == ["field-error"]
+    assert (
+        reasons[0].note == f'constraint "{name}" value "{value}" is not a valid "{type}"'
+    )
+
+
+def test_field_bound_constraint_value_read_with_field_options():
+    field = Field.from_descriptor(
+        {
+            "name": "field",
+            "type": "date",
+            "format": "%d/%m/%Y",
+            "constraints": {"minimum": "01/02/2020"},
+        }
+    )
+    read = field.read_cell
+    assert read("01/02/2020") == (date(2020, 2, 1), None)
+    assert read("31/01/2020") == (
+        date(2020, 1, 31),
+        {"minimum": 'constraint "minimum" is "01/02/2020"'},
+    )
 
 
 def test_field_read_cell_required():

@@ -305,6 +305,29 @@ class Field(Metadata):
                         note=f'constraint "{name}" requires datapackage v2'
                     )
 
+        # Bound constraints
+        # They are cast with the field's value reader when reading cells, so a
+        # value that cannot be cast would silently disable the check.
+        constraints = descriptor.get("constraints", {})
+        bounds = [
+            name
+            for name in ("minimum", "maximum", "exclusiveMinimum", "exclusiveMaximum")
+            if constraints.get(name) is not None and name in cls.supported_constraints
+        ]
+        if bounds:
+            Class = system.select_field_class(descriptor.get("type"))
+            field_descriptor = {
+                key: value
+                for key, value in descriptor.items()
+                if key not in ["constraints", "example"]
+            }
+            field = Class.from_descriptor(field_descriptor, allow_invalid=True)
+            value_reader = field.create_value_reader()
+            for name in bounds:
+                if value_reader(constraints[name]) is None:
+                    note = f'constraint "{name}" value "{constraints[name]}" is not a valid "{field.type}"'
+                    yield errors.FieldError(note=note)
+
         # Examples
         example = descriptor.get("example")
         if example:
