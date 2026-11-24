@@ -17,7 +17,9 @@ jobs:
 
   test-linux:
     if: github.event_name != 'schedule' || github.repository_owner == 'frictionlessdata'
-    runs-on: ubuntu-latest
+    # Python 3.9 has no build for ubuntu-latest (26.04): pin it to 24.04
+    # until 3.9 support is dropped.
+    runs-on: ${{ matrix.python-version == '3.9' && 'ubuntu-24.04' || 'ubuntu-latest' }}
     strategy:
       fail-fast: false
       matrix:
