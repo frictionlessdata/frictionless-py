@@ -78,7 +78,7 @@ jobs:
 
   test-macos:
     if: github.event_name != 'schedule' || github.repository_owner == 'frictionlessdata'
-    runs-on: macos-14
+    runs-on: macos-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
