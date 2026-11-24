@@ -13,6 +13,7 @@ class ISchema(TypedDict, total=False):
     fields: Required[IField]
     missingValues: List[str]
     primary_key: List[str]
+    unique_keys: List[List[str]]
     foreign_keys: List[IForeignKey]
 
 
