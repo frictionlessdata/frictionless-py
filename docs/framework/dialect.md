@@ -51,6 +51,12 @@ with Resource('capital-3.csv', dialect=dialect) as resource:
     print(resource.to_view())
 ```
 
+When a header spans several rows, the cells of each column are merged from top to bottom into a single label:
+
+- Identical values on consecutive rows are kept only once, so that vertically merged Excel cells filled with the `fill_merged_cells` option are not repeated.
+- Blank cells are ignored.
+- The remaining values are joined with `header_join`.
+
 ## Header Join
 
 If there are multiple header rows which is managed by `header_rows` parameter, we can set a string to be a separator for a header's cell join operation. Usually it's very handy for some "fancy" Excel files. For the sake of simplicity, we will show on a CSV file:

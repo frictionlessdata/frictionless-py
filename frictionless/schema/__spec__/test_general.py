@@ -87,6 +87,30 @@ def test_schema_read_cells_null_values():
     assert len(notes) == 5
 
 
+def test_schema_read_cells_object_missing_values():
+    # The object form being a v2 addition, the descriptor declares a v2
+    # `$schema` (an absent `$schema` is an explicit v1, which gates it out)
+    schema = Schema.from_descriptor(
+        {
+            "$schema": "https://datapackage.org/profiles/2.0/tableschema.json",
+            "fields": [
+                {"name": "name", "type": "string"},
+                {"name": "age", "type": "integer"},
+            ],
+            "missingValues": [
+                {"value": "", "label": "OMITTED"},
+                {"value": "-99", "label": "REFUSED"},
+            ],
+        }
+    )
+    assert schema.missing_values == ["", "-99"]
+    source = ["-99", ""]
+    target = [None, None]
+    cells, notes = schema.read_cells(source)
+    assert cells == target
+    assert len(notes) == 2
+
+
 def test_schema_read_cells_too_short():
     schema = Schema(DESCRIPTOR_MAX)
     source = ["string", "10.0", "1", "string"]
@@ -401,6 +425,19 @@ def test_schema_pprint_with_constraints():
     """
     print(repr(schema))
     assert repr(schema) == textwrap.dedent(expected).strip()
+
+
+# Fields match
+
+
+def test_schema_fields_match_defaults_to_exact():
+    assert Schema(DESCRIPTOR_MIN).fields_match == "exact"
+
+
+@pytest.mark.parametrize("value", ["exact", "equal", "subset", "superset", "partial"])
+def test_schema_fields_match_from_descriptor(value):
+    descriptor = {**DESCRIPTOR_MIN, "fieldsMatch": value}
+    assert Schema.from_descriptor(descriptor).fields_match == value
 
 
 # Bugs

@@ -3,12 +3,12 @@ from __future__ import annotations
 from typing import List
 
 import typer
-from rich.console import Console
 
 from ...resource import Resource
 from ...system import system
 from .. import common, helpers
 from ..console import console
+from ..helpers import output_console
 
 
 @console.command(name="index")
@@ -29,7 +29,6 @@ def console_index(
     standards: str = common.standards,
 ):
     """Index a tabular data resource"""
-    console = Console()
 
     # Setup system
     if trusted:
@@ -41,11 +40,11 @@ def console_index(
     source = helpers.create_source(source, path=path)
     if not source and not path:
         note = 'Providing "source" or "path" is required'
-        helpers.print_error(console, note=note)
+        helpers.print_error(note=note)
         raise typer.Exit(code=1)
 
     # Index resource
-    console.rule("[bold]Index")
+    output_console.rule("[bold]Index")
     try:
         # Create resource
         resource = Resource(
@@ -61,7 +60,6 @@ def console_index(
         for resource in resources:
             names.extend(
                 helpers.index_resource(
-                    console,
                     resource=resource,
                     database=database,
                     fast=fast,
@@ -71,9 +69,9 @@ def console_index(
                 )
             )
     except Exception as exception:
-        helpers.print_exception(console, debug=debug, exception=exception)
+        helpers.print_exception(debug=debug, exception=exception)
         raise typer.Exit(code=1)
 
     # Print result
-    console.rule("[bold]Result")
-    console.print(f"Succesefully indexed [bold]{len(names)}[/] tables")
+    output_console.rule("[bold]Result")
+    output_console.print(f"Succesefully indexed [bold]{len(names)}[/] tables")

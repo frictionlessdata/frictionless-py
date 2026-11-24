@@ -4,7 +4,6 @@ import json as pyjson
 from typing import TYPE_CHECKING, List, Optional
 
 import typer
-from rich.console import Console
 from rich.table import Table
 
 from ...exception import FrictionlessException
@@ -14,6 +13,7 @@ from ...resource import Resource
 from ...system import system
 from .. import common, helpers
 from ..console import console
+from ..helpers import output_console
 
 if TYPE_CHECKING:
     from ... import types
@@ -77,7 +77,6 @@ def console_extract(
     Based on the inferred data source type it will return resource or package data.
     Default output format is tabulated with a front matter. Output will be utf-8 encoded.
     """
-    console = Console()
     name = name or resource_name
 
     # Setup system
@@ -90,7 +89,7 @@ def console_extract(
     source = helpers.create_source(source, path=path)
     if not source and not path:
         note = 'Providing "source" or "path" is required'
-        helpers.print_error(console, note=note)
+        helpers.print_error(note=note)
         raise typer.Exit(code=1)
 
     try:
@@ -173,7 +172,7 @@ def console_extract(
         # List resources
         resources = resource.list()
     except Exception as exception:
-        helpers.print_exception(console, debug=debug, exception=exception)
+        helpers.print_exception(debug=debug, exception=exception)
         raise typer.Exit(code=1)
 
     # Yaml mode
@@ -191,7 +190,7 @@ def console_extract(
     # No data
     if not data:
         note = "No tabular data have been found in the source"
-        helpers.print_error(console, note=note)
+        helpers.print_error(note=note)
         raise typer.Exit(code=1)
 
     # TODO: rework
@@ -215,7 +214,7 @@ def console_extract(
         raise typer.Exit()
 
     # Default mode
-    console.rule("[bold]Dataset")
+    output_console.rule("[bold]Dataset")
     view = Table(title="dataset")
     view.add_column("name")
     view.add_column("type")
@@ -224,13 +223,13 @@ def console_extract(
         style = "sky_blue1" if resource.tabular else ""
         row = [resource.name, resource.type, resource.path]
         view.add_row(*row, style=style)
-    console.print(view)
+    output_console.print(view)
 
-    console.rule("[bold]Tables")
+    output_console.rule("[bold]Tables")
     for title, items in data.items():
         # Empty
         if not items:
-            helpers.print_error(console, note="No rows found", title="Empty")
+            helpers.print_panel(note="No rows found", title="Empty")
             continue
 
         # General
@@ -252,4 +251,4 @@ def console_extract(
             if len(labels) > DEFAULT_MAX_FIELDS:
                 row.append("...")
             view.add_row(*row)
-        console.print(view)
+        output_console.print(view)

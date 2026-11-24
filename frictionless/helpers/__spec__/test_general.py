@@ -23,6 +23,11 @@ def test_ensure_dir(tmpdir):
         ("data/country/data.csv", True),
         ("data\\data.csv", True),
         ("data\\country\\data.csv", True),
+        ("https://example.com/data.csv", True),
+        ("s3://bucket/data.csv", True),
+        ("file:///etc/passwd", False),
+        ("file://localhost/etc/passwd", False),
+        ("file:data.csv", False),
         ("../data.csv", False),
         ("~/data.csv", False),
         ("~invalid_user/data.csv", False),
@@ -35,3 +40,20 @@ def test_ensure_dir(tmpdir):
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_is_safe_path(path, is_safe):
     assert helpers.is_safe_path(path) is is_safe
+
+
+@pytest.mark.parametrize(
+    "path,is_remote",
+    (
+        ("data.csv", False),
+        ("data/data.csv", False),
+        ("C:\\\\data", False),
+        ("C:/data", False),
+        ("C:/data/table.csv", False),
+        ("https://example.com/data.csv", True),
+        ("s3://bucket/data.csv", True),
+        ("http://example.com/data.csv", True),
+    ),
+)
+def test_is_remote_path(path, is_remote):
+    assert helpers.is_remote_path(path) is is_remote

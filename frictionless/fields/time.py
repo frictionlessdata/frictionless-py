@@ -18,6 +18,8 @@ class TimeField(Field):
         "required",
         "minimum",
         "maximum",
+        "exclusiveMinimum",
+        "exclusiveMaximum",
         "enum",
     ]
 

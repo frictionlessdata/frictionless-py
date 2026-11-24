@@ -3,7 +3,6 @@ from __future__ import annotations
 from typing import List
 
 import typer
-from rich.console import Console
 
 from ...exception import FrictionlessException
 from ...platform import platform
@@ -31,8 +30,6 @@ def console_transform(
     Please read more about Transform pipelines to write a pipeline
     that can be accepted by this function.
     """
-    console = Console()
-
     # Setup system
     if trusted:
         system.trusted = trusted
@@ -43,7 +40,7 @@ def console_transform(
     source = helpers.create_source(source, path=path)
     if not source and not path:
         note = 'Providing "source" or "path" is required'
-        helpers.print_error(console, note=note)
+        helpers.print_error(note=note)
         raise typer.Exit(code=1)
 
     # Create pipeline
@@ -61,7 +58,7 @@ def console_transform(
         result = resource.transform(pipeline_obj)
     # TODO: we don't catch errors here because it's streaming
     except Exception as exception:
-        helpers.print_exception(console, debug=debug, exception=exception)
+        helpers.print_exception(debug=debug, exception=exception)
         raise typer.Exit(code=1)
 
     # TODO: support outputting packages

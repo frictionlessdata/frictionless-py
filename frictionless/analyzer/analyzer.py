@@ -35,11 +35,18 @@ class Analyzer:
         columns_data: Dict[str, List[Any]] = {}
         numeric = ["integer", "numeric", "number"]
         with resource:
+            expected_field_names = {
+                field.name for field in resource.header.get_expected_fields()
+            }
+            analysis_fields = [
+                field
+                for field in resource.schema.fields
+                if field.name in expected_field_names
+            ]
             for row in resource.row_stream:
                 null_columns = 0
-                for field_name in row:
-                    field = resource.schema.get_field(field_name)
-                    cell = field.read_cell(row.get(field_name))[0]
+                for field in analysis_fields:
+                    cell = field.read_cell(row.get(field.name))[0]
                     if field.name not in columns_data:
                         columns_data[field.name] = []
                     if cell is None:
@@ -55,7 +62,7 @@ class Analyzer:
         # Field/Column Stats
         if columns_data and detailed:
             analysis_report["correlations"] = {}
-            for field in resource.schema.fields:
+            for field in analysis_fields:
                 analysis_report["fieldStats"][field.name] = {}
 
                 if field.type not in analysis_report["variableTypes"]:
@@ -89,7 +96,7 @@ class Analyzer:
                     )
 
                     # calculate correlation between variables(columns/fields)
-                    for field_y in resource.schema.fields:
+                    for field_y in analysis_fields:
                         if field_y.type in numeric:
                             # filter rows with nan values, correlation return nan if any of the
                             # row has nan value.

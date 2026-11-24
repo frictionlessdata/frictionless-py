@@ -3,6 +3,7 @@ from __future__ import annotations
 import inspect
 import io
 import json
+import os
 import pprint
 import re
 from collections.abc import Mapping
@@ -20,16 +21,20 @@ from typing import (
     Type,
     Union,
 )
+from urllib.parse import urlparse
 
+import attrs
 from typing_extensions import Self
 
-from .. import helpers
+from .. import helpers, settings, types
 from ..exception import FrictionlessException
 from ..platform import platform
 from ..vendors import stringcase
+from .context import ValidationContext
 
 if TYPE_CHECKING:
-    from .. import types
+    from referencing import Resource
+
     from ..error import Error
     from ..report import Report
 
@@ -64,6 +69,21 @@ class Metadata:
 
     A "custom" property is an additional property to the ones expected by the
     classe's "profile" (See the "metadata_profile_*" properties)
+    """
+
+    _schema_profile: Optional[str] = None
+    """
+    `$schema` property value, a JSON-schema profile URL this metadata follows.
+    It is (de)serialized specially in `metadata_import`/`metadata_export` because
+    `$schema` is not a valid Python identifier.
+    """
+
+    metadata_v2_profile = None
+    """
+    Canonical Data Package v2 profile URL of this class, used by `upgrade` to
+    set the root `$schema` (e.g. "https://datapackage.org/profiles/2.0/
+    datapackage.json" for a package). `None` when the class has no versioned
+    profile (e.g. a field).
     """
 
     def __new__(cls, *args: Any, **kwargs: Any):
@@ -227,8 +247,13 @@ class Metadata:
 
         If `allow_invalid = True`, the class creation will try to continue
         despite the descriptor having errors.
+
+        The optional "datapackage_version" option is the Data Package standard
+        version imposed by an ancestor (top-down inheritance); it seeds the
+        validation and the import, overriding the descriptor's own `$schema`.
         """
         descriptor_path = None
+        inherited_version = options.pop("datapackage_version", None)
 
         if isinstance(descriptor, str):
             descriptor_path = descriptor
@@ -256,27 +281,56 @@ class Metadata:
         Error = Class.metadata_Error or platform.frictionless_errors.MetadataError
 
         Class.metadata_transform(descriptor)
-        errors = list(Class.metadata_validate(descriptor))
+        context = ValidationContext(datapackage_version=inherited_version)
+        errors = list(Class.metadata_validate(descriptor, context=context))
 
         if not allow_invalid:
             if errors:
                 error = Error(note="descriptor is not valid")
                 raise FrictionlessException(error, reasons=errors)
 
-        metadata = Class.metadata_import(descriptor, **helpers.remove_non_values(options))
+        metadata = Class.metadata_import(
+            descriptor,
+            datapackage_version=inherited_version,
+            **helpers.remove_non_values(options),
+        )
         if descriptor_path:
             metadata.metadata_descriptor_path = descriptor_path
             metadata.metadata_descriptor_initial = metadata.to_descriptor()
         return metadata  # type: ignore
 
-    def to_descriptor(self, *, validate: bool = False) -> types.IDescriptor:
-        """Return a descriptor associated to the class instance.
-        If `validate = True`, the descriptor will additionnaly be validated.
+    def to_descriptor(
+        self, *, validate: bool = False, upgrade: bool = False
+    ) -> types.IDescriptor:
+        """Export the instance as a descriptor.
+
+        The descriptor is a canonical form of the metadata: it preserves all
+        the information the instance holds, but is not guaranteed to be
+        syntactically identical to the descriptor the instance was created
+        from (equivalent notations are normalized). Exporting is idempotent:
+        re-importing the result and exporting it again returns the same
+        descriptor.
+
+        If `validate = True`, the descriptor will additionally be validated.
+
+        If `upgrade = True`, the descriptor (and its children) is first
+        transformed into the Data Package v2 form — see `upgrade`.
         """
         descriptor = self.metadata_export()
+        if upgrade:
+            descriptor = type(self)._upgrade_descriptor(descriptor)
         if validate:
             Error = self.metadata_Error or platform.frictionless_errors.MetadataError
-            errors = list(self.metadata_validate(descriptor))
+            # Seed the context with the version inherited at import time (if
+            # any): a detached instance keeps the semantics of its tree.
+            # An upgraded descriptor is self-contained (its version is
+            # declared at the root): it is validated positionally
+            context = ValidationContext(
+                datapackage_version=None
+                if upgrade
+                else getattr(self, "_datapackage_version", None)
+            )
+            errors = list(self.metadata_validate(descriptor, context=context))
             if errors:
                 error = Error(note="descriptor is not valid")
                 raise FrictionlessException(error, reasons=errors)
@@ -291,8 +345,34 @@ class Metadata:
         return descriptor
 
     def to_copy(self, **options: Any) -> Self:
-        """Create a copy of the metadata"""
+        """Create a copy of the metadata
+
+        The copy keeps the Data Package version the instance inherited from
+        its ancestors (if any), so that a detached copy validates like it did
+        within its tree.
+        """
+        options.setdefault(
+            "datapackage_version", getattr(self, "_datapackage_version", None)
+        )
         return type(self).from_descriptor(self.to_descriptor(), **options)
+
+    def upgrade(self) -> Self:
+        """Upgrade this metadata to the Data Package v2 standard
+
+        Returns a new instance (this one is left untouched) whose descriptor
+        tree — this object and its children — is transformed into the v2
+        form: the root gets `$schema` (as its first property) set to the
+        canonical v2 profile of the class, the legacy `profile` property is
+        migrated (a custom URL is retained in `$schema`; a
+        "tabular-data-resource" profile becomes "type": "table"), and
+        `$schema` never appears on children (it is removed: a `$schema` may
+        be provided at the root only).
+
+        A `$schema` or `profile` pointing to a custom profile URL is kept
+        as-is: an automatic upgrade of a custom profile is not possible (its
+        upgrade path is up to its author).
+        """
+        return type(self).from_descriptor(self.to_descriptor(upgrade=True))
 
     def to_dict(self) -> types.IDescriptor:
         """Export metadata as dictionary (alias for "to_descriptor")"""
@@ -467,8 +547,14 @@ class Metadata:
                     descriptor = str(descriptor)
 
                 if helpers.is_remote_path(descriptor):
+                    # Same timeout as remote data (imported locally to avoid
+                    # a circular import)
+                    from ..schemes.remote.settings import DEFAULT_HTTP_TIMEOUT
+
                     session = platform.frictionless.system.http_session
-                    response = session.get(descriptor, stream=True)
+                    response = session.get(
+                        descriptor, stream=True, timeout=DEFAULT_HTTP_TIMEOUT
+                    )
                     response.raise_for_status()
                     response.raw.decode_content = True
                     content = response.raw.read(size).decode("utf-8")
@@ -489,8 +575,89 @@ class Metadata:
 
         except Exception as exception:
             Error = cls.metadata_Error or platform.frictionless_errors.MetadataError
-            note = f'cannot retrieve metadata "{descriptor}" because "{exception}"'
+            reason = _network_error_note(exception)
+            note = f'cannot retrieve metadata "{descriptor}" because "{reason}"'
             raise FrictionlessException(Error(note=note)) from exception
+
+    @classmethod
+    def metadata_retrieve_json_schema(
+        cls,
+        uri: str,
+        *,
+        context: ValidationContext,
+    ) -> Resource:
+        """Retrieve the JSON Schema referenced by a profile's "$ref"
+
+        A local "$ref" follows the same safety rules as the profile path: when
+        untrusted, it must come from a local profile and resolve inside the
+        current working directory. Only http(s) and local "$ref"s are supported.
+        The JSON Schemas are cached in the validation context, so that each one
+        is retrieved only once per validation.
+        """
+        # Imported locally, as jsonschema (which imports it anyway) is lazily loaded
+        from urllib.request import url2pathname
+
+        from referencing import Resource
+        from referencing.jsonschema import DRAFT202012
+
+        Error = cls.metadata_Error or platform.frictionless_errors.MetadataError
+        trusted = platform.frictionless.system.trusted
+
+        def unsafe() -> FrictionlessException:
+            # The error avoids to disclose the path
+            return FrictionlessException(
+                Error(
+                    note='"$ref" path is not safe '
+                    "(see the Advanced topics > Security documentation)"
+                )
+            )
+
+        path = uri
+        url = urlparse(uri)
+        scheme = url.scheme
+        if scheme == "file":
+            # Accept only recognized authorities:
+            #  - "local_token": a "$ref" resolved against a local profile carries
+            #    this random sentinel as its authority (set in `metadata_validate`);
+            #    always accepted, because the profile was loaded by the validator
+            #    itself.
+            #  - "" / "localhost": a "file:" URI written literally in a document;
+            #    only accepted when trusted, since an untrusted document must not
+            #    read local files.
+            # Any other authority denotes a remote host (e.g. an SMB share on
+            # Windows, a remote file server): this retriever handles local files
+            # only, and such a host is an SSRF vector, so it is rejected
+            # regardless of trust.
+            hosts = [context.local_token] + (["", "localhost"] if trusted else [])
+            if url.netloc not in hosts:
+                raise unsafe()
+            path = url2pathname(url.path)
+
+            # Path-safety, only in untrusted mode: the path is only accepted
+            # if inside the current working directory
+            if not trusted:
+                try:
+                    path = os.path.relpath(path)
+                except ValueError:  # different drive on Windows
+                    raise unsafe()
+                if not helpers.is_safe_path(path):
+                    raise unsafe()
+        elif scheme in ("http", "https"):
+            pass
+        elif helpers.is_remote_path(uri):
+            note = f'"$ref" scheme "{scheme}" is not supported'
+            raise FrictionlessException(Error(note=note))
+        elif not trusted:
+            # A plain path is not resolved against a local profile
+            raise unsafe()
+
+        cache = context.json_schema_cache
+        if uri not in cache:
+            cache[uri] = Resource.from_contents(
+                cls.metadata_retrieve(path),
+                default_specification=DRAFT202012,
+            )
+        return cache[uri]
 
     @classmethod
     def metadata_transform(cls, descriptor: types.IDescriptor):
@@ -527,6 +694,7 @@ class Metadata:
         *,
         profile: Optional[Union[types.IDescriptor, str]] = None,
         error_class: Optional[Type[Error]] = None,
+        context: Optional[ValidationContext] = None,
     ) -> Generator[Error, None, None]:
         """Validates a descriptor according to a profile
 
@@ -535,18 +703,63 @@ class Metadata:
 
         The profile to validate can be set explicitely ("profile" parameter),
         otherwise it defaults to the class profile.
+
+        "context" carries the information shared down the recursion, such as
+        the Data Package standard version resolved from an ancestor's `$schema`
+        (top-down inheritance). An absent `$schema` resolves to an explicit
+        "v1" (as mandated by the spec), a custom profile URL to "unknown"
+        (gates accept a superset of v1 and v2); the resulting version is
+        imposed on all children, whatever `$schema` they declare themselves.
+        Subclasses read it (via `effective_datapackage_version`) to gate
+        version-specific properties.
         """
+        context = context or ValidationContext()
         Error = error_class
         if not Error:
             Error = cls.metadata_Error or platform.frictionless_errors.MetadataError
 
         profile = profile or cls.metadata_ensure_profile()
+        profile_uri = None
         if isinstance(profile, str):
+            # A base URI has to be absolute to resolve relative "$ref"s correctly
+            profile_uri = profile
+            if not helpers.is_remote_path(profile):
+                # We set the URI's authority component to a random token
+                # sentinel to tell relative "$ref"s resolved against it apart (see
+                # `ValidationContext.local_token`)
+                path_uri = Path(os.path.abspath(profile)).as_uri()
+                profile_uri = path_uri.replace(
+                    "file://", f"file://{context.local_token}", 1
+                )
             profile = cls.metadata_retrieve(profile)
 
+        # Imported locally, as jsonschema (which imports it anyway) is lazily loaded
+        from referencing import Registry, Resource
+        from referencing.jsonschema import DRAFT202012
+
+        # "$ref"s retrieval
+        registry = Registry(
+            retrieve=lambda uri: cls.metadata_retrieve_json_schema(uri, context=context)
+        )
         validator_class = platform.jsonschema.validators.validator_for(profile)  # type: ignore
-        validator = validator_class(profile)  # type: ignore
-        for error in validator.iter_errors(descriptor):  # type: ignore
+        schema = profile
+        if profile_uri:
+            # The profile is registered under its URI and used as the root
+            # document, so that its relative "$ref"s are resolved against it
+            resource = Resource.from_contents(profile, default_specification=DRAFT202012)
+            registry = registry.with_resource(profile_uri, resource)
+            schema = {"$ref": profile_uri}
+        validator = validator_class(schema, registry=registry)  # type: ignore
+        try:
+            errors = list(validator.iter_errors(descriptor))  # type: ignore
+        except Exception as exception:
+            # Our own error (raised while retrieving a "$ref") is more explicit
+            # than the jsonschema wrapper around it
+            reason = _profile_error_note(exception)
+            note = f'failed to resolve json-schema profile because "{reason}"'
+            raise FrictionlessException(Error(note=note)) from exception
+
+        for error in errors:
             metadata_path = "/".join(map(str, error.path))  # type: ignore
             message = re.sub(r"\s+", " ", error.message)  # type: ignore
             note = message
@@ -554,6 +767,10 @@ class Metadata:
                 note = f"{note} at property '{metadata_path}'"
             yield Error(note=note)
 
+        version = cls.effective_datapackage_version(
+            descriptor, context.datapackage_version
+        )
+        child_context = attrs.evolve(context, datapackage_version=version)
         for name in profile.get("properties", {}):
             value = descriptor.get(name)
             Class = cls.metadata_select_property_class(name)
@@ -563,9 +780,157 @@ class Metadata:
                         if isinstance(item, dict):
                             type = item.get("type")  # type: ignore
                             ItemClass = Class.metadata_select_class(type)  # type: ignore
-                            yield from ItemClass.metadata_validate(item)  # type: ignore
+                            yield from ItemClass.metadata_validate(
+                                item,  # type: ignore
+                                context=child_context,
+                            )
                 elif isinstance(value, dict):
-                    yield from Class.metadata_validate(value)  # type: ignore
+                    yield from Class.metadata_validate(
+                        value,  # type: ignore
+                        context=child_context,
+                    )
+
+    @classmethod
+    def _accepts_schema_profile(cls) -> bool:
+        """Whether the class declares the `schema_profile` field (i.e. handles
+        `$schema`). The `attrs.has` narrowing is kept local here to avoid
+        polluting the type of `cls` in the callers."""
+        return attrs.has(cls) and "_schema_profile" in attrs.fields_dict(cls)
+
+    @staticmethod
+    def _resolve_datapackage_version(
+        schema_profile: Optional[str],
+    ) -> types.IResolvedStandards:
+        """Resolve the Data Package standard version from a profile URL.
+
+        - a standard datapackage.org profile uses the version from its URL;
+        - any custom profile URL resolves to "unknown": the version is known
+          to nobody but the profile's author, so version gates accept a
+          superset of v1 and v2.
+        """
+        if not schema_profile:
+            return "v1"
+        url = urlparse(schema_profile)
+        if Metadata._is_standard_profile(schema_profile):
+            match = re.search(r"/profiles/(\d+)\.\d+/", url.path)
+            if match:
+                if match.group(1) == "1":
+                    return "v1"
+                if match.group(1) == "2":
+                    return "v2"
+        return "unknown"
+
+    @staticmethod
+    def _is_standard_profile(schema_profile: str) -> bool:
+        """Whether a `$schema` value is a datapackage.org standard profile
+        URL (i.e. a profile this library knows how to upgrade)"""
+        url = urlparse(schema_profile)
+        return url.netloc == "datapackage.org" and re.search(
+            r"/profiles/\d+\.\d+/", url.path
+        ) is not None
+
+    @classmethod
+    def _upgrade_descriptor(
+        cls, descriptor: types.IDescriptor, *, root: bool = True
+    ) -> types.IDescriptor:
+        """Transform a descriptor tree into the Data Package v2 form
+
+        Root (only the root can declare `$schema`):
+        - the legacy `profile` property is migrated: a custom profile URL is
+          retained in `$schema` instead of the canonical v2 URL;
+          "tabular-data-resource" becomes "type": "table"; other values
+          (e.g. "data-package"/"data-resource") are dropped;
+        - a `$schema` pointing to a standard profile is replaced by the
+          canonical v2 profile of the class; a custom `$schema` URL is kept
+          as-is (an automatic upgrade of a custom profile is not possible);
+        - otherwise `$schema` is set (as the first property) to the canonical
+          v2 profile of the class.
+
+        Children: `$schema` is removed (root-only) and the same legacy
+        `profile` handling is applied (a custom profile URL is kept in
+        place: it cannot be expressed as a child `$schema`).
+        """
+        descriptor = dict(descriptor)
+
+        # Children first: the same transformation as a root, but `$schema`
+        # is root-only (removed, never added)
+        profile = cls.metadata_ensure_profile()
+        for name in profile.get("properties", {}):
+            if name in ("$schema", "profile"):
+                continue
+            value = descriptor.get(name)
+            if not isinstance(value, (dict, list)):
+                continue
+            ItemClass = cls.metadata_select_property_class(name)
+            if not ItemClass:
+                continue
+            if isinstance(value, list):
+                for ix, item in enumerate(value):  # type: ignore
+                    if isinstance(item, dict):
+                        TypedItemClass = ItemClass.metadata_select_class(
+                            item.get("type")  # type: ignore
+                        )
+                        value[ix] = TypedItemClass._upgrade_descriptor(  # type: ignore
+                            item, root=False  # type: ignore
+                        )
+            else:
+                descriptor[name] = ItemClass._upgrade_descriptor(value, root=False)  # type: ignore
+
+        # Legacy `profile` property (standards v1)
+        profile_url = None
+        profile_value = descriptor.pop("profile", None)
+        if profile_value == settings.DEFAULT_TABULAR_RESOURCE_PROFILE:
+            descriptor["type"] = "table"
+        elif profile_value and urlparse(profile_value).netloc:
+            # custom profile URL: retained (see the docstring)
+            profile_url = profile_value
+
+        if not root:
+            descriptor.pop("$schema", None)  # a `$schema` is root-only
+            if profile_url:
+                descriptor["profile"] = profile_url
+            return descriptor
+
+        # `$schema` (first property) — only for the classes with a versioned
+        # profile (a field, for instance, has nothing to declare)
+        if cls.metadata_v2_profile:
+            schema_profile = descriptor.pop("$schema", None)
+            if profile_url:
+                schema_profile = profile_url
+            elif not schema_profile or cls._is_standard_profile(schema_profile):
+                schema_profile = cls.metadata_v2_profile
+            # else: a custom `$schema` URL is kept (see the docstring)
+            descriptor = {"$schema": schema_profile, **descriptor}
+        return descriptor
+
+    @classmethod
+    def effective_datapackage_version(
+        cls,
+        descriptor: types.IDescriptor,
+        inherited: Optional[types.IResolvedStandards],
+    ) -> types.IResolvedStandards:
+        """Version imposed top-down on this descriptor and its descendants.
+
+        An ancestor's resolved version wins (a descendant cannot escape it,
+        whatever `$schema` it declares); otherwise the descriptor's own
+        `$schema` sets the version. An absent `$schema` resolves to an
+        explicit "v1" (as mandated by the spec): only `$schema` plays —
+        a legacy `profile` coexisting with a `$schema` is ignored, so
+        declaring both behaves exactly as `$schema` alone (full backward
+        compatibility). A custom `$schema` URL resolves to "unknown" (its
+        version is known to nobody but its author, so version gates accept
+        a superset of v1 and v2).
+        """
+        if inherited is not None:
+            return inherited
+        schema_profile = descriptor.get("$schema")
+        if schema_profile:
+            return cls._resolve_datapackage_version(schema_profile)
+        # An absent `$schema` is an explicit "v1" (as mandated by the spec)
+        # for the classes that can declare one. A field never declares
+        # `$schema`: a standalone field carries no version of its own and
+        # only inherits one from its ancestors ("unknown": lax).
+        return "v1" if cls._accepts_schema_profile() else "unknown"
 
     @classmethod
     def metadata_import(
@@ -578,10 +943,28 @@ class Metadata:
         """Deserialization of a descriptor to a class instance
 
         The deserialization and serialization must be lossless.
+
+        The optional "datapackage_version" option is the version imposed by
+        an ancestor (top-down inheritance); by default the version is
+        resolved positionally from this descriptor. It is threaded to the
+        children like in `metadata_validate`, and stored by the classes
+        declaring the `_datapackage_version` field so that a detached
+        validation keeps the tree semantics.
         """
         merged_options = {}
         profile = cls.metadata_ensure_profile()
         basepath = options.pop("basepath", None)
+        inherited_version = options.pop("datapackage_version", None)
+        version = inherited_version or cls.effective_datapackage_version(descriptor, None)
+
+        # Special handling of `$schema`
+        # Only the subclasses declaring the `schema_profile` field
+        # accept the kwarg; for the others `$schema` is
+        # left in the descriptor and round-trips through `custom`.
+        if cls._accepts_schema_profile():
+            schema_profile = descriptor.pop("$schema", None)
+            if schema_profile is not None:
+                merged_options.setdefault("schema_profile", schema_profile)  # type: ignore
         is_typed_class = isinstance(getattr(cls, "type", None), str)
         for name in profile.get("properties", {}):
             value = descriptor.pop(name, None)
@@ -596,17 +979,29 @@ class Metadata:
                         if isinstance(item, dict):
                             type = item.get("type")  # type: ignore
                             ItemClass = Class.metadata_select_class(type)  # type: ignore
-                            value[ix] = ItemClass.metadata_import(item, basepath=basepath)  # type: ignore
+                            value[ix] = ItemClass.metadata_import(
+                                item,  # type: ignore
+                                basepath=basepath,
+                                datapackage_version=version,
+                            )
                         elif isinstance(item, str):
-                            value[ix] = Class.from_descriptor(item, basepath=basepath)
+                            value[ix] = Class.from_descriptor(
+                                item, basepath=basepath, datapackage_version=version
+                            )
                 elif isinstance(value, dict):
-                    value = Class.metadata_import(value, basepath=basepath)  # type: ignore
+                    value = Class.metadata_import(
+                        value,  # type: ignore
+                        basepath=basepath,
+                        datapackage_version=version,
+                    )
             merged_options.setdefault(stringcase.snakecase(name), value)  # type: ignore
         merged_options.update(options)  # type: ignore
+        if attrs.has(cls) and "_datapackage_version" in attrs.fields_dict(cls):
+            merged_options["datapackage_version"] = version
         if with_basepath:
             merged_options["basepath"] = basepath
         metadata = cls(**merged_options)
-        metadata.custom = descriptor
+        metadata.custom = descriptor  # type: ignore
         return metadata
 
     def metadata_export(self, *, exclude: List[str] = []) -> types.IDescriptor:
@@ -635,5 +1030,78 @@ class Metadata:
             if isinstance(value, (list, dict)):
                 value = deepcopy(value)  # type: ignore
             descriptor[name] = value
+
+        # Special handling of `$schema`
+        # The spec recommends `$schema` as the first property
+        if self._schema_profile is not None:
+            descriptor = {"$schema": self._schema_profile, **descriptor}
+
         descriptor.update(self.custom)  # type: ignore
         return descriptor  # type: ignore
+
+
+def _profile_error_note(exception: Exception) -> str:
+    """Return the note of a jsonschema profile validation failure
+
+    The "$ref" retrieval errors raised by frictionless (in the "__cause__"
+    chain) are more explicit than the jsonschema wrapper around them.
+
+    The exceptions of the referencing library are reworded when they embed the
+    referenced document in their message: a "$ref" can target any file of
+    the working directory, whose content must not be disclosed.
+    """
+    # local import for a rarely-hit path
+    from referencing import exceptions as referencing_exceptions
+
+    cause = exception
+    while cause is not None:
+        if isinstance(cause, FrictionlessException):
+            return cause.error.note
+        if isinstance(cause, referencing_exceptions.PointerToNowhere):
+            note = (
+                f"JSON pointer '{cause.ref}' does not exist "
+                "within the referenced document"
+            )
+            if cause.ref == "/":
+                note += " (to point to the whole document, use '#')"
+            return note
+        if isinstance(cause, referencing_exceptions.NoSuchAnchor):
+            return (
+                f"anchor '{cause.anchor}' does not exist within the referenced document"
+            )
+        if isinstance(cause, referencing_exceptions.CannotDetermineSpecification):
+            return "cannot determine the specification of the referenced document"
+        cause = cause.__cause__
+    return str(exception)
+
+
+# urllib3 prefixes network error messages with the representation of the
+# connection or pool, e.g. "HTTPSConnection(host='example.com', port=443): "
+# (before 2.0, it is the default object repr,
+# e.g. "<urllib3.connection.HTTPSConnection object at 0x...>: ")
+_HTTP_CONNECTION_PREFIX = re.compile(
+    r"^(<[^>]*>|\w*HTTPS?Connection(Pool)?\(host='[^']*', port=\d+\)):\s*"
+)
+
+
+def _network_error_note(exception: Exception) -> str:
+    """Return a concise message for a network error
+
+    A requests exception is verbose: it embeds the urllib3 representation of
+    the pool and of the connection, repeating the URL and hiding the
+    low-level cause behind nested parentheses and quotes. Only the
+    informative tail is kept, e.g. "Failed to resolve 'example.com' ([Errno
+    -2] Name or service not known)". Other exceptions are left unchanged.
+    """
+    requests = platform.requests
+    if not isinstance(exception, (requests.ConnectionError, requests.Timeout)):
+        return str(exception)
+
+    # Unwrap the chain: requests wraps the urllib3 error ("args[0]"), which
+    # itself wraps the low-level error (its "reason"). The low-level message
+    # is its last argument ("args[-1]")
+    error = exception.args[0] if exception.args else exception
+    reason = getattr(error, "reason", None) or error
+    args = getattr(reason, "args", None)
+    note = args[-1] if args else reason
+    return _HTTP_CONNECTION_PREFIX.sub("", str(note)) or str(exception)

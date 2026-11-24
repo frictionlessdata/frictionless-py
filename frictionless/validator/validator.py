@@ -21,7 +21,7 @@ class Validator:
 
         There is no plan to remove this method in future versions.
         """
-        package.validate(*args, **kwargs)
+        return package.validate(*args, **kwargs)
 
     # Resource
 
@@ -32,4 +32,4 @@ class Validator:
 
         There is no plan to remove this method in future versions.
         """
-        resource.validate(*args, **kwargs)
+        return resource.validate(*args, **kwargs)

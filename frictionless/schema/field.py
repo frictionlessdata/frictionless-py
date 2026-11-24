@@ -1,16 +1,27 @@
 from __future__ import annotations
 
-import decimal
+import operator
 import re
 from functools import partial
-from typing import TYPE_CHECKING, Any, Callable, ClassVar, Dict, List, Optional, Pattern
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Callable,
+    ClassVar,
+    Dict,
+    List,
+    Optional,
+    Pattern,
+    cast,
+)
 
 import attrs
 
 from .. import errors, settings
 from ..exception import FrictionlessException
-from ..metadata import Metadata
+from ..metadata import Metadata, ValidationContext
 from ..system import system
+from . import missing_values as missing_values_module
 
 if TYPE_CHECKING:
     from ..types import IDescriptor
@@ -50,9 +61,7 @@ class Field(Metadata):
     For example: "default","array" etc.
     """
 
-    missing_values: List[str] = attrs.field(
-        factory=settings.DEFAULT_MISSING_VALUES.copy
-    )
+    missing_values: List[str] = attrs.field(factory=settings.DEFAULT_MISSING_VALUES.copy)
     """
     List of string values to be set as missing values in the field. If any of string in missing values
     is found in the field value then it is set as None.
@@ -92,6 +101,10 @@ class Field(Metadata):
         if name == "type":
             note = 'Use "schema.set_field_type()" to update the type of the field'
             raise FrictionlessException(errors.FieldError(note=note))
+        if name == "missing_values" and isinstance(value, list):
+            value, self._missing_values_labels = missing_values_module.split(
+                cast(missing_values_module.IEntries, value)
+            )
         return super().__setattr__(name, value)  # type: ignore
 
     @property
@@ -123,7 +136,12 @@ class Field(Metadata):
         for name in self.supported_constraints:
             constraint = self.constraints.get(name)
             if constraint is not None:
-                if name in ["minimum", "maximum"]:
+                if name in [
+                    "minimum",
+                    "maximum",
+                    "exclusiveMinimum",
+                    "exclusiveMaximum",
+                ]:
                     constraint = value_reader(constraint)
                 if name == "pattern":
                     constraint = re.compile("^{0}$".format(constraint))
@@ -209,10 +227,7 @@ class Field(Metadata):
             "title": {"type": "string"},
             "description": {"type": "string"},
             "format": {"type": "string"},
-            "missingValues": {
-                "type": "array",
-                "items": {"type": "string"},
-            },
+            "missingValues": missing_values_module.PROFILE,
             "constraints": {
                 "type": "object",
                 "properties": {
@@ -224,6 +239,8 @@ class Field(Metadata):
                     "maxLength": {"type": "integer"},
                     "minimum": {},
                     "maximum": {},
+                    "exclusiveMinimum": {},
+                    "exclusiveMaximum": {},
                 },
             },
             "rdfType": {"type": "string"},
@@ -245,8 +262,14 @@ class Field(Metadata):
             descriptor["format"] = format.replace("fmt:", "")
 
     @classmethod
-    def metadata_validate(cls, descriptor: IDescriptor):  # type: ignore
-        metadata_errors = list(super().metadata_validate(descriptor))
+    def metadata_validate(  # type: ignore
+        cls,
+        descriptor: IDescriptor,
+        *,
+        context: Optional[ValidationContext] = None,
+    ):
+        context = context or ValidationContext()
+        metadata_errors = list(super().metadata_validate(descriptor, context=context))
         if metadata_errors:
             yield from metadata_errors
             return
@@ -256,6 +279,31 @@ class Field(Metadata):
             if name not in cls.supported_constraints + ["unique"]:
                 note = f'constraint "{name}" is not supported by type "{cls.type}"'
                 yield errors.FieldError(note=note)
+
+        # Missing Values
+        missing_values = descriptor.get("missingValues", [])
+        for note in missing_values_module.validation_notes(missing_values):
+            yield errors.FieldError(note=note)
+
+        # Missing Values version gate
+        # A field never declares its own `$schema`; the version is the one
+        # imposed top-down by an ancestor.
+        version = cls.effective_datapackage_version(
+            descriptor, context.datapackage_version
+        )
+        for note in missing_values_module.version_gate_notes(missing_values, version):
+            yield errors.FieldError(note=note)
+
+        # Exclusive bounds version gate
+        # `exclusiveMinimum`/`exclusiveMaximum` are a datapackage v2 addition,
+        # rejected under unambiguous v1 (an "unknown" version, from a
+        # custom profile, accepts the superset).
+        if version == "v1":
+            for name in ("exclusiveMinimum", "exclusiveMaximum"):
+                if name in descriptor.get("constraints", {}):
+                    yield errors.FieldError(
+                        note=f'constraint "{name}" requires datapackage v2'
+                    )
 
         # Examples
         example = descriptor.get("example")
@@ -276,9 +324,7 @@ class Field(Metadata):
                     field.false_values = descriptor["falseValues"]
             _, notes = field.read_cell(example)
             if notes is not None:
-                note = (
-                    f'example value "{example}" for field "{field.name}" is not valid'
-                )
+                note = f'example value "{example}" for field "{field.name}" is not valid'
                 yield errors.FieldError(note=note)
 
         # Misleading
@@ -286,6 +332,18 @@ class Field(Metadata):
             if name in descriptor:
                 note = f'"{name}" should be set as "constraints.{name}"'
                 yield errors.FieldError(note=note)
+
+    def metadata_export(self, *, exclude: List[str] = []) -> IDescriptor:
+        descriptor = super().metadata_export(exclude=exclude)
+
+        missing_values = descriptor.get("missingValues")
+        if isinstance(missing_values, list):
+            descriptor["missingValues"] = missing_values_module.export(
+                cast(List[str], missing_values),
+                getattr(self, "_missing_values_labels", {}),
+            )
+
+        return descriptor
 
 
 # Internal
@@ -313,30 +371,26 @@ def check_maxLength(constraint: Any, cell: Any):
     return False
 
 
-def check_minimum(constraint: Any, cell: Any):
+def _check_bound(
+    constraint: Any, cell: Any, *, compare: Callable[[Any, Any], bool]
+) -> bool:
+    # `compare(cell, constraint)` is one of operator.ge/le/gt/lt
     if cell is None:
         return True
-    try:
-        if cell >= constraint:
-            return True
-    except decimal.InvalidOperation:
-        # For non-finite numbers NaN, INF and -INF
-        # the constraint always is not satisfied
+
+    # Detect `NaN` in a type agnostic way: NaN is not equal to itself (IEEE 754)
+    # and is incomparable. Handling NaN defensively here prevents, e.g., raising
+    # decimal.InvalidOperation during the comparison. +/-Inf compare normally
+    # and pass through.
+    if cell != cell:
         return False
-    return False
+    return bool(compare(cell, constraint))
 
 
-def check_maximum(constraint: Any, cell: Any):
-    if cell is None:
-        return True
-    try:
-        if cell <= constraint:
-            return True
-    except decimal.InvalidOperation:
-        # For non-finite numbers NaN, INF and -INF
-        # the constraint always is not satisfied
-        return False
-    return False
+check_minimum = partial(_check_bound, compare=operator.ge)
+check_maximum = partial(_check_bound, compare=operator.le)
+check_exclusiveMinimum = partial(_check_bound, compare=operator.gt)
+check_exclusiveMaximum = partial(_check_bound, compare=operator.lt)
 
 
 def check_pattern(constraint: Pattern[str], cell: Optional[str]):

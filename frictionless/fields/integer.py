@@ -18,6 +18,8 @@ class IntegerField(Field):
         "required",
         "minimum",
         "maximum",
+        "exclusiveMinimum",
+        "exclusiveMaximum",
         "enum",
     ]
 

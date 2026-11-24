@@ -38,13 +38,16 @@ def test_resource_validate_invalid_resource():
 
 def test_resource_validate_schema_extra_headers_and_cells():
     schema = Schema.from_descriptor({"fields": [{"name": "id", "type": "integer"}]})
+    # resource with extra label "name"
     resource = TableResource(path="data/table.csv", schema=schema)
     report = resource.validate()
     assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
         [None, 2, "extra-label"],
-        [2, 2, "extra-cell"],
-        [3, 2, "extra-cell"],
     ]
+
+    extra_label_error = report.task.errors[0]
+    assert extra_label_error.label == "name"
+    assert '"name"' in extra_label_error.message
 
 
 def test_resource_validate_schema_multiple_errors():
@@ -113,6 +116,38 @@ def test_resource_validate_schema_minimum_constraint():
     report = resource.validate(checklist)
     assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
         [2, 2, "constraint-error"],
+    ]
+
+
+def test_resource_validate_schema_exclusive_minimum_and_maximum_constraints():
+    source = [["row", "score"], [2, 1], [3, 2], [4, 3], [5, 4], [6]]
+    # The exclusive bounds being a v2 addition, the v2 `$schema` is declared
+    # both on the schema (imported standalone: an absent `$schema` is an
+    # explicit v1) and on the resource (which imposes its version top-down on
+    # the schema and its fields)
+    schema = Schema.from_descriptor(
+        {
+            "$schema": "https://datapackage.org/profiles/2.0/tableschema.json",
+            "fields": [
+                {"name": "row", "type": "integer"},
+                {
+                    "name": "score",
+                    "type": "integer",
+                    "constraints": {"exclusiveMinimum": 1, "exclusiveMaximum": 4},
+                },
+            ]
+        }
+    )
+    resource = TableResource(
+        data=source,
+        schema=schema,
+        schema_profile="https://datapackage.org/profiles/2.0/dataresource.json",
+    )
+    checklist = Checklist(pick_errors=["constraint-error"])
+    report = resource.validate(checklist)
+    assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
+        [2, 2, "constraint-error"],
+        [5, 2, "constraint-error"],
     ]
 
 
@@ -298,7 +333,61 @@ def test_resource_validate_resource_duplicate_labels_with_sync_schema_issue_910(
     )
     report = resource.validate()
     assert report.flatten(["type", "note"]) == [
-        ["error", '"schema_sync" requires unique labels in the header'],
+        [
+            "error",
+            'matching fields by name ("fieldsMatch": "partial") '
+            "requires unique labels in the header",
+        ],
+    ]
+
+
+def test_resource_validate_duplicate_labels_ignoring_header_case():
+    schema = Schema.from_descriptor(
+        {
+            "fields": [{"name": "name", "type": "string"}],
+            "fieldsMatch": "partial",
+        }
+    )
+    resource = TableResource(
+        [["Name", "name"], ["a", "b"]],
+        schema=schema,
+        dialect=Dialect(header_case=False),
+    )
+    report = resource.validate()
+    assert report.flatten(["type", "note"]) == [
+        [
+            "error",
+            'matching fields by name ("fieldsMatch": "partial") '
+            "requires unique labels in the header",
+        ],
+    ]
+
+
+def test_resource_validate_fields_only_distinguished_by_case_are_rejected():
+    # The schema is valid: "a" and "A" are distinct field names. But with
+    # `header_case` off they collapse onto the same key.
+    schema = Schema.from_descriptor(
+        {
+            "fields": [
+                {"name": "a", "type": "string"},
+                {"name": "A", "type": "integer"},
+            ],
+            "fieldsMatch": "partial",
+        }
+    )
+    resource = TableResource(
+        [["A"], ["x"]],
+        schema=schema,
+        dialect=Dialect(header_case=False),
+    )
+    report = resource.validate()
+    assert report.flatten(["type", "note"]) == [
+        [
+            "metadata-error",
+            'matching fields by name ("fieldsMatch": "partial") is ambiguous: '
+            'fields "a", "A" differ only by case, which "header_case" is set '
+            "to ignore",
+        ],
     ]
 
 
@@ -309,10 +398,73 @@ def test_resource_validate_less_actual_fields_with_required_constraint_issue_950
     print(report.flatten(["rowNumber", "fieldNumber", "type"]))
     assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
         [None, 3, "missing-label"],
-        [2, 3, "constraint-error"],
-        [2, 3, "missing-cell"],
-        [3, 3, "constraint-error"],
-        [3, 3, "missing-cell"],
+    ]
+
+
+def test_resource_validate_missing_label_preserves_irregular_row_issue_1791():
+    data = [
+        ["a", "b"],
+        ["1"],
+    ]
+
+    schema = Schema.from_descriptor(
+        {
+            "fields": [
+                {"name": "a"},
+                {"name": "b"},
+                {"name": "c"},
+            ]
+        }
+    )
+
+    resource = TableResource(data=data, schema=schema)
+    report = resource.validate()
+
+    assert report.flatten(["rowNumber", "fieldNumber", "fieldName", "type"]) == [
+        [None, 3, "c", "missing-label"],
+        [2, 2, "b", "missing-cell"],
+    ]
+
+
+@pytest.mark.parametrize(
+    "schema_descriptor",
+    [
+        {
+            "fields": [
+                {"name": "id"},
+                {"name": "missing", "constraints": {"unique": True}},
+            ]
+        },
+        {
+            "fields": [{"name": "id"}, {"name": "missing"}],
+            "primaryKey": "missing",
+        },
+        {
+            "fields": [{"name": "id"}, {"name": "missing"}],
+            "foreignKeys": [
+                {
+                    "fields": "missing",
+                    "reference": {"resource": "", "fields": "id"},
+                }
+            ],
+        },
+    ],
+    ids=["unique", "primary-key", "foreign-key"],
+)
+def test_resource_validate_missing_label_skips_integrity_checks_issue_1791(
+    schema_descriptor,
+):
+    data = [["id"], ["1"], ["2"]]
+    schema = Schema.from_descriptor(schema_descriptor)
+    resource = TableResource(
+        data=data,
+        schema=schema,
+        dialect=Dialect(header_case=False),
+    )
+    report = resource.validate()
+
+    assert report.flatten(["rowNumber", "fieldNumber", "fieldName", "type"]) == [
+        [None, 2, "missing", "missing-label"],
     ]
 
 
@@ -411,10 +563,13 @@ def test_validate_resource_ignoring_header_case_issue_1635():
             "expected_flattened_report": [],
         },
         {
+            # Case-sensitive: no label matches any field, so the header as a
+            # whole is unmatched on top of both fields being missing.
             "source": [["AA", "bb"], ["a", "b"]],
             "header_case": True,
             "expected_valid_report": False,
             "expected_flattened_report": [
+                [None, None, None, "unmatched-header"],
                 [None, 3, "aa", "missing-label"],
                 [None, 4, "BB", "missing-label"],
             ],
@@ -438,4 +593,90 @@ def test_validate_resource_ignoring_header_case_issue_1635():
         assert report.valid == tc["expected_valid_report"]
         assert (report.flatten(["rowNumber", "fieldNumber", "fieldName", "type"])) == tc[
             "expected_flattened_report"
+        ]
+
+
+# Fields match
+#
+# End-to-end counterpart of the Header unit tests: the `fieldsMatch` property
+# of the schema drives how the data's header is matched against the fields.
+
+
+def _validate_fields_match(field_names, fields_match, source):
+    schema = Schema.from_descriptor(
+        {
+            "fields": [{"name": name, "type": "string"} for name in field_names],
+            "fieldsMatch": fields_match,
+        }
+    )
+    return frictionless.validate(TableResource(source, schema=schema))
+
+
+REORDERED = [["name", "id"], ["english", "1"]]
+
+
+@pytest.mark.parametrize(
+    "fields_match, expected",
+    [
+        (
+            "exact",
+            [[None, 1, "id", "incorrect-label"], [None, 2, "name", "incorrect-label"]],
+        ),
+        ("equal", []),
+        ("subset", []),
+        ("superset", []),
+        ("partial", []),
+    ],
+)
+def test_resource_validate_fields_match_reordered_labels(fields_match, expected):
+    report = _validate_fields_match(["id", "name"], fields_match, REORDERED)
+    assert report.flatten(["rowNumber", "fieldNumber", "fieldName", "type"]) == expected
+
+
+@pytest.mark.parametrize(
+    "fields_match, expected",
+    [
+        ("exact", [[None, 2, "", "extra-label"]]),
+        ("equal", [[None, 2, "", "extra-label"]]),
+        ("superset", [[None, 2, "", "extra-label"]]),
+        ("subset", []),
+        ("partial", []),
+    ],
+)
+def test_resource_validate_fields_match_extra_label(fields_match, expected):
+    report = _validate_fields_match(["name"], fields_match, REORDERED)
+    assert report.flatten(["rowNumber", "fieldNumber", "fieldName", "type"]) == expected
+
+
+@pytest.mark.parametrize(
+    "fields_match, expected",
+    [
+        ("exact", [[None, 3, "extra", "missing-label"]]),
+        ("equal", [[None, 3, "extra", "missing-label"]]),
+        ("subset", [[None, 3, "extra", "missing-label"]]),
+        ("superset", []),
+        ("partial", []),
+    ],
+)
+def test_resource_validate_fields_match_missing_field(fields_match, expected):
+    report = _validate_fields_match(["name", "id", "extra"], fields_match, REORDERED)
+    assert report.flatten(["rowNumber", "fieldNumber", "fieldName", "type"]) == expected
+
+
+def test_resource_fields_match_reads_cells_by_name():
+    # The mapping drives the row stream too: the declared order is not the
+    # data's order, yet each cell is read with its own field's type.
+    schema = Schema.from_descriptor(
+        {
+            "fields": [
+                {"name": "id", "type": "integer"},
+                {"name": "name", "type": "string"},
+            ],
+            "fieldsMatch": "equal",
+        }
+    )
+    with TableResource(path="data/sync-schema.csv", schema=schema) as resource:
+        assert resource.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "中国人"},
         ]

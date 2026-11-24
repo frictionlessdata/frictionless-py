@@ -9,7 +9,8 @@ from typing_extensions import Self
 from .. import errors, fields, helpers, settings
 from ..checklist import Checklist
 from ..exception import FrictionlessException
-from ..metadata import Metadata
+from ..metadata import Metadata, ValidationContext
+from ..metadata.names import validate_name
 from ..platform import platform
 from ..report import Report
 from ..resource import Resource
@@ -56,6 +57,12 @@ class Package(Metadata, metaclass=Factory):
     _basepath: Optional[str] = attrs.field(default=None, alias="basepath")
     """
     # TODO: add docs
+    """
+
+    _schema_profile: Optional[str] = attrs.field(default=None, alias="schema_profile")
+    """
+    `$schema` property value, a JSON-schema profile URL this metadata follows.
+    See `Metadata._schema_profile`.
     """
 
     name: Optional[str] = None
@@ -571,12 +578,17 @@ class Package(Metadata, metaclass=Factory):
     # Metadata
 
     metadata_type = "package"
+    metadata_v2_profile = "https://datapackage.org/profiles/2.0/datapackage.json"
+    """
+    Canonical Data Package v2 profile URL (used by `upgrade`).
+    """
     metadata_Error = errors.PackageError
     metadata_profile = {
         "type": "object",
         "required": ["resources"],
         "properties": {
-            "name": {"type": "string", "pattern": settings.NAME_PATTERN},
+            # The v1 pattern of "name" is checked in `metadata_validate` (dropped in v2)
+            "name": {"type": "string"},
             "type": {"type": "string", "pattern": settings.TYPE_PATTERN},
             "title": {"type": "string"},
             "description": {"type": "string"},
@@ -654,11 +666,33 @@ class Package(Metadata, metaclass=Factory):
                 descriptor["profile"] = profiles[0]
 
     @classmethod
-    def metadata_validate(cls, descriptor: types.IDescriptor):  # type: ignore
-        metadata_errors = list(super().metadata_validate(descriptor))
+    def metadata_validate(  # type: ignore
+        cls,
+        descriptor: types.IDescriptor,
+        *,
+        context: Optional[ValidationContext] = None,
+    ):
+        context = context or ValidationContext()
+        metadata_errors = list(
+            super().metadata_validate(descriptor, context=context)
+        )
         if metadata_errors:
             yield from metadata_errors
             return
+
+        # Name version gate
+        # The version is the one of this package's own `$schema` (an absent
+        # `$schema` resolves to an explicit "v1"), imposed on all children.
+        # The profile above ensures that "name" is a string if present.
+        name = descriptor.get("name")
+        if name is not None:
+            version = cls.effective_datapackage_version(
+                descriptor, context.datapackage_version
+            )
+            note = validate_name(name, version)
+            if note:
+                yield errors.PackageError(note=note)
+                return
 
         # Security
         if not system.trusted:
@@ -716,6 +750,7 @@ class Package(Metadata, metaclass=Factory):
                 descriptor,
                 profile=profile,
                 error_class=cls.metadata_Error,
+                context=context,
             )
 
         # Profile (tabular)

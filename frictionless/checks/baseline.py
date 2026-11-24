@@ -32,6 +32,7 @@ class baseline(Check):
         errors.RowCountError,
         # Header
         errors.BlankHeaderError,
+        errors.UnmatchedHeaderError,
         # Label
         errors.ExtraLabelError,
         errors.MissingLabelError,

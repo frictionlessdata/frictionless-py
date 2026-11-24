@@ -9,11 +9,11 @@ import attrs
 
 from .. import helpers, settings
 from ..dialect import Dialect
-from ..exception import FrictionlessException
 from ..fields import AnyField
 from ..metadata import Metadata
 from ..platform import platform
 from ..schema import Field, Schema
+from ..table.label_matching import deduplicate_names
 
 if TYPE_CHECKING:
     from .. import types
@@ -115,6 +115,9 @@ class Detector:
     the inferred schema. It means that, for example, you can
     provide a subset of fields to be applied on top of the inferred
     fields or the provided schema can have different order of fields.
+
+    Deprecated: use the `fieldsMatch` schema property instead.
+    A schema that declares `fieldsMatch` takes precedence over this option.
     """
 
     schema_patch: Optional[Dict[str, Any]] = None
@@ -216,7 +219,7 @@ class Detector:
             encoding = detector.result["encoding"] or settings.DEFAULT_ENCODING
             confidence = detector.result["confidence"] or 0
             if confidence < self.encoding_confidence:
-                # low confidence, so we try UTF8
+                # low confidence, so we try default encoding
                 # If decoding fails, we fallback to the detected encoding
                 # despite the low-confidence
                 detected = encoding
@@ -329,7 +332,6 @@ class Detector:
 
             # Prepare names
             names = copy(self.field_names or labels or [])
-            names = list(map(lambda cell: cell.replace("\n", " ").strip(), names))
             if not names:
                 if not fragment:
                     return schema
@@ -340,13 +342,7 @@ class Detector:
                 names[index] = name or f"field{index + 1}"
 
             # Deduplicate names
-            if len(names) != len(set(names)):
-                seen_names: List[str] = []
-                names = names.copy()
-                for index, name in enumerate(names):
-                    count = seen_names.count(name) + 1
-                    names[index] = "%s%s" % (name, count) if count > 1 else name
-                    seen_names.append(name)
+            names = deduplicate_names(names)
 
             # Handle type/empty
             if self.field_type or not fragment:
@@ -411,33 +407,6 @@ class Detector:
                     fields[index] = AnyField(name=name, schema=schema)  # type: ignore
             schema.fields = fields  # type: ignore
 
-        # Sync schema
-        if self.schema_sync:
-            if labels:
-                case_sensitive = options["header_case"]
-
-                if not case_sensitive:
-                    labels = [label.lower() for label in labels]
-
-                if len(labels) != len(set(labels)):
-                    note = '"schema_sync" requires unique labels in the header'
-                    raise FrictionlessException(note)
-
-                mapped_fields = self.mapped_schema_fields_names(
-                    schema.fields,  # type: ignore
-                    case_sensitive,
-                )
-
-                self.rearrange_schema_fields_given_labels(
-                    mapped_fields,
-                    schema,
-                    labels,
-                )
-
-                self.add_missing_required_labels_to_schema_fields(
-                    mapped_fields, schema, labels, case_sensitive
-                )
-
         # Patch schema
         if self.schema_patch:
             patch = deepcopy(self.schema_patch)
@@ -451,57 +420,3 @@ class Detector:
             schema = Schema.from_descriptor(descriptor)
 
         return schema
-
-    @staticmethod
-    def mapped_schema_fields_names(
-        fields: List[Field], case_sensitive: bool
-    ) -> Dict[str, Field]:
-        """Create a dictionnary to map field names with schema fields"""
-        if case_sensitive:
-            return {field.name: field for field in fields}
-        else:
-            return {field.name.lower(): field for field in fields}
-
-    @staticmethod
-    def rearrange_schema_fields_given_labels(
-        fields_mapping: Dict[str, Field],
-        schema: Schema,
-        labels: List[str],
-    ):
-        """Rearrange fields according to the order of labels. All fields
-        missing from labels are dropped"""
-        schema.clear_fields()
-
-        for name in labels:
-            default_field = Field.from_descriptor({"name": name, "type": "any"})
-            field = fields_mapping.get(name, default_field)
-            schema.add_field(field)
-
-    def add_missing_required_labels_to_schema_fields(
-        self,
-        fields_mapping: Dict[str, Field],
-        schema: Schema,
-        labels: List[str],
-        case_sensitive: bool,
-    ):
-        """This method aims to add missing required labels and
-        primary key field not in labels to schema fields.
-        """
-        for name, field in fields_mapping.items():
-            if (
-                self.field_is_required(field, schema, case_sensitive)
-                and name not in labels
-            ):
-                schema.add_field(field)
-
-    @staticmethod
-    def field_is_required(
-        field: Field,
-        schema: Schema,
-        case_sensitive: bool,
-    ) -> bool:
-        if case_sensitive:
-            return field.required or field.name in schema.primary_key
-        else:
-            lower_primary_key = [pk.lower() for pk in schema.primary_key]
-            return field.required or field.name.lower() in lower_primary_key

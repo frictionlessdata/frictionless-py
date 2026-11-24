@@ -284,8 +284,6 @@ def test_package_validate_with_schema_issue_348():
     report = package.validate()
     assert report.flatten(["rowNumber", "fieldNumber", "type"]) == [
         [None, 4, "missing-label"],
-        [2, 4, "missing-cell"],
-        [3, 4, "missing-cell"],
     ]
 
 
@@ -677,3 +675,218 @@ def test_package_validate_with_parallel():
         [1, 3, None, "primary-key"],
         [2, 4, None, "blank-row"],
     ]
+
+
+# Missing values version gate — inheritance through the package
+#
+# A package `$schema` imposes its version on its resources/schemas/fields
+# (top-down). The object form of `missingValues` is a datapackage v2 addition,
+# rejected when the imposed version is v1. A descendant cannot escape it by
+# declaring a v2 `$schema` of its own.
+
+DP_V1_PROFILE = "https://datapackage.org/profiles/1.0/datapackage.json"
+DP_V2_PROFILE = "https://datapackage.org/profiles/2.0/datapackage.json"
+TS_V2_PROFILE = "https://datapackage.org/profiles/2.0/tableschema.json"
+GATE_NOTE = "missing values in object form require datapackage v2"
+OBJECT_MISSING_VALUES = [{"value": "-99", "label": "REFUSED"}]
+
+
+def _package_with_object_missing_values(package_profile, schema_own_profile, location):
+    schema = {"fields": [{"name": "name", "type": "string"}]}
+    if schema_own_profile is not None:
+        schema["$schema"] = schema_own_profile
+    if location == "schema":
+        schema["missingValues"] = OBJECT_MISSING_VALUES
+    else:
+        schema["fields"][0]["missingValues"] = OBJECT_MISSING_VALUES
+    descriptor = {
+        "resources": [{"name": "table", "path": "data/table.csv", "schema": schema}]
+    }
+    if package_profile is not None:
+        descriptor["$schema"] = package_profile
+    return descriptor
+
+
+MISSING_VALUES_INHERITANCE_CASES = [
+    # schema inherits the package version
+    (
+        "schema-inherits-package-v1",
+        DP_V1_PROFILE,
+        None,
+        "schema",
+        [["schema-error", GATE_NOTE]],
+    ),
+    ("schema-inherits-package-v2", DP_V2_PROFILE, None, "schema", []),
+    # field inherits the package version (through a schema without its own $schema)
+    (
+        "field-inherits-package-v1",
+        DP_V1_PROFILE,
+        None,
+        "field",
+        [["field-error", GATE_NOTE]],
+    ),
+    ("field-inherits-package-v2", DP_V2_PROFILE, None, "field", []),
+    # a descendant cannot escape the imposed v1 by declaring its own v2 $schema
+    (
+        "schema-cannot-escape-package-v1",
+        DP_V1_PROFILE,
+        TS_V2_PROFILE,
+        "schema",
+        [["schema-error", GATE_NOTE]],
+    ),
+    (
+        "field-cannot-escape-package-v1",
+        DP_V1_PROFILE,
+        TS_V2_PROFILE,
+        "field",
+        [["field-error", GATE_NOTE]],
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    "name, package_profile, schema_own_profile, location, expected",
+    MISSING_VALUES_INHERITANCE_CASES,
+    ids=[case[0] for case in MISSING_VALUES_INHERITANCE_CASES],
+)
+def test_package_validate_missing_values_version_gate_inheritance(
+    name, package_profile, schema_own_profile, location, expected
+):
+    descriptor = _package_with_object_missing_values(
+        package_profile, schema_own_profile, location
+    )
+    report = Package.validate_descriptor(descriptor)
+    assert report.flatten(["type", "note"]) == expected
+
+
+# Name version gate (package and resource names)
+#
+# Datapackage v2 allows any string as a package or resource name, while v1
+# restricts it to lowercase alphanumerics plus ".", "-", "_" and "/". As for
+# missing values, the v1 pattern is only checked under v1: an absent package
+# `$schema` is an explicit v1, imposed on its resources (top-down) whatever
+# `$schema` they declare; otherwise the resource's own `$schema` sets the
+# version.
+
+DR_V1_PROFILE = "https://datapackage.org/profiles/1.0/dataresource.json"
+DR_V2_PROFILE = "https://datapackage.org/profiles/2.0/dataresource.json"
+V2_RESOURCE_NAME = "MEDGULL_ANTWERPEN-gps-2025.csv.gz"
+NAME_NOTE = (
+    "'MEDGULL_ANTWERPEN-gps-2025.csv.gz' does not match '^([-a-z0-9._/])+$' "
+    "at property 'name'"
+)
+
+RESOURCE_NAME_VERSION_GATE_CASES = [
+    # an absent package `$schema` is an explicit v1...
+    ("absent-package-is-v1", None, None, [["resource-error", NAME_NOTE]]),
+    # ...which the resource cannot escape by declaring its own `$schema`
+    (
+        "resource-cannot-escape-absent-v1",
+        None,
+        DR_V2_PROFILE,
+        [["resource-error", NAME_NOTE]],
+    ),
+    ("package-v2", DP_V2_PROFILE, None, []),
+    ("package-v2-resource-v2", DP_V2_PROFILE, DR_V2_PROFILE, []),
+    # a resource cannot escape the version imposed by the package
+    ("package-v2-resource-v1", DP_V2_PROFILE, DR_V1_PROFILE, []),
+    (
+        "package-v1-resource-v2",
+        DP_V1_PROFILE,
+        DR_V2_PROFILE,
+        [["resource-error", NAME_NOTE]],
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    "name, package_profile, resource_profile, expected",
+    RESOURCE_NAME_VERSION_GATE_CASES,
+    ids=[case[0] for case in RESOURCE_NAME_VERSION_GATE_CASES],
+)
+def test_package_validate_resource_name_version_gate(
+    name, package_profile, resource_profile, expected
+):
+    resource = {"name": V2_RESOURCE_NAME, "path": "data/table.csv"}
+    if resource_profile is not None:
+        resource["$schema"] = resource_profile
+    descriptor = {"resources": [resource]}
+    if package_profile is not None:
+        descriptor["$schema"] = package_profile
+    report = Package.validate_descriptor(descriptor)
+    assert report.flatten(["type", "note"]) == expected
+
+
+PACKAGE_NAME = "My Package"
+PACKAGE_NAME_NOTE = "'My Package' does not match '^([-a-z0-9._/])+$' at property 'name'"
+
+
+@pytest.mark.parametrize(
+    "package_profile, expected",
+    [
+        # an absent package `$schema` is an explicit v1
+        (None, [["package-error", PACKAGE_NAME_NOTE]]),
+        (DP_V1_PROFILE, [["package-error", PACKAGE_NAME_NOTE]]),
+        (DP_V2_PROFILE, []),
+    ],
+    ids=["absent-is-v1", "package-v1", "package-v2"],
+)
+def test_package_validate_package_name_version_gate(package_profile, expected):
+    descriptor = {
+        "name": PACKAGE_NAME,
+        "resources": [{"name": "table", "path": "data/table.csv"}],
+    }
+    if package_profile is not None:
+        descriptor["$schema"] = package_profile
+    report = Package.validate_descriptor(descriptor)
+    assert report.flatten(["type", "note"]) == expected
+
+
+# Inherited version kept by detached children
+#
+# A resource without its own `$schema` inherits the package's version. The
+# resolved version is stored on the instance at import time, so a detached
+# child (per-resource validation inside `package.validate()`, `to_copy()`,
+# transform pipelines) keeps the tree semantics instead of re-resolving
+# positionally (an absent `$schema` being an explicit v1).
+
+
+def test_package_validate_v2_inherited_by_detached_resource():
+    descriptor = {
+        "$schema": DP_V2_PROFILE,
+        "resources": [
+            {
+                "name": "table",
+                "data": [["name", "note"], ["a", "-99"], ["b", "ok"]],
+                "schema": {
+                    "fields": [
+                        {"name": "name", "type": "string"},
+                        {"name": "note", "type": "string"},
+                    ],
+                    # object form: a v2-only feature, inherited from the package
+                    "missingValues": [{"value": "-99", "label": "REFUSED"}],
+                },
+            }
+        ],
+    }
+
+    # metadata validation of the whole tree
+    assert Package.validate_descriptor(descriptor).valid
+
+    # full validation (per-resource detached validation inside)
+    package = Package(descriptor)
+    assert package.validate().valid
+
+    # the extracted resource validates on its own (keeps the inherited v2)
+    resource = package.get_table_resource("table")
+    assert resource.validate().valid
+
+    # a copy keeps the inherited v2 and the schema feature it enables
+    copy = resource.to_copy()
+    assert copy.validate().valid
+    assert copy.schema.missing_values == ["-99"]
+
+    # the stored version is private: the exports stay canonical
+    # (no `$schema` injected anywhere)
+    assert "$schema" not in resource.to_descriptor()
+    assert "$schema" not in resource.schema.to_descriptor()

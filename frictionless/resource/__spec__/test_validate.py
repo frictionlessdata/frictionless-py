@@ -419,7 +419,11 @@ def test_validate_resource_duplicate_labels_with_sync_schema_issue_910():
         detector=detector,
     ).validate()
     assert report.flatten(["type", "note"]) == [
-        ["error", '"schema_sync" requires unique labels in the header'],
+        [
+            "error",
+            'matching fields by name ("fieldsMatch": "partial") '
+            "requires unique labels in the header",
+        ],
     ]
 
 
@@ -509,10 +513,11 @@ def test_resource_validate_detector_sync_schema():
     )
     report = resource.validate()
     assert report.valid
+    # schema is nonmutated
     assert resource.schema.to_descriptor() == {
         "fields": [
-            {"name": "name", "type": "string"},
             {"name": "id", "type": "integer"},
+            {"name": "name", "type": "string"},
         ],
     }
 
@@ -666,6 +671,41 @@ def test_resource_validate_invalid_resource_standards_v2_strict():
     assert report.flatten(["type", "note"]) == [
         ["resource-error", "'name' is a required property"],
     ]
+
+
+# Name (version gate)
+#
+# Datapackage v2 allows any string as a resource name; the v1 pattern is
+# checked under v1 — which is also the version of an absent `$schema`.
+
+NAME_NOTE = "'My Table' does not match '^([-a-z0-9._/])+$' at property 'name'"
+
+
+@pytest.mark.parametrize(
+    "schema, expected",
+    [
+        # an absent `$schema` is an explicit v1
+        (None, [["resource-error", NAME_NOTE]]),
+        (
+            "https://datapackage.org/profiles/1.0/dataresource.json",
+            [["resource-error", NAME_NOTE]],
+        ),
+        ("https://datapackage.org/profiles/2.0/dataresource.json", []),
+    ],
+    ids=["undeclared", "v1", "v2"],
+)
+def test_resource_validate_name_version_gate(schema, expected):
+    descriptor = {"name": "My Table", "path": "data/table.csv"}
+    if schema is not None:
+        descriptor["$schema"] = schema
+    report = Resource.validate_descriptor(descriptor)
+    assert report.flatten(["type", "note"]) == expected
+
+
+def test_resource_validate_name_valid_v1():
+    descriptor = {"name": "my-table.v1/a_b", "path": "data/table.csv"}
+    report = Resource.validate_descriptor(descriptor)
+    assert report.valid
 
 
 # Format

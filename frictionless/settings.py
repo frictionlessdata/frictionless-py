@@ -5,7 +5,7 @@ import os
 
 # Version
 
-VERSION = "5.19.0"
+VERSION = "5.21.0"
 
 # General
 
@@ -53,9 +53,10 @@ DEFAULT_BARE_NUMBER = True
 DEFAULT_FLOAT_NUMBER = False
 DEFAULT_GROUP_CHAR = ""
 DEFAULT_DECIMAL_CHAR = "."
-DEFAULT_HTTP_HEADERS = {
-    "User-Agent": "frictionless-py/" + VERSION
-}
+DEFAULT_LIST_DELIMITER = ","
+DEFAULT_LIST_ITEM_TYPE = "string"
+DEFAULT_HTTP_HEADERS = {"User-Agent": "frictionless-py/" + VERSION}
+
 DEFAULT_FIELD_CANDIDATES = [
     {"type": "yearmonth"},
     {"type": "geopoint"},

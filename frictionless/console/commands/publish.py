@@ -3,7 +3,6 @@ from __future__ import annotations
 from typing import List
 
 import typer
-from rich.console import Console
 from rich.progress import track
 from rich.prompt import Prompt
 
@@ -14,6 +13,7 @@ from ...resource import Resource
 from ...system import system
 from .. import common, helpers
 from ..console import console
+from ..helpers import output_console
 
 
 @console.command(name="publish")
@@ -32,7 +32,6 @@ def console_publish(
     standards: str = common.standards,
 ):
     """Script data"""
-    console = Console()
     portals = platform.frictionless_portals
 
     # Setup system
@@ -45,7 +44,7 @@ def console_publish(
     source = helpers.create_source(source, path=path)
     if not source and not path:
         note = 'Providing "source" or "path" is required'
-        helpers.print_error(console, note=note)
+        helpers.print_error(note=note)
         raise typer.Exit(code=1)
 
     try:
@@ -60,7 +59,7 @@ def console_publish(
         package = Package(title=title, resources=resources)
 
         # Publish package
-        console.rule("[bold]Publish")
+        output_console.rule("[bold]Publish")
         adapter = system.create_adapter(target, packagify=True)
         if not isinstance(adapter, portals.ckan.CkanAdapter):
             raise FrictionlessException("Currently only CKAN publishing is supported")
@@ -71,9 +70,9 @@ def console_publish(
                 package.publish(target, control=portals.ckan.CkanControl(apikey=apikey))
 
     except Exception as exception:
-        helpers.print_exception(console, debug=debug, exception=exception)
+        helpers.print_exception(debug=debug, exception=exception)
         raise typer.Exit(code=1)
 
     # Print result
-    console.rule("[bold]Result")
-    console.print(f"Succesefully published to [bold]{target}[/bold]")
+    output_console.rule("[bold]Result")
+    output_console.print(f"Succesefully published to [bold]{target}[/bold]")

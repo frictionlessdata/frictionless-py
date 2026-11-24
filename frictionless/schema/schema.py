@@ -1,14 +1,15 @@
 from __future__ import annotations
 
-from typing import Any, ClassVar, Dict, List, Optional, Union
+from typing import Any, ClassVar, Dict, List, Optional, Union, cast
 
 import attrs
 from tabulate import tabulate
 
 from .. import errors, settings, types
 from ..exception import FrictionlessException
-from ..metadata import Metadata
+from ..metadata import Metadata, ValidationContext
 from ..platform import platform
+from . import missing_values as missing_values_module
 from .factory import Factory
 from .field import Field
 from .types import INotes
@@ -32,6 +33,23 @@ class Schema(Metadata, metaclass=Factory):
     )
     """
     # TODO: add docs
+    """
+
+    _schema_profile: Optional[str] = attrs.field(default=None, alias="schema_profile")
+    """
+    `$schema` property value, a JSON-schema profile URL this metadata follows.
+    See `Metadata._schema_profile`.
+    """
+
+    _datapackage_version: Optional[types.IResolvedStandards] = attrs.field(
+        default=None, alias="datapackage_version"
+    )
+    """
+    Data Package standard version resolved at import time: the one imposed
+    by an ancestor (top-down inheritance), or this schema's own `$schema`
+    ("unknown" when a custom profile URL is involved). Private (not
+    exported): a detached validation keeps the tree semantics. See
+    `Metadata.effective_datapackage_version`.
     """
 
     # TODO: why it's optional??
@@ -62,6 +80,14 @@ class Schema(Metadata, metaclass=Factory):
     A List of fields in the schema.
     """
 
+    fields_match: types.IFieldsMatch = "exact"
+    """
+    How the fields declared above match the fields of the data source.
+    `exact` (the default) maps them by order and requires the very same fields;
+    the other values map them by name and relax the requirement in one way or
+    another (see the Data Package v2 specification).
+    """
+
     missing_values: List[str] = attrs.field(factory=settings.DEFAULT_MISSING_VALUES.copy)
     """
     List of string values to be set as missing values in the schema fields. If any of string in
@@ -77,6 +103,13 @@ class Schema(Metadata, metaclass=Factory):
     """
     Specifies the foreign keys for the schema.
     """
+
+    def __setattr__(self, name: str, value: Any):  # type: ignore
+        if name == "missing_values" and isinstance(value, list):
+            value, self._missing_values_labels = missing_values_module.split(
+                cast(missing_values_module.IEntries, value)
+            )
+        return super().__setattr__(name, value)  # type: ignore
 
     def __attrs_post_init__(self):
         for field in self.fields:
@@ -157,15 +190,6 @@ class Schema(Metadata, metaclass=Factory):
     def clear_fields(self) -> None:
         """Remove all the fields"""
         self.fields = []
-
-    def deduplicate_fields(self):
-        if len(self.field_names) != len(set(self.field_names)):
-            seen_names: List[str] = []
-            for index, name in enumerate(self.field_names):
-                count = seen_names.count(name) + 1
-                if count > 1:
-                    self.fields[index].name = "%s%s" % (name, count)
-                seen_names.append(name)
 
     # Describe
 
@@ -282,6 +306,10 @@ class Schema(Metadata, metaclass=Factory):
     # Metadata
 
     metadata_type = "schema"
+    metadata_v2_profile = "https://datapackage.org/profiles/2.0/tableschema.json"
+    """
+    Canonical Data Package v2 profile URL (used by `upgrade`).
+    """
     metadata_Error = errors.SchemaError
     metadata_profile = {
         "type": "object",
@@ -292,10 +320,11 @@ class Schema(Metadata, metaclass=Factory):
             "title": {"type": "string"},
             "description": {"type": "string"},
             "fields": {"type": "array"},
-            "missingValues": {
-                "type": "array",
-                "items": {"type": "string"},
+            "fieldsMatch": {
+                "type": "string",
+                "enum": ["exact", "equal", "subset", "superset", "partial"],
             },
+            "missingValues": missing_values_module.PROFILE,
             "primaryKey": {
                 "type": "array",
                 "items": {"type": "string"},
@@ -311,7 +340,10 @@ class Schema(Metadata, metaclass=Factory):
                             "required": ["resource", "fields"],
                             "properties": {
                                 "resource": {"type": "string"},
-                                "fields": {"type": "array", "items": {"type": "string"}},
+                                "fields": {
+                                    "type": "array",
+                                    "items": {"type": "string"},
+                                },
                             },
                         },
                     },
@@ -350,9 +382,29 @@ class Schema(Metadata, metaclass=Factory):
                 if not isinstance(fk["reference"]["fields"], list):
                     fk["reference"]["fields"] = [fk["reference"]["fields"]]
 
+    def metadata_export(self, *, exclude: List[str] = []) -> types.IDescriptor:
+        descriptor = super().metadata_export(exclude=exclude)
+
+        missing_values = descriptor.get("missingValues")
+        if isinstance(missing_values, list):
+            descriptor["missingValues"] = missing_values_module.export(
+                cast(List[str], missing_values),
+                getattr(self, "_missing_values_labels", {}),
+            )
+
+        return descriptor
+
     @classmethod
-    def metadata_validate(cls, descriptor: types.IDescriptor):  # type: ignore
-        metadata_errors = list(super().metadata_validate(descriptor))
+    def metadata_validate(  # type: ignore
+        cls,
+        descriptor: types.IDescriptor,
+        *,
+        context: Optional[ValidationContext] = None,
+    ):
+        context = context or ValidationContext()
+        metadata_errors = list(
+            super().metadata_validate(descriptor, context=context)
+        )
         if metadata_errors:
             yield from metadata_errors
             return
@@ -373,6 +425,19 @@ class Schema(Metadata, metaclass=Factory):
                 note = 'primary key "%s" does not match the fields "%s"'
                 note = note % (pk, field_names)
                 yield errors.SchemaError(note=note)
+
+        # Missing Values
+        missing_values = descriptor.get("missingValues", [])
+        for note in missing_values_module.validation_notes(missing_values):
+            yield errors.SchemaError(note=note)
+
+        # Missing Values version gate
+        # The version is the one imposed top-down by an ancestor (whatever
+        # `$schema` this schema declares), or resolved from this schema's own
+        # `$schema` otherwise (absent: explicit "v1").
+        version = cls.effective_datapackage_version(descriptor, context.datapackage_version)
+        for note in missing_values_module.version_gate_notes(missing_values, version):
+            yield errors.SchemaError(note=note)
 
         # Foreign Keys
         fks = descriptor.get("foreignKeys", [])

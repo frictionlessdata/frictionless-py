@@ -91,6 +91,14 @@ def test_schema_infer_no_names():
     }
 
 
+def test_schema_from_sample_deduplicate_names_avoids_collision():
+    labels = ["a", "a2", "a"]
+    sample = [["1", "2", "3"]]
+    detector = Detector()
+    schema = detector.detect_schema(sample, labels=labels)
+    assert schema.field_names == ["a", "a2", "a3"]
+
+
 def test_detector_set_buffer_size():
     detector = Detector(buffer_size=10)
     assert detector.buffer_size == 10

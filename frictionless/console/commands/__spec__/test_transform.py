@@ -1,8 +1,8 @@
-from typer.testing import CliRunner
-
 from frictionless.console import console
 
-runner = CliRunner()
+from .conftest import create_runner
+
+runner = create_runner()
 
 
 def test_console_transform():
@@ -35,5 +35,5 @@ def test_console_transform_error_not_found_source_issue_814():
         "transform data/bad.csv --pipeline data/issue-814.yaml",
     )
     assert result.exit_code == 1
-    assert result.stdout.count("[Errno 2]")
-    assert result.stdout.count("bad.csv")
+    assert result.stderr.count("[Errno 2]")
+    assert result.stderr.count("bad.csv")

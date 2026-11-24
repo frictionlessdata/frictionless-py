@@ -188,9 +188,7 @@ def write_file(path: str, body: Any, *, mode: str = "wt"):
 def is_remote_path(path: str) -> bool:
     path = path[0] if path and isinstance(path, list) else path
     scheme = urlparse(path).scheme
-    if not scheme:
-        return False
-    if path.lower().startswith(scheme + ":\\"):
+    if len(scheme) < 2:  # empty or single-character scheme (e.g. Windows drive letter)
         return False
     return True
 
@@ -218,6 +216,12 @@ def is_safe_path(path: str):
         os.path.expandvars(path) != path,
         contains_windows_var(path),
         contains_posix_var(path),
+        # A "file://" URI is a local disk access: "os.path.isabs" does not
+        # recognize it and the local loader strips the scheme, so without
+        # this check it would bypass the other conditions ("file:///etc/passwd").
+        # Other schemes (e.g. "s3://") are network-based and left to the
+        # SSRF protections of the deployment
+        urlparse(path).scheme == "file",
     ]
     return not any(unsafeness_conditions)
 

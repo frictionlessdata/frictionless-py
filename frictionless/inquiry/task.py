@@ -9,7 +9,7 @@ from .. import errors, helpers, settings, types
 from ..checklist import Checklist
 from ..dialect import Dialect
 from ..exception import FrictionlessException
-from ..metadata import Metadata
+from ..metadata import Metadata, ValidationContext
 from ..package import Package
 from ..report import Report
 from ..resource import Resource
@@ -214,8 +214,16 @@ class InquiryTask(Metadata):
             warnings.warn(note, UserWarning)
 
     @classmethod
-    def metadata_validate(cls, descriptor: types.IDescriptor):  # type: ignore
-        metadata_errors = list(super().metadata_validate(descriptor))
+    def metadata_validate(  # type: ignore
+        cls,
+        descriptor: types.IDescriptor,
+        *,
+        context: Optional[ValidationContext] = None,
+    ):
+        context = context or ValidationContext()
+        metadata_errors = list(
+            super().metadata_validate(descriptor, context=context)
+        )
         if metadata_errors:
             yield from metadata_errors
             return

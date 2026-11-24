@@ -7,6 +7,7 @@ from .duration import DurationField as DurationField
 from .geojson import GeojsonField as GeojsonField
 from .geopoint import GeopointField as GeopointField
 from .integer import IntegerField as IntegerField
+from .list import ListField as ListField
 from .number import NumberField as NumberField
 from .object import ObjectField as ObjectField
 from .string import StringField as StringField

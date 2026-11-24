@@ -18,6 +18,8 @@ class DateField(Field):
         "required",
         "minimum",
         "maximum",
+        "exclusiveMinimum",
+        "exclusiveMaximum",
         "enum",
     ]
 
