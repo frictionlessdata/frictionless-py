@@ -213,9 +213,7 @@ print(report)
 
 At first sight, it might not be clear why such a construct exists, but when your validation workflow gets complex, the Inquiry can provide a lot of flexibility and power.
 
-> The Inquiry will use multiprocessing if there is the `parallel` flag provided. This runs
-> independent inquiry tasks concurrently; it does not split validation of a single file/resource
-> across multiple processes.
+> The Inquiry will use multiprocessing to run independent tasks concurrently if the `parallel` flag is provided.
 
 ## Validation Report
 

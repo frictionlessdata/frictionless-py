@@ -30,7 +30,7 @@ Tasks in the Inquiry accept the same arguments written in camelCase as the corre
 frictionless validate capital.inquiry-example.yaml
 ```
 
-At first sight, it's no clear why such a construct exists but when your validation workflow gets complex, the Inquiry can provide a lot of flexibility and power. If the `parallel` flag is provided, Inquiry validation can use multiprocessing to run independent tasks concurrently; it does not split validation of a single file/resource across multiple processes.
+At first sight, it's not clear why such a construct exists but when your validation workflow gets complex, the Inquiry can provide a lot of flexibility and power. Inquiry validation can use multiprocessing if the `parallel` flag is provided.
 
 ## Reference
 
