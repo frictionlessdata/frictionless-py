@@ -53,7 +53,7 @@ class Inquiry(Metadata):
         """Validate inquiry
 
         Parameters:
-            parallel? (bool): enable multiprocessing
+            parallel? (bool): enable multiprocessing of independent tasks
 
         Returns:
             Report: validation report
