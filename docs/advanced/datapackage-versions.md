@@ -50,6 +50,7 @@ unambiguous v1 version. See table below for examples of behavior changes.
 | `name` restricted to the v1 pattern | enforced | any string |
 | `missingValues` object form `{value, label?}` | rejected | accepted |
 | `exclusiveMinimum` / `exclusiveMaximum` | rejected | accepted |
+| `groupChar` for `integer` fields | rejected | accepted |
 
 ## Detached children keep the inherited version
 

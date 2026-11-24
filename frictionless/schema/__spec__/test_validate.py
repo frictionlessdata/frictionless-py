@@ -204,6 +204,46 @@ def test_validate_exclusive_bounds_version_gate(name, schema, constraints, expec
     assert report.flatten(["type", "note"]) == expected
 
 
+# Integer `groupChar` (version gate)
+#
+# `groupChar` was already a property of number fields; integer fields only
+# have it since datapackage v2, so it is rejected for them under v1 (which is
+# also the version of an absent `$schema`).
+
+GROUP_CHAR_GATE_NOTE = 'property "groupChar" of type "integer" requires datapackage v2'
+
+INTEGER_GROUP_CHAR_VERSION_GATE_CASES = [
+    (
+        "v1-integer-rejected",
+        V1_PROFILE,
+        "integer",
+        [["field-error", GROUP_CHAR_GATE_NOTE]],
+    ),
+    ("v1-number-valid", V1_PROFILE, "number", []),
+    ("v2-integer-valid", V2_PROFILE, "integer", []),
+    ("custom-profile-integer-valid", CUSTOM_PROFILE, "integer", []),
+    (
+        "no-schema-integer-rejected",
+        None,
+        "integer",
+        [["field-error", GROUP_CHAR_GATE_NOTE]],
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    "name, schema, type, expected",
+    INTEGER_GROUP_CHAR_VERSION_GATE_CASES,
+    ids=[case[0] for case in INTEGER_GROUP_CHAR_VERSION_GATE_CASES],
+)
+def test_validate_integer_group_char_version_gate(name, schema, type, expected):
+    descriptor = {"fields": [{"name": "name", "type": type, "groupChar": ","}]}
+    if schema is not None:
+        descriptor["$schema"] = schema
+    report = Schema.validate_descriptor(descriptor)
+    assert report.flatten(["type", "note"]) == expected
+
+
 # Missing values version gate — inheritance
 #
 # A `$schema` imposes its version on all descendants (top-down): a schema's

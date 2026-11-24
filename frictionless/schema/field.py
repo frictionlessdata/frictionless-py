@@ -97,6 +97,12 @@ class Field(Metadata):
     List of supported constraints for a field.
     """
 
+    datapackage_v2_properties: ClassVar[List[str]] = []
+    """
+    List of properties that a field only has since datapackage v2
+    (they are rejected under datapackage v1).
+    """
+
     def __setattr__(self, name: str, value: Any):  # type: ignore
         if name == "type":
             note = 'Use "schema.set_field_type()" to update the type of the field'
@@ -304,6 +310,17 @@ class Field(Metadata):
                     yield errors.FieldError(
                         note=f'constraint "{name}" requires datapackage v2'
                     )
+
+        # Datapackage v2 properties version gate
+        # Properties that a field type only has since datapackage v2 (e.g.
+        # `groupChar` for integers) are rejected under unambiguous v1.
+        if version == "v1":
+            for name in cls.datapackage_v2_properties:
+                if name in descriptor:
+                    note = (
+                        f'property "{name}" of type "{cls.type}" requires datapackage v2'
+                    )
+                    yield errors.FieldError(note=note)
 
         # Examples
         example = descriptor.get("example")
