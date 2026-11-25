@@ -6,6 +6,7 @@ import typer
 from rich.table import Table
 
 from ...resource import Resource
+from ...schema import Schema
 from ...system import system
 from .. import common, helpers
 from ..console import console
@@ -25,6 +26,7 @@ def console_validate(
     innerpath: str = common.innerpath,
     compression: str = common.compression,
     schema: str = common.schema,
+    jsonschema: str = common.jsonschema,
     hash: str = common.hash,
     bytes: int = common.bytes,
     fields: int = common.fields,
@@ -121,6 +123,9 @@ def console_validate(
             skip_errors=skip_errors,
         )
 
+        # Create schema
+        schema_obj = Schema.from_jsonschema(jsonschema) if jsonschema else schema
+
         # Create resource
         resource = Resource(
             source=helpers.create_source(source),
@@ -136,7 +141,7 @@ def console_validate(
             bytes=bytes,
             fields=fields,
             rows=rows,
-            schema=schema,
+            schema=schema_obj,
             basepath=basepath,
             detector=detector_obj,
         )
