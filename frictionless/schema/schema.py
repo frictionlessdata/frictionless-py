@@ -256,7 +256,7 @@ class Schema(Metadata, metaclass=Factory):
         return res_cells, res_notes
 
     def create_cell_writers(self):
-        return {field.name: field.create_cell_reader() for field in self.fields}
+        return {field.name: field.create_cell_writer() for field in self.fields}
 
     # Flatten
 
