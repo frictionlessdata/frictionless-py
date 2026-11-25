@@ -61,3 +61,25 @@ def test_datetime_read_cell(format, source, target, recwarn):
     assert cell == target
     if not format.startswith("fmt:"):
         assert recwarn.list == []
+
+
+@pytest.mark.parametrize("microsecond", [0, 1, 123456, 999999])
+@pytest.mark.parametrize("tzinfo", [None, tz.tzutc(), tz.tzoffset("BST", 3600)])
+def test_datetime_default_writer_preserves_microseconds(microsecond, tzinfo):
+    field = Field.from_descriptor({"name": "datetime", "type": "datetime"})
+    value = datetime(2014, 1, 1, 6, 30, 15, microsecond=microsecond, tzinfo=tzinfo)
+
+    written, notes = field.write_cell(value)
+
+    assert notes is None
+    assert field.read_cell(written) == (value, None)
+    if microsecond == 0:
+        assert "." not in written
+
+
+def test_datetime_writer_keeps_explicit_precision():
+    field = Field.from_descriptor(
+        {"name": "datetime", "type": "datetime", "format": "%Y-%m-%dT%H:%M:%S"}
+    )
+    value = datetime(2014, 1, 1, 6, 30, 15, microsecond=123456)
+    assert field.write_cell(value) == ("2014-01-01T06:30:15", None)

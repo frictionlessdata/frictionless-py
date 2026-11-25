@@ -53,12 +53,16 @@ class DatetimeField(Field):
     def create_value_writer(self):
         # Create format
         format = self.format
+        default_format = format == settings.DEFAULT_FIELD_FORMAT
         if format == settings.DEFAULT_FIELD_FORMAT:
             format = settings.DEFAULT_DATETIME_PATTERN
 
         # Create writer
         def value_writer(cell: Any):
-            cell = cell.strftime(format)
+            pattern = format
+            if default_format and cell.microsecond:
+                pattern = pattern.replace("%S", "%S.%f")
+            cell = cell.strftime(pattern)
             cell = cell.replace("+0000", "Z")
             return cell
 
