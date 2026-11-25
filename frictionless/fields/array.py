@@ -44,6 +44,7 @@ class ArrayField(Field):
         def cell_reader(cell: Any):
             cell, notes = default_reader(cell)
             if cell is not None and not notes and field_reader:
+                cell = cell.copy()
                 for index, item in enumerate(cell):
                     item_cell, item_notes = field_reader(item)
                     if item_notes:

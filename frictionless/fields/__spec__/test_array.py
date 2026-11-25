@@ -47,6 +47,19 @@ def test_array_read_cell_array_item_type_error():
     assert notes == {"type": 'array item type is "integer/default"'}
 
 
+@pytest.mark.parametrize("source", [["1", "2"], ["1", "bad"]])
+def test_array_read_cell_array_item_preserves_source(source):
+    field = fields.ArrayField(name="name", array_item={"type": "integer"})
+    original = source.copy()
+
+    first = field.read_cell(source)
+    second = field.read_cell(source)
+
+    assert source == original
+    assert first == second
+    assert first[0] is not source
+
+
 def test_array_read_cell_array_item_with_constraint():
     field = fields.ArrayField(
         name="name", array_item={"constraints": {"enum": ["val1", "val2"]}}
