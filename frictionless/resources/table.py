@@ -207,7 +207,7 @@ class TableResource(Resource):
             field_candidates=system.detect_field_candidates(),
             header_case=self.dialect.header_case,
         )
-        self.stats.fields = len(self.schema.fields)
+        self.stats.fields = len(self.labels or self.schema.fields)
 
     def __open_header(self):
         assert self.__labels is not None
