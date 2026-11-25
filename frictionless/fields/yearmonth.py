@@ -50,7 +50,7 @@ class YearmonthField(Field):
     def create_value_writer(self):
         # Create writer
         def value_writer(cell: Any):
-            return f"{cell.year}-{cell.month:02}"
+            return f"{cell.year:04}-{cell.month:02}"
 
         return value_writer
 

@@ -45,6 +45,6 @@ class YearField(Field):
     def create_value_writer(self):
         # Create writer
         def value_writer(cell: Any):
-            return str(cell)
+            return str(cell).zfill(4)
 
         return value_writer

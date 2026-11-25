@@ -61,11 +61,15 @@ class DateField(Field):
     def create_value_writer(self):
         # Create format
         format = self.format
+        default_format = format == settings.DEFAULT_FIELD_FORMAT
         if format == settings.DEFAULT_FIELD_FORMAT:
             format = settings.DEFAULT_DATE_PATTERN
 
         # Create writer
         def value_writer(cell: Any):
-            return cell.strftime(format)
+            pattern = format
+            if default_format:
+                pattern = pattern.replace("%Y", f"{cell.year:04d}")
+            return cell.strftime(pattern)
 
         return value_writer
