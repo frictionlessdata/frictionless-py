@@ -1,0 +1,19 @@
+fields:
+  - name: id
+    type: integer
+    constraints:
+      required: true
+      unique: true
+  - name: name
+    type: string
+  - name: height
+    type: number
+    constraints:
+      maximum: 2
+  - name: built
+    type: string
+  - name: geometry
+    type: string
+    format: wkt
+    constraints:
+      required: true
