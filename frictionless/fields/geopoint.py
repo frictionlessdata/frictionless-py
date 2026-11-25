@@ -45,9 +45,9 @@ class GeopointField(Field):
             # Validate
             try:
                 cell = geopoint(*cell)
-                if cell.lon > 180 or cell.lon < -180:
+                if not -180 <= cell.lon <= 180:
                     return None
-                if cell.lat > 90 or cell.lat < -90:
+                if not -90 <= cell.lat <= 90:
                     return None
             except Exception:
                 return None
