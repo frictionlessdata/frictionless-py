@@ -35,6 +35,7 @@ class DateField(Field):
                     value_time.hour == 0
                     and value_time.minute == 0
                     and value_time.second == 0
+                    and value_time.microsecond == 0
                 ):
                     return datetime(cell.year, cell.month, cell.day).date()
                 else:
