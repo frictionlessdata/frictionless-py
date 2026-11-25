@@ -57,6 +57,26 @@ def test_pandas_parser_with_nan():
         assert row["x"].is_nan(), test_name
 
 
+def test_pandas_parser_integer_columns_next_to_float_columns_issue_1599():
+    dataframe = pd.DataFrame(
+        data={"year": [1972, 2001], "id": [2**53 + 1, 2], "value": [1.5, 2.5]}
+    )
+    schema = Schema.from_descriptor(
+        {
+            "fields": [
+                {"name": "year", "type": "year"},
+                {"name": "id", "type": "integer"},
+                {"name": "value", "type": "number"},
+            ]
+        }
+    )
+    with TableResource(data=dataframe, schema=schema) as resource:
+        assert resource.read_rows() == [
+            {"year": 1972, "id": 2**53 + 1, "value": Decimal("1.5")},
+            {"year": 2001, "id": 2, "value": Decimal("2.5")},
+        ]
+
+
 def test_pandas_parser_from_dataframe_with_primary_key_having_datetime():
     df = pd.read_csv("data/vix.csv", sep=";", parse_dates=["Date"], index_col=["Date"])  # type: ignore
     with TableResource(data=df) as resource:

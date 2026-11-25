@@ -46,7 +46,9 @@ class PandasParser(Parser):
 
         # Lists
         yield schema.field_names
-        for pk, item in dataframe.iterrows():  # type: ignore
+        # Without the object cast, iterrows() upcasts rows that only contain
+        # integer and float columns to float
+        for pk, item in dataframe.astype(object).iterrows():  # type: ignore
             cells: List[Any] = []
             for field in schema.fields:
                 if field.name in schema.primary_key:
