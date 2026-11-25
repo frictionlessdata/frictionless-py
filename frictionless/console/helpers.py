@@ -42,6 +42,11 @@ def create_source(source: Any, *, path: Optional[str] = None) -> Any:
 
 def create_dialect(
     *,
+    source: Optional[Any] = None,
+    path: Optional[str] = None,
+    format: Optional[str] = None,
+    innerpath: Optional[str] = None,
+    basepath: Optional[str] = None,
     descriptor: Optional[str] = None,
     header_rows: Optional[str] = None,
     header_join: Optional[str] = None,
@@ -77,7 +82,14 @@ def create_dialect(
 
     # Controls
     if sheet is not None:
-        dialect.controls.append(formats.ExcelControl(sheet=sheet))
+        # Resolve the format using the same detection as the CLI's resource.
+        resource = platform.frictionless.Resource(
+            source, path=path, format=format, innerpath=innerpath, basepath=basepath
+        )
+        if resource.format == "ods":
+            formats.OdsControl.from_dialect(dialect).sheet = sheet
+        else:
+            dialect.controls.append(formats.ExcelControl(sheet=sheet))
     elif table is not None:
         dialect.controls.append(formats.SqlControl(table=table))
     elif keys is not None or keyed is not None:
