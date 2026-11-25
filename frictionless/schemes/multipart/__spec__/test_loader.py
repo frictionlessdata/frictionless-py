@@ -175,3 +175,17 @@ def test_multipart_loader_with_compressed_parts_issue_1215():
             {"id": 1, "name": "english"},
             {"id": 2, "name": "中国人"},
         ]
+
+
+def test_multipart_loader_missing_trailing_newline(tmpdir):
+    tmpdir.join("chunk1.csv").write("id,name\n1,english")
+    tmpdir.join("chunk2.csv").write("id,name\n2,german\n")
+    with TableResource(
+        path=str(tmpdir.join("chunk1.csv")),
+        extrapaths=[str(tmpdir.join("chunk2.csv"))],
+    ) as resource:
+        assert resource.header == ["id", "name"]
+        assert resource.read_rows() == [
+            {"id": 1, "name": "english"},
+            {"id": 2, "name": "german"},
+        ]
