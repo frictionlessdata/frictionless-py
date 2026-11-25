@@ -6,6 +6,63 @@ from frictionless import FrictionlessException, Package, Resource, platform, sys
 
 # General
 
+DP_PROFILES = [
+    "https://datapackage.org/profiles/1.0/datapackage.json",
+    "https://datapackage.org/profiles/2.0/datapackage.json",
+]
+UNSAFE_METADATA_PATHS = [
+    "/outside/image.png",
+    r"C:\outside\image.png",
+    r"\\server\share\image.png",
+    "../outside/image.png",
+    "file:///outside/image.png",
+    "s3://bucket/image.png",
+    "javascript:alert(1)",
+    "mailto:user@example.com",
+    "unknown://host/image.png",
+    "http://[",
+]
+SAFE_METADATA_PATHS = [
+    "assets/image.png",
+    "http://example.com/image.png",
+    "https://example.com/image.png",
+    "ftp://example.com/image.png",
+    "ftps://example.com/image.png",
+]
+
+
+def _package_with_metadata_path(field, path):
+    descriptor = {"resources": []}
+    if field == "image":
+        descriptor["image"] = path
+    else:
+        name = {
+            "contributor": "contributors",
+            "license": "licenses",
+            "source": "sources",
+        }[field]
+        descriptor[name] = [{"title": field.title(), "path": path}]
+    return descriptor
+
+
+@pytest.mark.parametrize("schema", DP_PROFILES)
+@pytest.mark.parametrize("field", ["image", "contributor", "license", "source"])
+@pytest.mark.parametrize("path", UNSAFE_METADATA_PATHS)
+def test_package_rejects_unsafe_metadata_paths_issue_1591(schema, field, path):
+    descriptor = _package_with_metadata_path(field, path)
+    descriptor["$schema"] = schema
+    errors = list(Package.metadata_validate(descriptor))
+    assert [error.note for error in errors] == [f'path "{path}" is not safe']
+
+
+@pytest.mark.parametrize("schema", DP_PROFILES)
+@pytest.mark.parametrize("field", ["image", "contributor", "license", "source"])
+@pytest.mark.parametrize("path", SAFE_METADATA_PATHS)
+def test_package_accepts_safe_metadata_paths_issue_1591(schema, field, path):
+    descriptor = _package_with_metadata_path(field, path)
+    descriptor["$schema"] = schema
+    assert not list(Package.metadata_validate(descriptor))
+
 
 @pytest.mark.skipif(platform.type == "windows", reason="Fix on Windows")
 def test_package_resource_unsafe_schema():
